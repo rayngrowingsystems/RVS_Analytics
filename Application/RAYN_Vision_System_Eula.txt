@@ -1,0 +1,276 @@
+﻿RAYN Vision System - Copyright © 2023 - RAYN Growing Systems, LLC
+
+IMPORTANT – THIS IS A LEGAL AGREEMENT BETWEEN YOU (“USER”) AND RAYN 
+GROWING SYSTEMS, LLC (“RAYN”).  PLEASE READ THE FOLLOWING CAREFULLY 
+BEFORE OPERATING AND INSTALLING THE SOFTWARE (the “Software”).  RAYN 
+PROVIDES THE SOFTWARE SOLELY ON THE TERMS AND CONDITIONS SET FORTH IN 
+THIS END USER LICENSE AGREEMENT (the “Agreement”) AND BY CLICKING THE 
+“ACCEPT” BUTTON AND OPERATING AND INSTALLING THE SOFTWARE, YOU ACCEPT 
+THIS AGREEMENT AND AGREE THAT YOU ARE LEGALLY BOUND BY ITS TERMS. IF YOU 
+DO NOT AGREE TO ALL THE TERMS AND CONDITIONS CONTAINED IN THE 
+AGREEMENT, THEN RAYN WILL NOT AND DOES NOT LICENSE THE SOFTWARE TO YOU 
+AND YOU MUST NOT INSTALL THE SOFTWARE OR OTHERWISE USE THE SOFTWARE. 
+
+THE SOFTWARE IS LICENSED AND COPYRIGHTED (NOT SOLD). Except for the limited 
+license granted in this Agreement, RAYN and its licensors retain all right, title and interest in the 
+Software and all proprietary rights in the Software, including copyrights, patents, trademarks, and 
+trade secret rights, excluding any third party software contained therein. 
+
+THIS SOFTWARE IS PROVIDED TO USER IN CONNECTION WITH DEVICE(S) FROM 
+RAYN (“Device”). USER MAY USE THE SOFTWARE ONLY ON THE DEVICE AND ONLY 
+SUBJECT TO THE TERMS AND CONDITIONS HEREIN.  RAYN will have no liability for 
+errors, unreliable operation, or other issues resulting from use of the Software on or in 
+connection with devices that are not in conformance with the manufacturer’s original 
+specifications (collectively, “Modified Devices”). Use of the Software on Modified Devices 
+will be at User’s sole and exclusive risk and liability.
+
+1.	Grant of License.   Subject to User’s strict compliance with the following terms and 
+conditions, RAYN hereby grants to User, a worldwide, non-exclusive, limited license 
+to use the Software on the Device during the Term.  
+
+2.	Limitations on License.  The license granted to User in this Agreement is restricted 
+as follows:  
+
+*	Limitations on Copying and Distribution.  User may not copy or distribute 
+the Software except to the extent that copying is necessary to use the Software 
+within User’s organization for purposes set forth herein.
+*	Limitations on Reverse Engineering and Modification.  User may not 
+reverse engineer, dissemble, decompile, modify or create derivative works of 
+the Software. However, if the relevant software copy is situated in a country 
+that transposed Article 6 of Directive 2009/24/EC into such country's applicable 
+laws, a decompiling is admissible for the reasons and within the restrictions set 
+forth in such country's laws that transpose Article 6 of Directive 2009/24/EC.
+*	Back-up copy.  If the relevant software copy is situated in a country that 
+transposed Article 5 para. 2 of Directive 2009/24/EC into such country's 
+applicable laws, the making of a back-up copy of the relevant software copy is 
+admissible for the reasons and within the restrictions set forth in such country's 
+laws that transpose Article 5 para. 2 of Directive 2009/24/EC.
+*	Proprietary Notices.  User may not remove, delete, alter or obscure any 
+product identification or proprietary notices (e.g., copyright and trademark 
+notices) from the Software or its documentation.  
+*	Use in Accordance with Documentation.  All use of the Software must be in 
+accordance with its then current documentation, if any, provided with the 
+Software or made available on RAYN’s website.
+*	Compliance with Applicable Law.  User is solely responsible for ensuring its 
+use of the Software is in compliance with all applicable foreign, federal, state 
+and local laws, and rules and regulations.
+
+3.	Responsibility for Use of Software.  User is responsible and liable for all uses of the 
+Software and documentation through access thereto provided by RAYN, directly or 
+indirectly. Specifically, and without limiting the generality of the foregoing, User is 
+responsible and liable for all actions and failures to take required actions with respect 
+to the Software and documentation by its authorized users or by any other person to 
+whom User may provide access to or use of the Software, whether such access or 
+use is permitted by or in violation of this Agreement.
+
+4.	Third-Party Software.  The Software may include software, content, data, or other 
+materials, including related documentation, that are owned by third parties other than 
+RAYN and that are provided to RAYN on license terms that are in addition to or 
+different from those contained in this Agreement (“Third-Party Licenses”). A list of all 
+materials, if any, included in the Software and provided under Third-Party Licenses 
+is set forth on Schedule A to this Agreement, and the applicable Third-Party 
+Licenses are accessible via links therefrom. User is bound by and shall comply with 
+all Third-Party Licenses. Any breach by User or any of its authorized users of any 
+Third-Party License is also a breach of this Agreement.
+
+5.	Software Support; Functionality.  All questions and requests relating to Software 
+Support must be directed to RAYN. RAYN may change or remove functionality and 
+other features of the Software at any time, without notice. Support Services will include 
+the provision of updates, bug fixes, patches, and other error corrections (collectively, 
+“Updates”) as RAYN makes generally available free of charge to all licensees of the 
+Software. RAYN may develop and provide Updates in its sole discretion, and User 
+agrees that RAYN has no obligation to develop any Updates at all or for particular 
+issues. User further agrees that all Updates will be deemed Software, and related 
+documentation will be deemed documentation, all subject to all terms and conditions 
+of this Agreement.  User acknowledges that RAYN may provide some or all Updates 
+via download from a website designated by RAYN and that User’s receipt thereof will 
+require an internet connection, which connection is User’s sole responsibility. RAYN 
+has no obligation to provide Updates via any other media. Support Services do not 
+include any new version or new release of the Software that RAYN may issue as a 
+separate or new product (“Upgrades”), and RAYN may determine whether any 
+issuance qualifies as an Upgrade or Update in its sole discretion. RAYN has no 
+obligation to provide Support Services, including Updates (i) for any but the most 
+current version or release of the Software, or (ii) for any copy of Software for which all 
+previously issued Updates have not been installed, or (iii) for any Software that has 
+been modified other than by or with the authorization of RAYN, or that is being used 
+with any hardware, software, or configuration not specified in the documentation or 
+expressly authorized by RAYN in writing.
+
+6.	Upgrades.  RAYN intends to provide, but does not guarantee, Updates or Upgrades 
+of the Software. If the Software is an Upgrade from a previous version of the 
+Software, then it is provided to User on a license exchange basis. User agrees by 
+installing and using the upgraded version of the Software to voluntarily terminate all 
+use of the previous version of the Software. For each Upgrade, User will be prompted 
+to accept a new terms and conditions relating to User’s use of the upgraded Software. 
+User agrees any earlier agreement governing the use of the previous version of the 
+Software is hereby void and replaced in its entirety by this Agreement.
+
+7.	Feedback.  User may provide suggestions, comments, or other feedback (collectively, 
+“Feedback”) regarding RAYN’s products and services, including the Device and 
+Software. Feedback is voluntary. RAYN may use Feedback for any purpose without 
+obligation of any kind. To the extent a license is required under User’s intellectual 
+property rights to make use of the Feedback, User hereby grants to RAYN an 
+irrevocable, world-wide, non-exclusive, perpetual, fully-paid-up, royalty-free license to 
+use the Feedback in connection with RAYN’s business, including the enhancement of 
+the Software and the provision of products and services to its customers.
+
+8.	Disclaimer of Warranty. THE SOFTWARE AND DOCUMENTATION ARE 
+PROVIDED TO USER “AS IS” AND WITH ALL FAULTS AND DEFECTS WITHOUT 
+WARRANTY OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY LAW, 
+RAYN AND ITS SUPPLIERS AND LICENSORS DISCLAIM ALL WARRANTIES 
+WITH RESPECT TO THE SOFTWARE, INCLUDING, BUT NOT LIMITED TO, THE 
+IMPLIED WARRANTIES OF NON-INFRINGEMENT, TITLE, MERCHANTABILITY, 
+QUITE ENJOYMENT, QUALITY OF INFORMATION, AND FITNESS FOR A 
+PARTICULAR PURPOSE. RAYN AND ITS SUPPLIERS AND LICENSORS DO NOT 
+WARRANT THAT THE SOFTWARE WILL MEET USER’S REQUIREMENTS, OR 
+THAT THE OPERATION OF THE SOFTWARE WILL BE UNINTERRUPTED OR 
+ERROR-FREE, OR THAT DEFECTS IN THE SOFTWARE WILL BE CORRECTED. 
+The entire risk as to the quality, operation, and performance of the Software is with 
+User. Should any Software prove defective in any respect, User assumes the cost of 
+any necessary servicing, repair or correction. This disclaimer of warranty constitutes 
+an essential part of this license.  RAYN STRICTLY DISCLAIMS ALL WARRANTIES 
+WITH RESPECT TO ANY THIRD-PARTY LICENSES.
+
+9.	U.S. Government Restrictions.  The Software is commercial computer software, as 
+such term is defined in 48 C.F.R. §2.101. Accordingly, if the User is the U.S. 
+Government or any contractor therefor, User shall receive only those rights with 
+respect to the Software and documentation as are granted to all other end users 
+under license, in accordance with (a) 48 C.F.R. §227.7201 through 48 C.F.R. 
+§227.7204, with respect to the Department of Defense and their contractors, or (b) 48 
+C.F.R. §12.212, with respect to all other U.S. Government licensees and their 
+contractors. 
+
+10.	Limitation of Liability.  TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO 
+EVENT WILL RAYN OR ITS AFFILIATES OR SUBSIDIARIES, OR ANY OF ITS 
+SUPPLIERS AND LICENSORS, BE LIABLE TO USER OR ANY THIRD PARTY FOR 
+ANY DIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, PUNITIVE, OR 
+INDIRECT DAMAGES (WHETHER IN CONTRACT, TORT (INCLUDING 
+NEGLIGENCE), OR OTHERWISE), WHICH INCLUDE, WITHOUT LIMITATION, 
+DAMAGES FOR PERSONAL INJURY, LOSS OF SERVICES, LOST PROFITS, 
+LOST DATA AND BUSINESS INTERRUPTION, ARISING OUT OF THE USE OR 
+INABILITY TO USE THE SOFTWARE, EVEN IF THEY HAVE BEEN ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGES. IN ANY CASE, THE ENTIRE LIABILITY 
+OF RAYN AND ITS AFFILIATES, SUPPLIERS AND LICENSORS, UNDER THIS 
+AGREEMENT FOR ALL DAMAGES, LOSSES, AND CAUSES OF ACTION 
+(WHETHER IN CONTRACT, TORT (INCLUDING NEGLIGENCE), OR OTHERWISE) 
+IS LIMITED TO THE AMOUNT PAID BY USER, IF ANY, FOR THE SOFTWARE. 
+
+SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF 
+INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THIS EXCLUSION AND 
+LIMITATION MAY NOT APPLY TO USER.
+
+11.	Export Regulations and Trade Compliance.  The Software and documentation are 
+subject to U.S. export control laws, including without limitation, the U.S. Export 
+Administration Act and its associated regulations, and may be subject to export or 
+import regulations in other countries. In connection with this Agreement, both RAYN 
+and User will comply with all applicable import, re-import, sanctions, anti-boycott, 
+export, and re-export control laws and regulations, including all such laws and 
+regulations that apply to a U.S. company, such as the Export Administration 
+Regulations, the International Traffic in Arms Regulations, and economic sanctions 
+programs implemented by the Office of Foreign Assets Control. User shall not, 
+directly or indirectly, export, re-export or release the Software or documentation to, or 
+make the Software or documentation accessible from, any jurisdiction or country to 
+which export, re-export or release is prohibited by law, rule or regulation. User shall 
+comply with all applicable federal laws, regulations and rules, and complete all 
+required undertakings (including obtaining any necessary export license or other 
+governmental approval), prior to exporting, re-exporting, releasing or otherwise 
+making the Software or documentation available outside the United States. User 
+represents and warrants that it is not subject to sanctions or otherwise designated on 
+any list of prohibited or restricted parties, including but not limited to the lists 
+maintained by the United Nations Security Council, the U.S. Government (e.g., the 
+Specially Designated Nationals List and Foreign Sanctions Evaders List of the U.S. 
+Department of Treasury, and the Entity List of the U.S. Department of Commerce), 
+the European Union or its Member States, or other applicable government authority. 
+
+12.	Termination.  User may terminate this Agreement by ceasing to use and destroying 
+all copies of the Software and documentation. This license will automatically terminate 
+in the event User breaches any of its terms. In the event of a claim of intellectual 
+property infringement by any third party relating to the Software, RAYN may 
+immediately terminate this Agreement. In addition, RAYN may choose to discontinue 
+support of the Software at any time, without notice. In such case, the Software may 
+cease to function and User’s data may become inaccessible. User is solely 
+responsible for backing up any data stored in the Software. 
+
+Nothing in this Agreement shall limit User's right to sell the relevant Device together 
+with the Software being on such Device if and to the extent the User purchased and 
+further sells the relevant device within a country that transposed Directive 2009/24/EC 
+into such country's applicable laws. It being clarified that this Agreement terminates 
+and User has to destroy any back-up copy made of the Software as soon as User 
+ceases to be the owner of the relevant Device. 
+
+13.	Indemnification.  User shall indemnify, defend, and hold harmless RAYN and its 
+suppliers and licensors from and against all losses, damages, claims, liabilities, fines, 
+costs, and expenses (including reasonable attorney fees) arising out of User’s breach 
+of this Agreement.  
+
+14.	Privacy.  User acknowledges that RAYN may, directly or indirectly through the 
+services of third parties, collect and store information regarding use of the Software 
+and use of the Device on which the Software is installed through the provision of 
+Support Services.  User agrees RAYN may use such information for any purpose 
+related to any use of the Software by User or on User’s equipment including but not 
+limited to improving the performance of the Software, developing Updates, or 
+providing products and services to its customers. RAYN recognizes the importance of 
+respecting User’s privacy. The Privacy Policy (linked below) provides a description of 
+how RAYN collects, uses, shares, and protects personal information, as well as the 
+choices and access rights User has regarding such personal information. For more 
+information on RAYN’s privacy practices and to review RAYN’s Privacy Policy please 
+visit the following link: https://www.rayngrowingsystems.com/Privacy-Policy-and-terms-of-
+use.aspx.
+
+15.	Destruction of the Software.  Upon termination of this Agreement, the license 
+granted hereunder shall terminate, and User shall cease using and destroy the 
+Software, the related documents, and all copies thereof and submit documents 
+evidencing such destruction to RAYN, if requested by RAYN to do so.
+
+16.	Miscellaneous.  This Agreement will be construed and interpreted exclusively 
+according to the laws of the State of Wisconsin, United States of America, without 
+giving effect to any principles of conflicts of law. Any action at law or in equity arising 
+out of or directly or indirectly relating to this Agreement may be instituted only in the 
+Federal or state courts located in Dane County, Wisconsin. RAYN and User consent 
+and submit to the personal jurisdiction of those courts for the purposes of any action 
+related to this Agreement, and to extra-territorial service of process. This Agreement 
+constitutes the entire understanding and agreement between RAYN and User with 
+respect to the transactions contemplated in this Agreement and supersedes all prior 
+or contemporaneous oral or written communications with respect to the subject 
+matter of this Agreement, all of which are merged in this Agreement. This Agreement 
+may not be modified, amended or in any way altered except by an instrument in 
+writing signed by authorized representatives of both parties. In the event any 
+provision of this Agreement is found invalid or unenforceable pursuant to judicial 
+decree, the remainder of this Agreement will remain valid and enforceable according 
+to its terms. Any failure by RAYN to strictly enforce any provision of this Agreement 
+will not operate as a waiver of that provision or any subsequent breach of that 
+provision. The disclaimers and limitations of liability and User’s indemnity will survive 
+any termination or expiration of this Agreement. All notices, requests, consents, 
+claims, demands, waivers and other communications hereunder shall be in writing 
+and shall be deemed to have been given on the date sent by e-mail or facsimile (with 
+confirmation of transmission) or on the third day after the date mailed, by certified or 
+registered mail, postage prepaid. This Agreement may be accepted in electronic form 
+(e.g., by an electronic or other means of demonstrating assent) and User’s 
+acceptance will be deemed binding between User and RAYN. Neither RAYN nor 
+User will contest the validity or enforceability of this Agreement, including under any 
+applicable statute of frauds, because it was accepted or signed in electronic form. 
+Electronically maintained records when produced in hard copy form shall constitute 
+business records and shall have the same validity as any other generally recognized 
+business records.  IT IS EXPRESSLY UNDERSTOOD AND AGREED THAT IN THE 
+EVENT ANY REMEDY HEREUNDER IS DETERMINED TO HAVE FAILED OF ITS 
+ESSENTIAL PURPOSE, ALL LIMITATIONS OF LIABILITY AND EXCLUSIONS OF 
+DAMAGES WILL REMAIN IN EFFECT.
+
+
+
+
+Schedule A
+
+Third-Party Licenses Terms and Conditions.  For a complete list of all Third-Party Licenses 
+that are fully incorporated herein to the extent required by each Third-Party License terms and 
+conditions please visit www.rayngrowingsystems.com/licenses.
+
+
+
+                   RAYN GROWING SYSTEMS, LLC’S END USER LICENSE AGREEMENT 
+Software: RAYN Syrcadia
+4842-5816-8396.3
+
+Page 1 of 1
+January 12th 2022
+4842-5816-8396.3
