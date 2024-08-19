@@ -1,4 +1,4 @@
-# Copyright 2024 RAYN Growing Systems
+# Copyright 2024 ETC Inc d/b/a RAYN Growing Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

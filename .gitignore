@@ -112,3 +112,5 @@ Application/VersionInfoGenerated.txt
 Application/resources/rc_CameraApp.py
 
 Application/generated/
+
+Application/runUiRcc.bat

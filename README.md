@@ -18,17 +18,17 @@ Please refer to the [User Guide]() for more details.
 ## Setup
 It is recommended to run the application in a virtual environment.
 Required libraries and versions:
-- python v3.10
-- plantCV
-- jupyterlab
-- ipympl
-- nodejs
-- stackprinter
-- paho-mqtt
-- plotly
-- watchdog
-- kaleido (v0.1.0, other versions do not work)
-- pyside6
+- python (3.10.14)
+- plantCV (4.3.1)
+- jupyterlab (4.2.4)
+- ipympl (0.9.4)
+- nodejs (22.5.1)
+- stackprinter (0.2.5)
+- paho-mqtt (1.6.1)
+- plotly (5.9.0)
+- watchdog (2.1.6)
+- kaleido (0.1.0, other versions do not work)
+- pyside6 (6.6.0)
 
 Here are the steps to set up everything to run the application using conda.
 
@@ -47,6 +47,16 @@ cd Application # enter Application folder - important for relative paths
 python cameraapp.py
 ```
 
+The application itself does not contain any analysis scripts. Mask and Analysis scripts can be added 
+through the "Masks" and "Scripts" folders. You can use pre-made scripts or create your own. 
+
+Both official RAYN and community-created scripts can be retrieved from the following repositories:
+- [RVS-A Mask Scripts](https://github.com/rayngrowingsystems/RVS-A_analysis_scripts)
+- [RVS-A Analysis Scripts](https://github.com/rayngrowingsystems/RVS-A_analysis_scripts)
+
+Read here about how to create custom scripts:
+- [RVS-A Custom Scripts](https://github.com/rayngrowingsystems/RVS-A_custom_scripts)
+
 ## Support
 If you experience any problems or have feedback on the analysis scripts, please add an issue to this repository or 
 contact [RAYN Vision Support](mailto:RAYNVisionSupport@rayngrowingsystems.com).
@@ -58,7 +68,8 @@ contributions.
 Please add any suggestions/issues/bugs as issues in the [RVS Analytics Repository](https://github.com/rayngrowingsystems/RVS_Analytics/issues).
 
 ## License and Copyright
-© 2024 RAYN Growing Systems, All Rights Reserved. Licensed under the Apache License, Version 2.0
+© 2024 ETC Inc d/b/a RAYN Growing Systems. Licensed under the Apache License, Version 2.0
+You may not use the files in this repository except in compliance with the License.
 
 Trademark and patent info: [rayngrowingsystems.com/ip](https://rayngrowingsystems.com/ip/) \
 Third-party license agreement info: [etcconnect.com/licenses](https://www.etcconnect.com/licenses/). \
