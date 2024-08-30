@@ -13,9 +13,27 @@ Analyse hyper/multispectral images using PlantCV workflows in a graphical user i
 provides different dialogues to e.g. select image source, regions of interest as well as masks 
 in a graphical user interface.
 
-Please refer to the [User Guide]() for more details.
+Please refer to the User Guide for more details. You can download it through the 
+[RVS-A webpage (Resources)](https://rayngrowingsystems.com/products/rvs-analytics/).
+
+## Main Features
+
+**Open Source** - Built on the PlantCV library for plant phenotyping.\
+**Versatile Data Sources** - Supports multiple hyper- and multispectral image sources.\
+**User-Friendly Interface** - Easily set regions of interest (ROIs). \
+**Interactive Masking** - Select masking methods and thresholds with ease. \
+**Base Analysis Script** - Analyze shape, size parameters, and selected reflectance indices. \
+**Customizable** - Add your own analysis scripts. \
+**Preview Data Visualization** - Quickly preview output.
+
 
 ## Setup
+### Windows installer
+RAYN provides an executable to install RVS-A on Windows. You can download it through the 
+[RVS-A webpage (Resources)](https://rayngrowingsystems.com/products/rvs-analytics/).
+
+### Source Setup (any platform)
+
 It is recommended to run the application in a virtual environment.
 Required libraries and versions:
 - python (3.10.14)
@@ -47,8 +65,8 @@ cd Application # enter Application folder - important for relative paths
 python cameraapp.py
 ```
 
-The application itself does not contain any analysis scripts. Mask and Analysis scripts can be added 
-through the "Masks" and "Scripts" folders. You can use pre-made scripts or create your own. 
+If installed from source, the application itself does not contain any analysis scripts. Mask and Analysis scripts can 
+be added through the "Masks" and "Scripts" folders. You can use pre-made scripts or create your own. 
 
 Both official RAYN and community-created scripts can be retrieved from the following repositories:
 - [RVS-A Mask Scripts](https://github.com/rayngrowingsystems/RVS-A_analysis_scripts)
