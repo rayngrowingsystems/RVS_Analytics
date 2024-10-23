@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Regions of Interest (ROI)</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="vertical_layout" stretch="0,4,0,0,0,0,0,0">
@@ -27,6 +30,18 @@
       <layout class="QHBoxLayout" name="horizontal_layout">
        <item>
         <widget class="ClickableLabel" name="reference_image1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>200</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -43,6 +58,18 @@
        </item>
        <item>
         <widget class="ClickableLabel" name="reference_image2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>200</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -66,29 +93,28 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,2">
        <item>
-        <layout class="QGridLayout" name="grid_layout" columnstretch="0,1,0,1,0,0,0,0" columnminimumwidth="1,1,0,0,1,0,0,0">
-         <item row="0" column="4">
-          <widget class="QLabel" name="width_label">
-           <property name="text">
-            <string>Width</string>
+        <layout class="QGridLayout" name="grid_layout" columnstretch="0,1,0,1,0,0,0,0,0" columnminimumwidth="1,1,0,0,1,0,0,0,0">
+         <item row="1" column="3">
+          <widget class="QSpinBox" name="rows_spinbox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>3</number>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QComboBox" name="roi_shape">
-           <item>
-            <property name="text">
-             <string>Circle</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Rectangle</string>
-            </property>
-           </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="rows_label">
+           <property name="text">
+            <string>Rows</string>
+           </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="1" column="1">
           <widget class="QComboBox" name="roi_placement_mode">
            <item>
             <property name="text">
@@ -102,74 +128,26 @@
            </item>
           </widget>
          </item>
-         <item row="0" column="3">
-          <spacer name="horizontal_spacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="columns_label">
-           <property name="text">
-            <string>Columns</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QSpinBox" name="rows_spinbox">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>10</number>
-           </property>
-           <property name="value">
-            <number>3</number>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="rows_label">
-           <property name="text">
-            <string>Rows</string>
-           </property>
+          <widget class="QComboBox" name="roi_detection_mode">
+           <item>
+            <property name="text">
+             <string>Partial</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Cut to</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Largest</string>
+            </property>
+           </item>
           </widget>
          </item>
-         <item row="1" column="4">
-          <widget class="QLabel" name="height_label">
-           <property name="text">
-            <string>Height</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QSpinBox" name="columns_spinbox">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>10</number>
-           </property>
-           <property name="value">
-            <number>5</number>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="6">
-          <widget class="QLabel" name="radius_label">
-           <property name="text">
-            <string>Radius</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
+         <item row="1" column="6">
           <widget class="QSpinBox" name="width_spinbox">
            <property name="minimum">
             <number>5</number>
@@ -183,6 +161,33 @@
           </widget>
          </item>
          <item row="1" column="5">
+          <widget class="QLabel" name="width_label">
+           <property name="text">
+            <string>Width</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <spacer name="horizontal_spacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="5">
+          <widget class="QLabel" name="height_label">
+           <property name="text">
+            <string>Height</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="6">
           <widget class="QSpinBox" name="height_spinbox">
            <property name="minimum">
             <number>5</number>
@@ -195,13 +200,85 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="7">
+         <item row="2" column="2">
+          <widget class="QLabel" name="columns_label">
+           <property name="text">
+            <string>Columns</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="roi_shape">
+           <item>
+            <property name="text">
+             <string>Circle</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Rectangle</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Ellipse</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Polygon</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="8">
           <widget class="QSpinBox" name="radius_spinbox">
            <property name="minimum">
             <number>5</number>
            </property>
            <property name="maximum">
             <number>1000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="7">
+          <widget class="QLabel" name="radius_label">
+           <property name="text">
+            <string>Radius</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QSpinBox" name="columns_spinbox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Detection mode</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Placement mode</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Shape</string>
            </property>
           </widget>
          </item>

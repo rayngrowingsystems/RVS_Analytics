@@ -25,6 +25,8 @@ from enum import Enum
 
 import Config
 
+from Helper import tprint
+
 class Experiment:
     ImageSource = Enum('ImageSource', ['Image', 'Folder', 'Camera'])
 
@@ -42,7 +44,7 @@ class Experiment:
 
         self.output_file_path = os.path.join(os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)), QApplication.organizationName(), QApplication.applicationName(), 'Analysis')
         QDir().mkpath(self.output_file_path)
-        print("Output folder", self.output_file_path)
+        tprint("Output folder", self.output_file_path)
 
         self.mask = {}
         self.mask_defined = False
@@ -53,6 +55,8 @@ class Experiment:
         self.lens_angle = 60
         self.normalize = False
         self.light_correction = False
+        self.rotation = 0
+        self.crop = False
 
         self.script_options = {}
         self.chart_options = {}
@@ -61,6 +65,9 @@ class Experiment:
 
         self.roi_reference_image1 = None
         self.roi_reference_image2 = None
+
+        self.script_reference_image1 = None
+        self.script_reference_image2 = None
 
         self.camera_discovery_ip = ""
 
@@ -73,7 +80,8 @@ class Experiment:
 
     class RoiInfo:
         PlacementMode = Enum('PlacementMode', ['Matrix', 'Manual'])
-        Shape = Enum('Shape', ['Circle', 'Rectangle'])
+        Shape = Enum('Shape', ['Circle', 'Rectangle', 'Ellipse', 'Polygon'])
+        DetectionMode = Enum('DetectionMode', ['Partial', 'CutTo', 'Largest'])
 
         def __init__(self):
             self.rect = QRect()
@@ -82,19 +90,15 @@ class Experiment:
             self.radius = 20
             self.width = 40
             self.height = 40
-            self.original_image_size = QSize(0, 0)
-            self.preview_image_size = QSize(0, 0)
             self.shape = self.Shape.Circle
             self.placement_mode = self.PlacementMode.Matrix
+            self.detection_mode = self.DetectionMode.Partial
             self.manual_roi_items = []
 
-        def roi_items(self):
+        def roi_items(self, scaling_factor):
             roi_items = []
 
-            if not self.original_image_size.isEmpty() and not self.preview_image_size.isEmpty() and (self.rect.isValid() or len(self.manual_roi_items) > 0):
-                scaling_x = self.original_image_size.width() / self.preview_image_size.width()
-                scaling_y = self.original_image_size.height() / self.preview_image_size.height()
-
+            if self.rect.isValid() or len(self.manual_roi_items) > 0:
                 if self.placement_mode == self.PlacementMode.Matrix:
                     if self.columns > 1:
                         spacing_x = self.rect.width() / (self.columns - 1)
@@ -106,41 +110,42 @@ class Experiment:
                     else:
                         spacing_y = 0
 
-                    # print("Scaling:", scalingX, scalingY, self.originalImageSize, self.previewImageSize, self.rect)
-
                     for r in range(self.rows):
                         for c in range(self.columns):
                             x = self.rect.x() + c * spacing_x
                             y = self.rect.y() + r * spacing_y
 
-                            x1 = x * scaling_x
-                            y1 = y * scaling_y
-
-                            # print(x, y, x1, y1)
-
+                            d = {}
                             if self.shape == self.Shape.Circle:
-                                roi_items.append(("Circle", int(x1), int(y1), int(self.radius * 2 * scaling_x), int(self.radius * 2 * scaling_y), ))
+                                d["type"] = "Circle"
+                                d["x"] = int(x)
+                                d["y"] = int(y)
+                                d["width"] = int(self.radius * 2 / scaling_factor)
+                                d["height"] = int(self.radius * 2 / scaling_factor)
                             elif self.shape == self.Shape.Rectangle:
-                                roi_items.append(("Rectangle", int(x1), int(y1), int(self.width * scaling_x), int(self.height * scaling_y), ))
+                                d["type"] = "Rectangle"
+                                d["x"] = int(x)
+                                d["y"] = int(y)
+                                d["width"] = int(self.width / scaling_factor)
+                                d["height"] = int(self.height / scaling_factor)
+                            elif self.shape == self.Shape.Ellipse:
+                                d["type"] = "Ellipse"
+                                d["x"] = int(x)
+                                d["y"] = int(y)
+                                d["width"] = int(self.width / scaling_factor)
+                                d["height"] = int(self.height / scaling_factor)
+                            elif self.shape == self.Shape.Polygon:
+                                tprint("Polygon not supported in matrix mode")
+                            else:
+                                tprint("Missing shape type")
 
-                    # print("Experiment.RoiInfo.roiItems (matrix):", roiItems)
+                            roi_items.append(d)
+
+                    # tprint("Experiment.RoiInfo.roiItems (matrix):", roi_items)
                 elif self.placement_mode == self.PlacementMode.Manual:
-                    # print("Scaling:", scalingX, scalingY, self.originalImageSize, self.previewImageSize)
+                    roi_items = self.manual_roi_items
 
-                    for item_type, x, y, width, height in self.manual_roi_items:
-                        x1 = x * scaling_x
-                        y1 = y * scaling_y
-
-                        # print(x, y, x1, y1, width, height)
-
-                        if self.shape == self.Shape.Circle:
-                            roi_items.append(("Circle", int(x1), int(y1), int(width * scaling_x), int(height * scaling_y), ))
-                        elif self.shape == self.Shape.Rectangle:
-                            roi_items.append(("Rectangle", int(x1), int(y1), int(width * scaling_x), int(height * scaling_y), ))
-
-                    # print("Experiment.RoiInfo.roiItems (manual):", roiItems)
-            else:
-                print("Experiment.RoiInfo.roiItems failed:", self.original_image_size.isEmpty(), self.preview_image_size.isEmpty(), self.rect.isValid())
+                    # tprint("Experiment.RoiInfo.roiItems (manual):", roi_items)
 
             return roi_items
 
@@ -149,6 +154,10 @@ class Experiment:
                 return 0
             elif self.shape == self.Shape.Rectangle:
                 return 1
+            elif self.shape == self.Shape.Ellipse:
+                return 2
+            elif self.shape == self.Shape.Polygon:
+                return 3
             else:
                 return -1
 
@@ -157,6 +166,16 @@ class Experiment:
                 return 0
             elif self.placement_mode == self.PlacementMode.Manual:
                 return 1
+            else:
+                return -1
+
+        def detection_mode_number(self):
+            if self.detection_mode == self.DetectionMode.Partial:
+                return 0
+            elif self.detection_mode == self.DetectionMode.CutTo:
+                return 1
+            elif self.detection_mode == self.DetectionMode.Largest:
+                return 2
             else:
                 return -1
 
@@ -193,9 +212,8 @@ class Experiment:
                       "height": self.roi_info.height,
                       "shape": self.roi_info.shape_number(),
                       "placementMode": self.roi_info.placement_mode_number(),
-                      "roiItems": self.roi_info.roi_items(),
-                      "originalImageSize": {"width": self.roi_info.original_image_size.width(), "height": self.roi_info.original_image_size.height()},
-                      "previewImageSize": {"width": self.roi_info.preview_image_size.width(), "height": self.roi_info.preview_image_size.height()}},
+                      "detectionMode": self.roi_info.detection_mode_number(),
+                      "roiList": self.roi_info.roi_items(1.0)},
           # NOTE: When things are added to the "analysis" section, update analysisToDict below
           "analysis": {"maskOptions": self.mask,
                        "scriptOptions": {"general": self.script_options},
@@ -207,9 +225,13 @@ class Experiment:
           "maskReferenceImage2": self.safe_normpath(self.mask_reference_image2),
           "imageOptions": {"lensAngle": self.lens_angle,
                            "normalize": self.normalize,
-                           "lightCorrection": self.light_correction},
+                           "lightCorrection": self.light_correction,
+                           "rotation": self.rotation,
+                           "crop": self.crop},
           "roiReferenceImage1": self.safe_normpath(self.roi_reference_image1),
           "roiReferenceImage2": self.safe_normpath(self.roi_reference_image2),
+          "scriptReferenceImage1": self.safe_normpath(self.script_reference_image1),
+          "scriptReferenceImage2": self.safe_normpath(self.script_reference_image2),
           "cameraDiscoveryIp": self.camera_discovery_ip,
           "mqttBroker": self.mqtt_broker
         }
@@ -223,7 +245,14 @@ class Experiment:
                        "selectedMask": self.selected_mask}
         }
 
-    def to_json(self):
+    def image_options_to_dict(self):
+        return {"lensAngle": self.lens_angle,
+                "normalize": self.normalize,
+                "lightCorrection": self.light_correction,
+                "rotation": self.rotation,
+                "crop": self.crop}
+
+    def update_experiment_file(self):
         d = self.to_dict()
 
         j = json.dumps(d, indent=4)
@@ -275,6 +304,10 @@ class Experiment:
                     self.roi_info.shape = self.roi_info.Shape.Circle
                 elif shape_number == 1:
                     self.roi_info.shape = self.roi_info.Shape.Rectangle
+                elif shape_number == 2:
+                    self.roi_info.shape = self.roi_info.Shape.Ellipse
+                elif shape_number == 3:
+                    self.roi_info.shape = self.roi_info.Shape.Polygon
 
             if "placementMode" in d["roiInfo"]:
                 placement_mode_number = d["roiInfo"]["placementMode"]
@@ -284,25 +317,50 @@ class Experiment:
                 elif placement_mode_number == 1:
                     self.roi_info.placement_mode = self.roi_info.PlacementMode.Manual
 
-            if "originalImageSize" in d["roiInfo"]:
-                self.roi_info.original_image_size = QSize(d["roiInfo"]["originalImageSize"]["width"], d["roiInfo"]["originalImageSize"]["height"])
+            if "detectionMode" in d["roiInfo"]:
+                detection_mode_number = d["roiInfo"]["detectionMode"]
 
-            if "previewImageSize" in d["roiInfo"]:
-                self.roi_info.preview_image_size = QSize(d["roiInfo"]["previewImageSize"]["width"], d["roiInfo"]["previewImageSize"]["height"])
+                if detection_mode_number == 0:
+                    self.roi_info.detection_mode = self.roi_info.DetectionMode.Partial
+                elif detection_mode_number == 1:
+                    self.roi_info.detection_mode = self.roi_info.DetectionMode.CutTo
+                elif detection_mode_number == 2:
+                    self.roi_info.detection_mode = self.roi_info.DetectionMode.Largest
 
-            if "roiItems" in d["roiInfo"]:
-                if self.roi_info.original_image_size.width() != 0 and self.roi_info.preview_image_size.width() != 0 and self.roi_info.original_image_size.height() != 0 and self.roi_info.preview_image_size.height() != 0:
-                    scaling_x = self.roi_info.original_image_size.width() / self.roi_info.preview_image_size.width()
-                    scaling_y = self.roi_info.original_image_size.height() / self.roi_info.preview_image_size.height()
-                else:
-                    scaling_x = 1.0
-                    scaling_y = 1.0
+            if "roiList" in d["roiInfo"]:
+                self.roi_info.manual_roi_items = []
+                for item in d["roiInfo"]["roiList"]:
+                    roi_item = {}
+                    roi_item["type"] = item["type"]
+                    roi_item["x"] = int(item["x"])
+                    roi_item["y"] = int(item["y"])
+                    roi_item["width"] = int(item["width"])
+                    roi_item["height"] = int(item["height"])
 
+                    if "points" in item:
+                        result = []
+                        for point in item["points"]:
+                            result.append([int(point[0]), int(point[1])])
+
+                        roi_item["points"] = result
+             
+                    self.roi_info.manual_roi_items.append(roi_item)
+
+                # tprint("RoiList unscaled:", self.roi_info.manual_roi_items)
+
+            if "roiItems" in d["roiInfo"]:  # Migrate old tuple based format
                 self.roi_info.manual_roi_items = []
                 for item in d["roiInfo"]["roiItems"]:
-                    self.roi_info.manual_roi_items.append((item[0], int(item[1] / scaling_x), int(item[2] / scaling_y), int(item[3] / scaling_x), int(item[4] / scaling_y),))
+                    roi_item = {}
+                    roi_item["type"] = item[0]
+                    roi_item["x"] = int(item[1])
+                    roi_item["y"] = int(item[2])
+                    roi_item["width"] = int(item[3])
+                    roi_item["height"] = int(item[4])
 
-                # print("RoiItems unscaled:", self.roiInfo.manualRoiItems)
+                    self.roi_info.manual_roi_items.append(roi_item)
+
+                # tprint("RoiList unscaled:", self.roi_info.manual_roi_items)
 
         if "maskDefined" in d:
             self.mask_defined = d["maskDefined"]
@@ -324,16 +382,22 @@ class Experiment:
             if "lightCorrection" in d["imageOptions"]:
                 self.light_correction = d["imageOptions"]["lightCorrection"]
 
+            if "rotation" in d["imageOptions"]:
+                self.rotation = d["imageOptions"]["rotation"]
+
+            if "crop" in d["imageOptions"]:
+                self.crop = d["imageOptions"]["crop"]
+
         if "analysis" in d:
             self.script_options = d["analysis"]["scriptOptions"]["general"]
-            print("Loaded scriptOptions", self.script_options)
+            tprint("Loaded scriptOptions", self.script_options)
 
             self.mask = d["analysis"]["maskOptions"]
-            print("Loaded maskOptions", self.mask)
+            tprint("Loaded maskOptions", self.mask)
 
             if "chartOptions" in d["analysis"]:
                 self.chart_options= d["analysis"]["chartOptions"]
-                print("Loaded chartOptions", self.chart_options)
+                tprint("Loaded chartOptions", self.chart_options)
 
             self.selected_script = d["analysis"]["selectedScript"]
 
@@ -345,6 +409,12 @@ class Experiment:
 
         if "roiReferenceImage2" in d:
             self.roi_reference_image2 = os.path.normpath(d["roiReferenceImage2"])
+
+        if "scriptReferenceImage1" in d:
+            self.script_reference_image1 = os.path.normpath(d["scriptReferenceImage1"])
+
+        if "scriptReferenceImage2" in d:
+            self.script_reference_image2 = os.path.normpath(d["scriptReferenceImage2"])
 
         if "cameraDiscoveryIp" in d:
             self.camera_discovery_ip = d["cameraDiscoveryIp"]
@@ -359,15 +429,17 @@ class Experiment:
                 d = json.loads(j)
 
                 if Config.verbose_mode:
-                    print("Read experiment settings:", d)
+                    tprint("Read experiment settings:", d)
                 else:
-                    print("Read experiment settings")
+                    tprint("Read experiment settings")
 
                 self.from_dict(d)
 
     def all_preview_images_empty(self):
-        return self.mask_reference_image1 in [None, '.'] and self.mask_reference_image2 in [None, '.'] and self.roi_reference_image1 in [None, '.'] and self.roi_reference_image2 in [None, '.']
-
+        return self.mask_reference_image1 in [None, '.'] and self.mask_reference_image2 in [None, '.'] and \
+               self.roi_reference_image1 in [None, '.'] and self.roi_reference_image2 in [None, '.'] and \
+               self.script_reference_image1 in [None, '.'] and self.script_reference_image2 in [None, '.']
+    
     def clear_analysis(self):
         if self.analysis is not None:
             self.analysis["maskOptions"] = {}

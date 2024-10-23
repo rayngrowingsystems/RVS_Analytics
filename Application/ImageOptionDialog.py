@@ -46,6 +46,12 @@ class ImageOptionDialog(QDialog):
         self.ui.light_correction_checkbox.setChecked(self.main_window.experiment.light_correction)
         self.ui.light_correction_checkbox.toggled.connect(self.on_light_correction)
 
+        self.ui.rotation_spinbox.setValue(self.main_window.experiment.rotation)
+        self.ui.rotation_spinbox.valueChanged.connect(self.on_rotation)
+
+        self.ui.crop_checkbox.setChecked(self.main_window.experiment.crop)
+        self.ui.crop_checkbox.toggled.connect(self.on_crop)
+
         self.ui.done_button.clicked.connect(self.accept)
 
     def load_ui(self):
@@ -60,12 +66,21 @@ class ImageOptionDialog(QDialog):
         else:
             self.main_window.experiment.lens_angle = 120
 
-        self.main_window.experiment.to_json()
+        self.main_window.update_experiment_file(False)
 
     def on_normalize(self):
         self.main_window.experiment.normalize = self.ui.normalize_checkbox.isChecked()
-        self.main_window.experiment.to_json()
+        self.main_window.update_experiment_file(False)
 
     def on_light_correction(self):
         self.main_window.experiment.light_correction = self.ui.light_correction_checkbox.isChecked()
-        self.main_window.experiment.to_json()
+        self.main_window.update_experiment_file(False)
+
+    def on_rotation(self):
+        self.main_window.experiment.rotation = self.ui.rotation_spinbox.value()
+        self.main_window.update_experiment_file(False)
+
+    def on_crop(self):
+        self.main_window.experiment.crop = self.ui.crop_checkbox.isChecked()
+        self.main_window.update_experiment_file(False)
+

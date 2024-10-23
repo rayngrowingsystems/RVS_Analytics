@@ -24,9 +24,11 @@ import plotly.graph_objects as go
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import QStandardPaths
 
+from Helper import tprint
+
 class Chart:
     def __init__(self, title, y_label):
-        print("Chart.init")
+        tprint("Chart.init")
 
         self.fig = go.Figure()
 
@@ -50,7 +52,7 @@ class Chart:
         self.temp_image_file = os.path.normpath(os.path.join(QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".svg"))
         self.temp_html_file = os.path.normpath(os.path.join(QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".html"))
 
-        print("Temp files:", self.temp_image_file, self.temp_html_file)
+        tprint("Temp files:", self.temp_image_file, self.temp_html_file)
 
     def add_roi(self, timestamp, y, name):
         found = False
@@ -62,7 +64,7 @@ class Chart:
         if not found:
             self.fig.add_scatter(name=name)
 
-            print("Added scatter", name)
+            tprint("Added scatter", name)
 
         dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
 
@@ -75,7 +77,7 @@ class Chart:
                 self.fig.data[i].y = self.fig.data[i].y + (y,)
                 self.fig.data[i].x = self.fig.data[i].x + (dt,)
 
-                # print("Added datapoint", name, dt, y, self.fig.data[i].y)
+                # tprint("Added datapoint", name, dt, y, self.fig.data[i].y)
                 break
 
         self.fig.write_image(self.image_file())

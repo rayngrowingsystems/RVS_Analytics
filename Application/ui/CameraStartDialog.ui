@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
-    <height>181</height>
+    <width>346</width>
+    <height>212</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,6 +104,13 @@
       <widget class="QComboBox" name="start_combo_box"/>
      </item>
     </layout>
+   </item>
+   <item row="6" column="0">
+    <widget class="QCheckBox" name="delete_from_camera_checkbox">
+     <property name="text">
+      <string>Delete from camera after download</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

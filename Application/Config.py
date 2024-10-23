@@ -15,14 +15,26 @@
 # This Python file uses the following encoding: utf-8
 
 import os
+from os import path
 
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QStandardPaths, QDir
 
-settings = QSettings(os.path.join(".", "RaynVisionSystem.ini"), QSettings.IniFormat)
+from Helper import tprint
+
+path_name = os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation))
+file_name = os.path.join(path_name, "RaynVisionSystem.ini")
+
+if not path.exists(file_name):
+    # Create empty file
+    QDir().mkpath(path_name)
+    with open(file_name, 'w') as fp:
+        pass
+
+settings = QSettings(file_name, QSettings.IniFormat)
 if settings.value("Verbose", False) == "True":
     verbose_mode = True
 else:
     verbose_mode = False
 
-print("Config: Verbose", verbose_mode, type(verbose_mode))
+tprint("Config: Verbose", verbose_mode, type(verbose_mode))
 

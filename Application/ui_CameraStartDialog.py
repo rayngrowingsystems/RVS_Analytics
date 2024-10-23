@@ -15,15 +15,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QFrame,
-    QGridLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QSizePolicy, QSpacerItem, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+    QFrame, QGridLayout, QHBoxLayout, QLabel,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QWidget)
 
 class Ui_CameraStartDialog(object):
     def setupUi(self, CameraStartDialog):
         if not CameraStartDialog.objectName():
             CameraStartDialog.setObjectName(u"CameraStartDialog")
-        CameraStartDialog.resize(338, 181)
+        CameraStartDialog.resize(346, 212)
         self.gridLayout_2 = QGridLayout(CameraStartDialog)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -85,6 +86,11 @@ class Ui_CameraStartDialog(object):
 
         self.gridLayout_2.addLayout(self.horizontalLayout_2, 5, 0, 1, 1)
 
+        self.delete_from_camera_checkbox = QCheckBox(CameraStartDialog)
+        self.delete_from_camera_checkbox.setObjectName(u"delete_from_camera_checkbox")
+
+        self.gridLayout_2.addWidget(self.delete_from_camera_checkbox, 6, 0, 1, 1)
+
 
         self.retranslateUi(CameraStartDialog)
 
@@ -101,5 +107,6 @@ class Ui_CameraStartDialog(object):
         self.cancel_button.setText(QCoreApplication.translate("CameraStartDialog", u"Cancel", None))
         self.done_button.setText(QCoreApplication.translate("CameraStartDialog", u"Start", None))
         self.label.setText(QCoreApplication.translate("CameraStartDialog", u"Start at", None))
+        self.delete_from_camera_checkbox.setText(QCoreApplication.translate("CameraStartDialog", u"Delete from camera after download", None))
     # retranslateUi
 

@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QFrame, QGridLayout,
-    QGroupBox, QHBoxLayout, QLabel, QPushButton,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
+    QGridLayout, QGroupBox, QHBoxLayout, QLabel,
+    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QWidget)
 
 from ClickableLabel import ClickableLabel
 from Label import Label
@@ -144,9 +145,14 @@ class Ui_ImageMaskDialog(object):
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.show_rois_checkbox = QCheckBox(ImageMaskDialog)
+        self.show_rois_checkbox.setObjectName(u"show_rois_checkbox")
 
-        self.verticalLayout_3.addItem(self.verticalSpacer)
+        self.verticalLayout_3.addWidget(self.show_rois_checkbox)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer_2)
 
         self.cancel_button = QPushButton(ImageMaskDialog)
         self.cancel_button.setObjectName(u"cancel_button")
@@ -197,6 +203,7 @@ class Ui_ImageMaskDialog(object):
         self.preview_image1.setText(QCoreApplication.translate("ImageMaskDialog", u"Preview 1", None))
         self.preview_image2.setText(QCoreApplication.translate("ImageMaskDialog", u"Preview 2", None))
         self.mask_options_box.setTitle(QCoreApplication.translate("ImageMaskDialog", u"Adjust mask parameters", None))
+        self.show_rois_checkbox.setText(QCoreApplication.translate("ImageMaskDialog", u"Show ROIs", None))
         self.cancel_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Cancel", None))
         self.done_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Done", None))
     # retranslateUi

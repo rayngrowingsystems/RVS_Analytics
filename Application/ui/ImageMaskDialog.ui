@@ -221,7 +221,14 @@ Click the Image button to pick</string>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <spacer name="verticalSpacer">
+          <widget class="QCheckBox" name="show_rois_checkbox">
+           <property name="text">
+            <string>Show ROIs</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>

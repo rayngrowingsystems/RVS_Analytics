@@ -15,7 +15,10 @@
 import warnings
 import cv2
 import numpy as np
+import os
 from plantcv.plantcv import spectral_index
+from plantcv.plantcv import readimage
+from plantcv.plantcv.transform import rotate
 
 
 def load_coefficients(path):
@@ -130,6 +133,59 @@ def light_intensity_correction(spectral_array_object, correction_matrix, normali
     return spectral_array_object
 
 
+def prepare_spectral_data(settings, file_name=False, preview=False):
+    # file and settings
+    if preview and file_name:
+        img_file = file_name
+        image_options = settings
+    else:
+        img_file = settings["inputImage"]
+        image_options = settings["experimentSettings"]["imageOptions"]
+
+    lens_angle = image_options["lensAngle"]
+    dark_normalize = image_options["normalize"]
+    light_correction = image_options["lightCorrection"]
+    rotation = image_options["rotation"]
+    crop = image_options["crop"]
+
+    # check if a .hdr file name was provided and set img_file to the binary location
+    if os.path.splitext(img_file)[1] == ".hdr":
+        img_file = os.path.splitext(img_file)[0]
+
+    else:
+        warnings.warn("No header file provided. Processing not possible.")
+        return
+
+    # begin masking workflow
+    spectral_data = readimage(filename=img_file, mode='envi')
+    spectral_data.array_data = spectral_data.array_data.astype("float32")  # required for further calculations
+    if spectral_data.d_type == np.uint8:  # only convert if data seems to be uint8
+        spectral_data.array_data = spectral_data.array_data / 255  # convert 0-255 (orig.) to 0-1 range
+
+    # Apply light correction
+    if light_correction:
+        correction_matrix = get_correction_matrix_from_file("calibration_data/120_correction_matrix.npy")
+        spectral_data = light_intensity_correction(spectral_data, correction_matrix)
+
+    # normalize the image cube
+    if dark_normalize:
+        spectral_data.array_data = dark_normalize_array_data(spectral_data)
+
+    # undistort the image cube
+    if lens_angle != 0:  # only undistort if angle is selected
+        cam_calibration_file = f"calibration_data/{lens_angle}_calibration_data.yml"  # select the data set
+        mtx, dist = load_coefficients(cam_calibration_file)  # depending on the lens angle
+        spectral_data.array_data = undistort_data_cube(spectral_data.array_data, mtx, dist)
+        spectral_data.pseudo_rgb = undistort_data_cube(spectral_data.pseudo_rgb, mtx, dist)
+
+    # apply rotation
+    if rotation != 0:
+        spectral_data.array_data = rotate(spectral_data.array_data, rotation, crop)
+        spectral_data.pseudo_rgb = rotate(spectral_data.pseudo_rgb, rotation, crop)
+
+    return spectral_data
+
+
 def get_index_functions():
     """Loads list of available spectral indices (plantCV) including min/max ranges"""
     # TODO: Update ranges
@@ -140,6 +196,8 @@ def get_index_functions():
                    spectral_index.cri700, -10, 10),
         "evi": ("EVI - Excess Green Index",
                 spectral_index.evi, -1, 1),
+        "gli": ("GLI - Green Leaf Index",
+                spectral_index.gli, -1, 1),
         "gdvi": ("GDVI - Green Difference Vegetation Index",
                  spectral_index.gdvi, -0.5, 0.5),
         "mari": ("MARI - Modified Anthocyanin Reflectance Index",

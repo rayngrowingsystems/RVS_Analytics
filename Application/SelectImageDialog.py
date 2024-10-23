@@ -25,6 +25,7 @@ import CameraApp_rc
 
 from ui_SelectImageDialog import Ui_SelectImageDialog
 
+from Helper import tprint
 
 class SelectImageDialog(QDialog):
     def __init__(self, parent, corresponding_label):
@@ -70,9 +71,9 @@ class SelectImageDialog(QDialog):
 
                 self.dialog.load_reference_images()  # Reload images in this dialog
             else:
-                self.corresponding_label.set_image_file_name(file_name, self.main_window.experiment.lens_angle, self.main_window.experiment.normalize, self.main_window.experiment.light_correction)
+                self.corresponding_label.set_image_file_name(file_name, self.main_window.experiment.image_options_to_dict())
 
-            print("Set image preview:", file_name)
+            tprint("Set image preview:", file_name)
 
             QGuiApplication.restoreOverrideCursor()
 
@@ -94,24 +95,24 @@ class SelectImageDialog(QDialog):
                 else:
                     target_folder = self.main_window.experiment.camera_file_path
 
-                QGuiApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
-
                 if file == "Take new image":
-                    print("Camera: Taking image...")
+                    tprint("Camera: Taking image...")
 
                     QMessageBox.information(None, "Take image", "This takes up to one minute, be patient!")
+
+                    QGuiApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
 
                     image_files = self.main_window.camera.take_image()
 
                     # Fetch resulting files
                     hdr_file = ""
                     for image_file in image_files:
-                        print("Camera: Fetching file:", image_file)
+                        tprint("Camera: Fetching file:", image_file)
 
                         image_data = self.main_window.camera.get_file("api_takeimage", image_file)
 
                         try:
-                            print("Camera: Saving image file locally:", os.path.join(target_folder, image_file))
+                            tprint("Camera: Saving image file locally:", os.path.join(target_folder, image_file))
 
                             f = open(os.path.join(target_folder, image_file), "wb")  # save to file
                             f.write(image_data)
@@ -121,14 +122,18 @@ class SelectImageDialog(QDialog):
                                 hdr_file = image_file
 
                         except IOError as e:
-                            print("Fetch: IOError", e)
+                            tprint("Fetch: IOError", e)
 
                     if hdr_file != "":
-                        self.corresponding_label.set_image_file_name(os.path.join(target_folder, hdr_file), self.main_window.experiment.lens_angle, self.main_window.experiment.normalize, self.main_window.experiment.light_correction)
-                        print("Set preview image:", os.path.join(target_folder, hdr_file))
+                        self.corresponding_label.set_image_file_name(os.path.join(target_folder, hdr_file), self.main_window.experiment.image_options_to_dict())
+                        tprint("Set preview image:", os.path.join(target_folder, hdr_file))
 
                 else:
-                    print("Fetch image hdr and image cube", file)
+                    tprint("Camera: Fetch image hdr and image cube", file)
+
+                    QMessageBox.information(None, "Fetch image", "This takes up to one minute, be patient!")
+
+                    QGuiApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
 
                     image_hdr_file = file
                     image_hdr = self.main_window.camera.get_file("scheduler", image_hdr_file)
@@ -146,16 +151,16 @@ class SelectImageDialog(QDialog):
                             f.write(image_cube)
                             f.close()
 
-                            self.corresponding_label.set_image_file_name(os.path.join(target_folder, image_hdr_file), self.main_window.experiment.lens_angle, self.main_window.experiment.normalize, self.main_window.experiment.light_correction)
-                            print("Set preview image:", os.path.join(target_folder, image_hdr_file))
+                            self.corresponding_label.set_image_file_name(os.path.join(target_folder, image_hdr_file), self.main_window.experiment.image_options_to_dict())
+                            tprint("Set preview image:", os.path.join(target_folder, image_hdr_file))
 
                         except IOError as e:
-                            print("Fetch: IOError", e)
+                            tprint("Fetch: IOError", e)
                         except BaseException as e:
-                            print("Fetch: Unknown exception", e)
+                            tprint("Fetch: Unknown exception", e)
 
                 QGuiApplication.restoreOverrideCursor()
         else:
-            print("Camera not set", self.main_window.camera)
+            tprint("Camera not set", self.main_window.camera)
 
         self.accept()

@@ -14,10 +14,13 @@
 
 import time
 import math
+import json
 
 from EtcDiscover import EtcDiscover
 
 import Config
+
+from Helper import tprint
 
 class CameraDiscovery:
 
@@ -27,24 +30,28 @@ class CameraDiscovery:
             self.device = device
             self.timer = timer
             
-            print("Camera: Create CameraDevice: Now:", math.ceil(time.perf_counter()), "Expire:", math.ceil(timer))
+            if Config.verbose_mode:
+                tprint("Camera: Create CameraDevice: Now:", math.ceil(time.perf_counter()), "Expire:", math.ceil(timer))
 
-    def __init__(self, nic_ip_address, main_window, queue):
+    def __init__(self, nic_ip_address, main_window): #, queue):
         self.camera_device_list = []               # list of all discovered devices
         self.discover = EtcDiscover(nic_ip_address)   # ETC discover protocol
 
-        self.feedback_queue = queue
+        tprint("Camera: Network IP for camera discovery:", nic_ip_address)
 
-        print("Camera: Network IP for camera discovery:", nic_ip_address)
+        self.main_window = main_window
 
-        main_window.camera_discovery = self
+        self.main_window.camera_discovery = self
 
-        while True:
+        while not self.main_window.stop_camera_discovery_worker:
             self.tick()
 
-            print("Camera: tick:", math.ceil(time.perf_counter()))
+            if Config.verbose_mode:
+               tprint("Camera: tick:", math.ceil(time.perf_counter()))
 
             time.sleep(5)
+
+        tprint("Camera discovery thread stopped")
 
     def change_ip_address(self, nic_ip_address):
         self.discover = EtcDiscover(nic_ip_address)
@@ -57,7 +64,7 @@ class CameraDiscovery:
                 json_object = self.discover.poll()        # poll for new devices
 
                 if Config.verbose_mode:
-                    print("Camera poll:", math.ceil(time.perf_counter()), json_object)
+                    tprint("Camera poll:", math.ceil(time.perf_counter()), json_object)
 
                 TIMEOUT = 20  # timeout in seconds
 
@@ -68,7 +75,7 @@ class CameraDiscovery:
                         if item.device['cid'] == json_object['cid']:   # replace existing
 
                             if Config.verbose_mode:
-                                print("Camera: Update existing")
+                                tprint("Camera: Update existing")
 
                             self.camera_device_list.remove(item)
                             self.camera_device_list.append(self.CameraDevice(json_object, time.perf_counter() + TIMEOUT))
@@ -79,12 +86,12 @@ class CameraDiscovery:
                     if not replaced:
                         self.camera_device_list.append(self.CameraDevice(json_object, time.perf_counter() + TIMEOUT))
 
-                        self.feedback_queue.put(["addCamera", json_object["cid"], json_object])
+                        self.main_window.camera_discovery_worker.signals.add_camera.emit(json_object["cid"], json.dumps(json_object))
 
                         if Config.verbose_mode:
-                            print("Camera: Found new camera:", json_object)
+                            tprint("Camera: Found new camera:", json_object)
                         else:
-                            print("Camera: Found new camera:", json_object['name'] + ", " + json_object['version']['main'] + ", " + json_object['tags']['disc']['ipv4'])
+                            tprint("Camera: Found new camera:", json_object['name'] + ", " + json_object['version']['main'] + ", " + json_object['tags']['disc']['ipv4'])
                 else:
                     done = True
 
@@ -93,6 +100,6 @@ class CameraDiscovery:
                 if item is not None and time.perf_counter() > item.timer:  # remove on timeout
                     self.camera_device_list.remove(item)     # remove device from list
 
-                    self.feedback_queue.put(["removeCamera", item.device["cid"]])
+                    self.main_window.camera_discovery_worker.signals.remove_camera.emit(item.device["cid"])
 
-                    print("Camera: Lost existing camera", item.device, "Removed after", time.perf_counter() - item.timer, "seconds")
+                    tprint("Camera: Lost existing camera", item.device, "Removed after", time.perf_counter() - item.timer, "seconds")

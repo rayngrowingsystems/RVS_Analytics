@@ -6,11 +6,13 @@ import sqlite3
 import os.path
 from contextlib import closing
 
+from Helper import tprint
+
 databaseFileName = './Camera.db'
 
 
 def addImageToDatabase(fileName, timestamp):
-    print("Add image to DB:", fileName, timestamp)
+    tprint("Add image to DB:", fileName, timestamp)
 
     with closing(sqlite3.connect(databaseFileName)) as connection:
         with closing(connection.cursor()) as cursor:
@@ -27,7 +29,7 @@ def imageInDatabase(fileName):
             cursor = connection.execute(sql, (fileName,))
 
             for row in cursor:
-                # print(row)
+                # tprint(row)
                 return True
 
     return False
@@ -40,7 +42,7 @@ self.readCamerasFromDatabase()
 
 def initDatabase(self):
     if not os.path.exists(databaseFileName):
-        print("Create database")
+        tprint("Create database")
 
         with closing(sqlite3.connect(databaseFileName)) as connection:
             with closing(connection.cursor()) as cursor:
@@ -63,7 +65,7 @@ def initDatabase(self):
                 cursor.execute(sql)
 
                 def addFolderToDatabase(self, url, name):
-                    print("Add folder to DB:", url, name)
+                    tprint("Add folder to DB:", url, name)
 
                     with closing(sqlite3.connect(databaseFileName)) as connection:
                         with closing(connection.cursor()) as cursor:
@@ -74,7 +76,7 @@ def initDatabase(self):
 
 
                 def removeFolderFromDatabase(self, url):
-                    print("Remove folder from DB:", url)
+                    tprint("Remove folder from DB:", url)
 
                     with closing(sqlite3.connect(databaseFileName)) as connection:
                         with closing(connection.cursor()) as cursor:
@@ -85,7 +87,7 @@ def initDatabase(self):
 
 
                 def addCameraToDatabase(self, url, name):
-                    print("Add folder to DB:", url, name)
+                    tprint("Add folder to DB:", url, name)
 
                     with closing(sqlite3.connect(databaseFileName)) as connection:
                         with closing(connection.cursor()) as cursor:
@@ -96,7 +98,7 @@ def initDatabase(self):
 
 
                 def removeCameraFromDatabase(self, url):
-                    print("Remove camera from DB:", url)
+                    tprint("Remove camera from DB:", url)
 
                     with closing(sqlite3.connect(databaseFileName)) as connection:
                         with closing(connection.cursor()) as cursor:
@@ -114,7 +116,7 @@ def initDatabase(self):
 
                             for row in cursor:
                                 self.folderList.append(row[0])
-                                # print(row)
+                                # tprint(row)
 
 
                 def readCamerasFromDatabase(self):
@@ -125,6 +127,6 @@ def initDatabase(self):
 
                             for row in cursor:
                                 self.cameraList.append(row[0])
-                                # print(row[0])
+                                # tprint(row[0])
 
 

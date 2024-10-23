@@ -33,6 +33,8 @@ class HelpDialog(QDialog):
 
         self.load_ui()
 
+        self.setModal(False)
+
         self.ui.help_browser.setSearchPaths([ 'Help' ])
         self.ui.help_browser.setSource(os.path.join('.', 'Help', 'Help.htm'))
 

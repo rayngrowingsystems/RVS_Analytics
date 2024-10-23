@@ -23,6 +23,7 @@ import CameraApp_rc
 
 from ui_ImageSourceDialog import Ui_ImageSourceDialog
 
+from Helper import tprint
 
 class ImageSourceDialog(QDialog):
     def __init__(self, main_window):
@@ -130,7 +131,7 @@ class ImageSourceDialog(QDialog):
             self.ui.camera_file_path.setText(folder)
 
     def set_output_file_path(self):
-        print("SetOutput", self.main_window.experiment.output_file_path)
+        tprint("SetOutput", self.main_window.experiment.output_file_path)
 
         folder = QFileDialog.getExistingDirectory(self, "Select a folder", self.main_window.experiment.output_file_path)
 
@@ -142,7 +143,7 @@ class ImageSourceDialog(QDialog):
             self.ui.output_file_path.setText(folder)
 
     def refresh_cameras(self):
-        # print("refreshCameras")
+        # tprint("refreshCameras")
 
         self.ui.camera_selection_combobox.blockSignals(True)
 
@@ -157,12 +158,12 @@ class ImageSourceDialog(QDialog):
         self.ui.camera_selection_combobox.blockSignals(False)
 
     def identify_camera(self):
-        print("identifyCamera")
+        tprint("identifyCamera")
         if self.main_window.camera:
             self.main_window.camera.identify()
 
     def configure_camera(self):
-        print("configureCamera")
+        tprint("configureCamera")
 
         self.close()
 

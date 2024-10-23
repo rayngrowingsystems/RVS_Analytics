@@ -22,6 +22,7 @@ import CameraApp_rc
 
 from ui_DownloadImagesDialog import Ui_DownloadImagesDialog
 
+from Helper import tprint
 
 class DownloadImagesDialog(QDialog):
     def __init__(self, parent):
@@ -76,28 +77,33 @@ class DownloadImagesDialog(QDialog):
 
             self.ui.target_path_label.setText(folder)
 
-            print("Target path", folder)
+            tprint("Target path", folder)
 
     def fetch_images(self):
-        images = []
-        for i in range(self.ui.start_combo_box.currentIndex(), self.ui.stop_combo_box.currentIndex() + 1):
-            if i >= 0 and i < len(self.files):
-                images.append(self.files[i])
-                images.append(os.path.splitext(self.files[i])[0])  # Get corresponding imagecube file
-                images.append(os.path.splitext(self.files[i])[0] + ".PNG")  # Get corresponding PNG file
+        if self.ui.target_path_label.text() in ["", "."]:
+            QMessageBox.warning(self, "No target folder defined", "Please press the Browse button to select a target folder")
+        else:
+            images = []
+            for i in range(self.ui.start_combo_box.currentIndex(), self.ui.stop_combo_box.currentIndex() + 1):
+                if i >= 0 and i < len(self.files):
+                    images.append(self.files[i])
+                    images.append(os.path.splitext(self.files[i])[0])  # Get corresponding imagecube file
+                    images.append(os.path.splitext(self.files[i])[0] + ".PNG")  # Get corresponding PNG file
 
-        if len(images) / 3 > 150:
-            QMessageBox.warning(self, "Too many files", "Currently, a maximum of 150 images can be transferred at once. Consider using the SD-card to transfer many images at once")
-        elif len(images) > 0:
-            print("Fetch images", images)
+            if len(images) / 3 > 150:
+                QMessageBox.warning(self, "Too many files", "Currently, a maximum of 150 images can be transferred at once. Consider using the SD-card to transfer many images at once")
+            elif len(images) > 0:
+                tprint("Fetch images", images)
 
-            self.main_window.add_status_text("Downloading images from camera...")
+                self.main_window.add_status_text.emit("Downloading images from camera...")
 
-            self.main_window.ui.image_preview_progressbar.setValue(0)
-            self.main_window.ui.image_preview_progressbar.setRange(0, len(images) / 3)
+                self.main_window.ui.image_preview_progressbar.setValue(0)
+                self.main_window.ui.image_preview_progressbar.setRange(0, len(images) / 3)
 
-            self.main_window.camera.get_files(images, self.ui.target_path_label.text(), False, self.ui.delete_from_camera_checkbox.isChecked())
+                self.main_window.camera.get_files(images, self.ui.target_path_label.text(), False, self.ui.delete_from_camera_checkbox.isChecked())
 
-            # self.mainWindow.camera.setLastReceivedFile(images[-1])
+                # self.mainWindow.camera.setLastReceivedFile(images[-1])
 
-            self.accept()
+                self.accept()
+            else:
+                QMessageBox.warning(self, "No images", "The camera doesn't have any images to download")

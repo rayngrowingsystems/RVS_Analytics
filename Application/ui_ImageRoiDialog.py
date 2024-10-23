@@ -27,6 +27,7 @@ class Ui_ImageRoiDialog(object):
         if not ImageRoiDialog.objectName():
             ImageRoiDialog.setObjectName(u"ImageRoiDialog")
         ImageRoiDialog.resize(986, 473)
+        ImageRoiDialog.setModal(True)
         self.gridLayout_2 = QGridLayout(ImageRoiDialog)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.vertical_layout = QVBoxLayout()
@@ -40,6 +41,12 @@ class Ui_ImageRoiDialog(object):
         self.horizontal_layout.setObjectName(u"horizontal_layout")
         self.reference_image1 = ClickableLabel(ImageRoiDialog)
         self.reference_image1.setObjectName(u"reference_image1")
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.reference_image1.sizePolicy().hasHeightForWidth())
+        self.reference_image1.setSizePolicy(sizePolicy)
+        self.reference_image1.setMinimumSize(QSize(300, 200))
         self.reference_image1.setFrameShape(QFrame.Box)
         self.reference_image1.setScaledContents(False)
         self.reference_image1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
@@ -48,6 +55,9 @@ class Ui_ImageRoiDialog(object):
 
         self.reference_image2 = ClickableLabel(ImageRoiDialog)
         self.reference_image2.setObjectName(u"reference_image2")
+        sizePolicy.setHeightForWidth(self.reference_image2.sizePolicy().hasHeightForWidth())
+        self.reference_image2.setSizePolicy(sizePolicy)
+        self.reference_image2.setMinimumSize(QSize(300, 200))
         self.reference_image2.setFrameShape(QFrame.Box)
         self.reference_image2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
@@ -65,64 +75,33 @@ class Ui_ImageRoiDialog(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.grid_layout = QGridLayout()
         self.grid_layout.setObjectName(u"grid_layout")
-        self.width_label = QLabel(ImageRoiDialog)
-        self.width_label.setObjectName(u"width_label")
-
-        self.grid_layout.addWidget(self.width_label, 0, 4, 1, 1)
-
-        self.roi_shape = QComboBox(ImageRoiDialog)
-        self.roi_shape.addItem("")
-        self.roi_shape.addItem("")
-        self.roi_shape.setObjectName(u"roi_shape")
-
-        self.grid_layout.addWidget(self.roi_shape, 1, 0, 1, 1)
-
-        self.roi_placement_mode = QComboBox(ImageRoiDialog)
-        self.roi_placement_mode.addItem("")
-        self.roi_placement_mode.addItem("")
-        self.roi_placement_mode.setObjectName(u"roi_placement_mode")
-
-        self.grid_layout.addWidget(self.roi_placement_mode, 0, 0, 1, 1)
-
-        self.horizontal_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.grid_layout.addItem(self.horizontal_spacer, 0, 3, 1, 1)
-
-        self.columns_label = QLabel(ImageRoiDialog)
-        self.columns_label.setObjectName(u"columns_label")
-
-        self.grid_layout.addWidget(self.columns_label, 1, 1, 1, 1)
-
         self.rows_spinbox = QSpinBox(ImageRoiDialog)
         self.rows_spinbox.setObjectName(u"rows_spinbox")
         self.rows_spinbox.setMinimum(1)
         self.rows_spinbox.setMaximum(10)
         self.rows_spinbox.setValue(3)
 
-        self.grid_layout.addWidget(self.rows_spinbox, 0, 2, 1, 1)
+        self.grid_layout.addWidget(self.rows_spinbox, 1, 3, 1, 1)
 
         self.rows_label = QLabel(ImageRoiDialog)
         self.rows_label.setObjectName(u"rows_label")
 
-        self.grid_layout.addWidget(self.rows_label, 0, 1, 1, 1)
+        self.grid_layout.addWidget(self.rows_label, 1, 2, 1, 1)
 
-        self.height_label = QLabel(ImageRoiDialog)
-        self.height_label.setObjectName(u"height_label")
+        self.roi_placement_mode = QComboBox(ImageRoiDialog)
+        self.roi_placement_mode.addItem("")
+        self.roi_placement_mode.addItem("")
+        self.roi_placement_mode.setObjectName(u"roi_placement_mode")
 
-        self.grid_layout.addWidget(self.height_label, 1, 4, 1, 1)
+        self.grid_layout.addWidget(self.roi_placement_mode, 1, 1, 1, 1)
 
-        self.columns_spinbox = QSpinBox(ImageRoiDialog)
-        self.columns_spinbox.setObjectName(u"columns_spinbox")
-        self.columns_spinbox.setMinimum(1)
-        self.columns_spinbox.setMaximum(10)
-        self.columns_spinbox.setValue(5)
+        self.roi_detection_mode = QComboBox(ImageRoiDialog)
+        self.roi_detection_mode.addItem("")
+        self.roi_detection_mode.addItem("")
+        self.roi_detection_mode.addItem("")
+        self.roi_detection_mode.setObjectName(u"roi_detection_mode")
 
-        self.grid_layout.addWidget(self.columns_spinbox, 1, 2, 1, 1)
-
-        self.radius_label = QLabel(ImageRoiDialog)
-        self.radius_label.setObjectName(u"radius_label")
-
-        self.grid_layout.addWidget(self.radius_label, 0, 6, 1, 1)
+        self.grid_layout.addWidget(self.roi_detection_mode, 0, 1, 1, 1)
 
         self.width_spinbox = QSpinBox(ImageRoiDialog)
         self.width_spinbox.setObjectName(u"width_spinbox")
@@ -130,7 +109,21 @@ class Ui_ImageRoiDialog(object):
         self.width_spinbox.setMaximum(1000)
         self.width_spinbox.setValue(5)
 
-        self.grid_layout.addWidget(self.width_spinbox, 0, 5, 1, 1)
+        self.grid_layout.addWidget(self.width_spinbox, 1, 6, 1, 1)
+
+        self.width_label = QLabel(ImageRoiDialog)
+        self.width_label.setObjectName(u"width_label")
+
+        self.grid_layout.addWidget(self.width_label, 1, 5, 1, 1)
+
+        self.horizontal_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.grid_layout.addItem(self.horizontal_spacer, 1, 4, 1, 1)
+
+        self.height_label = QLabel(ImageRoiDialog)
+        self.height_label.setObjectName(u"height_label")
+
+        self.grid_layout.addWidget(self.height_label, 2, 5, 1, 1)
 
         self.height_spinbox = QSpinBox(ImageRoiDialog)
         self.height_spinbox.setObjectName(u"height_spinbox")
@@ -138,14 +131,56 @@ class Ui_ImageRoiDialog(object):
         self.height_spinbox.setMaximum(1000)
         self.height_spinbox.setValue(30)
 
-        self.grid_layout.addWidget(self.height_spinbox, 1, 5, 1, 1)
+        self.grid_layout.addWidget(self.height_spinbox, 2, 6, 1, 1)
+
+        self.columns_label = QLabel(ImageRoiDialog)
+        self.columns_label.setObjectName(u"columns_label")
+
+        self.grid_layout.addWidget(self.columns_label, 2, 2, 1, 1)
+
+        self.roi_shape = QComboBox(ImageRoiDialog)
+        self.roi_shape.addItem("")
+        self.roi_shape.addItem("")
+        self.roi_shape.addItem("")
+        self.roi_shape.addItem("")
+        self.roi_shape.setObjectName(u"roi_shape")
+
+        self.grid_layout.addWidget(self.roi_shape, 2, 1, 1, 1)
 
         self.radius_spinbox = QSpinBox(ImageRoiDialog)
         self.radius_spinbox.setObjectName(u"radius_spinbox")
         self.radius_spinbox.setMinimum(5)
         self.radius_spinbox.setMaximum(1000)
 
-        self.grid_layout.addWidget(self.radius_spinbox, 0, 7, 1, 1)
+        self.grid_layout.addWidget(self.radius_spinbox, 1, 8, 1, 1)
+
+        self.radius_label = QLabel(ImageRoiDialog)
+        self.radius_label.setObjectName(u"radius_label")
+
+        self.grid_layout.addWidget(self.radius_label, 1, 7, 1, 1)
+
+        self.columns_spinbox = QSpinBox(ImageRoiDialog)
+        self.columns_spinbox.setObjectName(u"columns_spinbox")
+        self.columns_spinbox.setMinimum(1)
+        self.columns_spinbox.setMaximum(10)
+        self.columns_spinbox.setValue(5)
+
+        self.grid_layout.addWidget(self.columns_spinbox, 2, 3, 1, 1)
+
+        self.label_3 = QLabel(ImageRoiDialog)
+        self.label_3.setObjectName(u"label_3")
+
+        self.grid_layout.addWidget(self.label_3, 0, 0, 1, 1)
+
+        self.label_4 = QLabel(ImageRoiDialog)
+        self.label_4.setObjectName(u"label_4")
+
+        self.grid_layout.addWidget(self.label_4, 1, 0, 1, 1)
+
+        self.label_5 = QLabel(ImageRoiDialog)
+        self.label_5.setObjectName(u"label_5")
+
+        self.grid_layout.addWidget(self.label_5, 2, 0, 1, 1)
 
         self.grid_layout.setColumnStretch(1, 1)
         self.grid_layout.setColumnStretch(3, 1)
@@ -225,17 +260,26 @@ class Ui_ImageRoiDialog(object):
         self.reference_image1.setText(QCoreApplication.translate("ImageRoiDialog", u"<br><br>Click the Image button to pick", None))
         self.reference_image2.setText(QCoreApplication.translate("ImageRoiDialog", u"<br><br>Click the Image button to pick", None))
         self.label_2.setText(QCoreApplication.translate("ImageRoiDialog", u"Select Regions of Interest (ROI) drawing mode and related settings", None))
-        self.width_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Width", None))
-        self.roi_shape.setItemText(0, QCoreApplication.translate("ImageRoiDialog", u"Circle", None))
-        self.roi_shape.setItemText(1, QCoreApplication.translate("ImageRoiDialog", u"Rectangle", None))
-
+        self.rows_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Rows", None))
         self.roi_placement_mode.setItemText(0, QCoreApplication.translate("ImageRoiDialog", u"Matrix", None))
         self.roi_placement_mode.setItemText(1, QCoreApplication.translate("ImageRoiDialog", u"Individual", None))
 
-        self.columns_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Columns", None))
-        self.rows_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Rows", None))
+        self.roi_detection_mode.setItemText(0, QCoreApplication.translate("ImageRoiDialog", u"Partial", None))
+        self.roi_detection_mode.setItemText(1, QCoreApplication.translate("ImageRoiDialog", u"Cut to", None))
+        self.roi_detection_mode.setItemText(2, QCoreApplication.translate("ImageRoiDialog", u"Largest", None))
+
+        self.width_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Width", None))
         self.height_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Height", None))
+        self.columns_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Columns", None))
+        self.roi_shape.setItemText(0, QCoreApplication.translate("ImageRoiDialog", u"Circle", None))
+        self.roi_shape.setItemText(1, QCoreApplication.translate("ImageRoiDialog", u"Rectangle", None))
+        self.roi_shape.setItemText(2, QCoreApplication.translate("ImageRoiDialog", u"Ellipse", None))
+        self.roi_shape.setItemText(3, QCoreApplication.translate("ImageRoiDialog", u"Polygon", None))
+
         self.radius_label.setText(QCoreApplication.translate("ImageRoiDialog", u"Radius", None))
+        self.label_3.setText(QCoreApplication.translate("ImageRoiDialog", u"Detection mode", None))
+        self.label_4.setText(QCoreApplication.translate("ImageRoiDialog", u"Placement mode", None))
+        self.label_5.setText(QCoreApplication.translate("ImageRoiDialog", u"Shape", None))
         self.info_label.setText("")
         self.clear_button.setText(QCoreApplication.translate("ImageRoiDialog", u"Clear ROIs", None))
         self.cancel_button.setText(QCoreApplication.translate("ImageRoiDialog", u"Cancel", None))

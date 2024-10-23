@@ -24,14 +24,16 @@ from multiprocessing import freeze_support
 
 freeze_support()
 
-print("Loading CameraApp", __name__)
+import Helper
+from Helper import tprint
+
+tprint("Loading CameraApp", __name__)
 
 if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp_main__) so let's make sure nothing is executed if in that case
     from os import path
-
     import sys
-
     import stackprinter
+    from datetime import datetime
 
     from PySide6.QtWidgets import QApplication, QLabel
     from PySide6.QtGui import QPixmap
@@ -40,7 +42,7 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
 
     import CameraApp_rc
 
-    print("Platform:", sys.platform)
+    tprint("Platform:", sys.platform)
 
     dark_mode = False
 
@@ -49,14 +51,14 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
         try:
             import winreg
         except ImportError:
-            print("winreg missing")
+            tprint("winreg missing")
 
         registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
         reg_keypath = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize'
         try:
             reg_key = winreg.OpenKey(registry, reg_keypath)
         except FileNotFoundError:
-            print("Key not found")
+            tprint("Key not found")
 
         for i in range(1024):
             try:
@@ -71,8 +73,7 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
 
     app = QApplication([])
-    if dark_mode:
-        app.setStyle( 'Fusion' )
+    app.setStyle( 'Fusion' )
 
     # Splash screen - need to happen after QApplication is created and before MainWindow is loaded
     splash = QLabel(None, QtCore.Qt.SplashScreen)
@@ -81,6 +82,10 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     splash.show()
 
     app.processEvents()
+
+    # Needs to be set before calling MainWindow. These settings are used to find the way to AppData and Documents
+    QApplication.setOrganizationName("RAYN")
+    QApplication.setApplicationName("RAYN Vision System")
 
     from MainWindow import MainWindow
 
@@ -109,17 +114,21 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
         def flush(self):
             pass
 
-    QApplication.setOrganizationName("RAYN")
-    QApplication.setApplicationName("RAYN Vision System")
+    local_data_location_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
 
-    error_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
+    if not os.path.exists(local_data_location_path):
+        os.makedirs(local_data_location_path)
 
-    if not os.path.exists(error_path):
-        os.makedirs(error_path)
+    debug_file_name = os.path.normpath(os.path.join(local_data_location_path, datetime.now().strftime("%Y-%d-%m %H.%M.%S") + ".log"))
+    error_file_name = os.path.normpath(os.path.join(local_data_location_path, "error.log"))
 
-    error_file_name = os.path.normpath(os.path.join(error_path, "error.log"))
+    tprint("Debug file name:", debug_file_name)
+    tprint("Error file name:", error_file_name)
 
-    print("Error file name:", error_file_name)
+    Helper.debug_file_name = debug_file_name
+
+    if path.exists(debug_file_name):
+        os.remove(debug_file_name)
 
     logging.basicConfig(
        level=logging.DEBUG,
@@ -133,10 +142,10 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     sys.stderr = sl
 
     def resource_path():
-        print("Path:", path.dirname(__file__))
+        tprint("Path:", path.dirname(__file__))
 
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        print('running in a PyInstaller bundle')
+        tprint('running in a PyInstaller bundle')
 
     resource_path()
 
@@ -151,7 +160,7 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
         try:
             os.remove(file_path)
         except:
-            print("Error while deleting file : ", file_path)
+            tprint("Error while deleting file : ", file_path)
 
     # Open main window
     widget = MainWindow(script_folder, mask_folder)

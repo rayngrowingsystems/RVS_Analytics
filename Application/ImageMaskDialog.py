@@ -18,13 +18,14 @@ import json
 import tempfile
 import os
 
-from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox
+from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame
 from PySide6.QtGui import QPixmap, QGuiApplication, QCursor
 from PySide6.QtCore import QTimer
 from PySide6 import QtCore
 
 import CameraApp_rc
 
+from ImageRoiDialog import RoiGrid
 from ui_ImageMaskDialog import Ui_ImageMaskDialog
 
 from SelectImageDialog import SelectImageDialog
@@ -33,6 +34,7 @@ from DoubleSlider import DoubleSlider
 
 import Config
 import Helper
+from Helper import tprint
 
 class ImageMaskDialog(QDialog):
     # MASK_FILE_PREFIX = "mask_"
@@ -75,6 +77,9 @@ class ImageMaskDialog(QDialog):
         self.original_preview_image1 = None
         self.original_preview_image2 = None
 
+        self.roi_grid1 = None
+        self.roi_grid2 = None
+
         # Connect image buttons to slot for selecting reference images
         image_button = QPushButton("Image...", self.ui.reference_image1)
         image_button.setMaximumWidth(55)
@@ -91,6 +96,8 @@ class ImageMaskDialog(QDialog):
         # Connect cancel button to close the dialog
         self.ui.cancel_button.clicked.connect(self.reject)
 
+        self.ui.show_rois_checkbox.toggled.connect(self.show_rois)
+
         # Initialize script description
         self.script_description = ''
 
@@ -102,14 +109,13 @@ class ImageMaskDialog(QDialog):
             self.mask_script = self.main_window.experiment.selected_mask
             config_file_name = self.main_window.mask_paths[self.mask_script].replace(".py", ".config")
 
-        print("Mask/Config:", self.mask_script, config_file_name)
+        tprint("Mask/Config:", self.mask_script, config_file_name)
 
         # Create a grid layout to hold mask options
-        grid = QGridLayout()
         with open(config_file_name) as config_file:
             data = json.load(config_file)
             if Config.verbose_mode:
-                print("Read config file:", data)
+                tprint("Read config file:", data)
 
             # Extract script and mask descriptions
             if "script" in data:
@@ -118,7 +124,13 @@ class ImageMaskDialog(QDialog):
             if "mask" in data:
                 self.mask_description = data['mask']['info']['description']
 
-            row = 0
+            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges = \
+                Helper.get_ui_elements_from_config(options=data['mask']['options'], settings=self.main_window.experiment.mask, \
+                                                   execute_on_change=self.run_mask_script, dropdown_changed=self.dropdown_changed, \
+                                                   slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
+                                                   script_for_dropdown_values=self.main_window.current_mask_script())
+            
+            '''row = 0
             column = 0
 
             # Iterate over each mask option
@@ -131,12 +143,13 @@ class ImageMaskDialog(QDialog):
                 # Handle checkbox options
                 if option["type"] == "checkBox":
                     option_checkbox = QCheckBox(option["displayName"])
+                    option_checkbox.setToolTip(option["hint"])
                     grid.addWidget(option_checkbox, row, column)
                     row += 1
 
                     # Check if the option is already set
                     if option["name"] in self.main_window.experiment.mask:
-                        print("Mask: Found checkbox option:", option["name"], self.main_window.experiment.mask[option["name"]])
+                        tprint("Mask: Found checkbox option:", option["name"], self.main_window.experiment.mask[option["name"]])
                         option_checkbox.setChecked(self.main_window.experiment.mask[option["name"]])
                     else:
                         option_checkbox.setChecked(option["value"] == "true")
@@ -149,6 +162,7 @@ class ImageMaskDialog(QDialog):
                 # Handle slider options
                 elif option["type"] == "slider":
                     option_label = QLabel()
+                    option_label.setToolTip(option["hint"])
                     grid.addWidget(option_label, row, column)
                     row += 1
 
@@ -163,14 +177,14 @@ class ImageMaskDialog(QDialog):
                             if name == option["getRangesFor"]:
                                 self.option_ranges.append((option_slider, dropdown, name,))
 
-                                print("Force delayed refresh of related slider range", name)
+                                tprint("Force delayed refresh of related slider range", name)
                                 # Force refresh of initial dropdown range. Needs a delay, otherwise, it won't activate the new range
                                 QTimer.singleShot(200, lambda name=name, dropdown=dropdown: self.dropdown_changed(name, dropdown, True))
                                 found = True
                                 break
 
                         if not found:
-                            print("Slider is referring a non-existent dropdown", option["getRangesFor"])
+                            tprint("Slider is referring a non-existent dropdown", option["getRangesFor"])
 
                         min = 0
                         max = 1
@@ -187,7 +201,7 @@ class ImageMaskDialog(QDialog):
 
                     # Check if the slider value is set
                     if option["name"] in self.main_window.experiment.mask:
-                        print("Mask: Found slider option:", option["name"], self.main_window.experiment.mask[option["name"]])
+                        tprint("Mask: Found slider option:", option["name"], self.main_window.experiment.mask[option["name"]])
                         start_value = self.main_window.experiment.mask[option["name"]]  # Use last value
                     elif "value" in option:
                         start_value = default_value  # Use default value
@@ -214,6 +228,7 @@ class ImageMaskDialog(QDialog):
                     option_slider.valueChanged.connect(lambda a, name=name, optionSlider=option_slider: self.slider_value_changed(name, optionSlider))
                     option_slider.valueChanged.emit(0)  # Force refresh of label
                     option_slider.setValue(start_value)
+                    option_slider.setToolTip(option["hint"])
                     grid.addWidget(option_slider, row, column)
                     row += 1
 
@@ -225,10 +240,12 @@ class ImageMaskDialog(QDialog):
                 elif option["type"] == "wavelength":
                     option_label = QLabel()
                     option_label.setText(option["displayName"])
+                    option_label.setToolTip(option["hint"])
                     grid.addWidget(option_label, row, column)
                     row += 1
 
                     option_wavelength = QComboBox()
+                    option_wavelength.setToolTip(option["hint"])
                     grid.addWidget(option_wavelength, row, column)
                     row += 1
 
@@ -255,11 +272,13 @@ class ImageMaskDialog(QDialog):
                     # Create a label for the dropdown option
                     option_label = QLabel()
                     option_label.setText(option["displayName"])
+                    option_label.setToolTip(option["hint"])
                     grid.addWidget(option_label, row, column)
                     row += 1
 
                     # Create a dropdown menu
                     option_dropdown = QComboBox()
+                    option_dropdown.setToolTip(option["hint"])
                     grid.addWidget(option_dropdown, row, column)
                     row += 1
 
@@ -301,16 +320,22 @@ class ImageMaskDialog(QDialog):
 
                     # Connect the signal of dropdown menu change to the main function for updating the mask script
                     option_dropdown.currentIndexChanged.connect(self.run_mask_script)
+                elif option["type"] == "divider":
+                    line = QFrame()
+                    line.setFrameShape(QFrame.HLine)
+                    line.setStyleSheet('color: rgb(100,100,100)')
+                    grid.addWidget(line, row, column)
+                    row += 1
 
                 # Adjust row and column for grid layout
                 if row > 5:
                     column += 1
-                    row = 0
+                    row = 0'''
 
             # Set the layout for mask options
             self.ui.mask_options_box.setLayout(grid)
 
-            print(self.option_wavelengths, self.option_dropdowns)
+            tprint(self.option_wavelengths, self.option_dropdowns)
 
         # Set label and description based on selected mask or script
         if self.main_window.experiment.selected_mask == "" or self.main_window.experiment.selected_mask == "Default":
@@ -328,18 +353,21 @@ class ImageMaskDialog(QDialog):
         self.ui.setupUi(self)
 
     def slider_value_changed(self, name, option_slider):
-        print("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max, option_slider.steps, option_slider.stepSize)
-        option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(option_slider.value())))
+        tprint("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max, option_slider.steps, option_slider.stepSize)
+        if option_slider.stepSize == 1.0:
+            option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(int(option_slider.value()))))
+        else:
+            option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(option_slider.value())))
 
     def wavelength_changed(self, name, option_wavelength):
-        print("Wavelength changed", name, option_wavelength, option_wavelength.currentIndex())
+        tprint("Wavelength changed", name, option_wavelength, option_wavelength.currentIndex())
         # No action needed, runMaskScript will pull the current values
 
     def populate_wavelengths(self):
         if self.ui.reference_image1.image_file_name != "":
             date, time, camera, image_wavelengths = Helper.info_from_header_file(self.ui.reference_image1.image_file_name)
 
-            print("Wavelengths from image:", image_wavelengths)
+            tprint("Wavelengths from image:", image_wavelengths)
 
             self.wavelengths = ['None']
             self.wavelengths.extend(image_wavelengths)
@@ -350,18 +378,18 @@ class ImageMaskDialog(QDialog):
                 option_wavelength.addItems(self.wavelengths)
 
                 if name in self.wavelength_value and self.wavelength_value[name] != "":
-                    print("Restore wavelength", name, self.wavelength_value[name], self.wavelengths)
+                    tprint("Restore wavelength", name, self.wavelength_value[name], self.wavelengths)
                     index = option_wavelength.findText(str(self.wavelength_value[name]))
                     option_wavelength.setCurrentIndex(index)
 
     def dropdown_changed(self, name, option_dropdown, initial_update):
-        print("Dropdown changed", name, option_dropdown, option_dropdown.currentIndex(), initial_update)
+        tprint("Dropdown changed", name, option_dropdown, option_dropdown.currentIndex(), initial_update)
         # runMaskScript will pull the current values
 
         # If dropdown is referenced by a slider, get related slider ranges from the mask script for the new index
         for slider, dropdown, name in self.option_ranges:
             if dropdown == option_dropdown:
-                print("Update related slider range", name)
+                tprint("Update related slider range", name)
 
                 mask_script = self.main_window.current_mask_script()
 
@@ -381,12 +409,12 @@ class ImageMaskDialog(QDialog):
 
                 slider.valueChanged.emit(slider.value())  # Force refresh of label
 
-                print("New range:", slider.min, slider.max, slider.steps, slider.defaultValue, slider.stepSize)
+                tprint("New range:", slider.min, slider.max, slider.steps, slider.defaultValue, slider.stepSize)
 
                 # Find corresponding optionSlider and update the min and stepsize in the tuplet
                 for index, item in enumerate(self.option_sliders):
                     itemlist = list(item)  # tuplet is (name, slider, min, stepSize)
-                    print(itemlist)
+                    tprint(itemlist)
                     if itemlist[1] == slider:
                         itemlist[2] = slider.min
                         itemlist[3] = slider.stepSize
@@ -394,12 +422,16 @@ class ImageMaskDialog(QDialog):
 
                         self.option_sliders[index] = item
 
+    def show_rois(self, active):
+        if self.roi_grid1:
+            self.roi_grid1.setVisible(active)
+        if self.roi_grid2:
+            self.roi_grid2.setVisible(active)
+
     def select_reference_image1(self):
         select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
 
         select_image_dialog.exec()
-
-        self.populate_wavelengths()
 
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
@@ -411,12 +443,12 @@ class ImageMaskDialog(QDialog):
 
     def load_reference_images(self):
         if self.main_window.experiment.mask_reference_image1 is not None:
-            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.mask_reference_image1, self.main_window.experiment.lens_angle, self.main_window.experiment.normalize, self.main_window.experiment.light_correction)
-            print("Mask: Load left preview image:", self.main_window.experiment.mask_reference_image1)
+            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.mask_reference_image1, self.main_window.experiment.image_options_to_dict())
+            tprint("Mask: Load left preview image:", self.main_window.experiment.mask_reference_image1)
 
         if self.main_window.experiment.mask_reference_image2 is not None:
-            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.mask_reference_image2, self.main_window.experiment.lens_angle, self.main_window.experiment.normalize, self.main_window.experiment.light_correction)
-            print("Mask: Load right preview image:", self.main_window.experiment.mask_reference_image2)
+            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.mask_reference_image2, self.main_window.experiment.image_options_to_dict())
+            tprint("Mask: Load right preview image:", self.main_window.experiment.mask_reference_image2)
 
         self.populate_wavelengths()
 
@@ -434,8 +466,8 @@ class ImageMaskDialog(QDialog):
         QGuiApplication.setOverrideCursor(QCursor(QtCore.Qt.WaitCursor))
 
         # Set up temporary file for mask preview
-        with tempfile.TemporaryDirectory() as tmp:
-            temp_file_name = os.path.join(tmp, 'maskPreview.png')
+        with tempfile.TemporaryDirectory() as temp_path:
+            temp_file_name = os.path.join(temp_path, 'maskPreview.png')
 
             # Initialize settings dictionary for the script
             settings = {}
@@ -462,9 +494,11 @@ class ImageMaskDialog(QDialog):
                 settings['experimentSettings']['analysis']['maskOptions'][name] = dropdown.currentData()
 
             # Populate image options
-            settings["experimentSettings"]["imageOptions"]["lensAngle"] = self.main_window.experiment.lens_angle
-            settings["experimentSettings"]["imageOptions"]["normalize"] = self.main_window.experiment.normalize
-            settings["experimentSettings"]["imageOptions"]["lightCorrection"] = self.main_window.experiment.light_correction
+            settings["experimentSettings"]["imageOptions"] = self.main_window.experiment.image_options_to_dict()
+            # settings["experimentSettings"]["imageOptions"]["lensAngle"] = self.main_window.experiment.lens_angle
+            # settings["experimentSettings"]["imageOptions"]["normalize"] = self.main_window.experiment.normalize
+            # settings["experimentSettings"]["imageOptions"]["lightCorrection"] = self.main_window.experiment.light_correction
+            # settings["experimentSettings"]["imageOptions"]["rotation"] = self.main_window.experiment.rotation
 
             # Get the current mask script
             mask_script = self.main_window.current_mask_script()
@@ -473,7 +507,7 @@ class ImageMaskDialog(QDialog):
             if self.ui.reference_image1.image_file_name != "":
                 settings["inputImage"] = self.ui.reference_image1.image_file_name
 
-                print("Mask", settings)
+                tprint("Mask", settings)
 
                 # Execute the mask script
                 mask_script.create_mask(settings)
@@ -511,6 +545,16 @@ class ImageMaskDialog(QDialog):
             # Scale pixmap to follow available space
             self.ui.preview_image1.setPixmap(self.original_preview_image1.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
+            scaling_factor = self.ui.preview_image1.pixmap().width() / self.original_preview_image1.width()
+
+            if not self.roi_grid1:
+                items = self.main_window.experiment.roi_info.roi_items(1.0)
+                self.roi_grid1 = RoiGrid(self.ui.preview_image1, self, items)
+                self.roi_grid1.setVisible(self.ui.show_rois_checkbox.isChecked())
+
+            self.roi_grid1.scaling_factor = scaling_factor
+            self.roi_grid1.setFixedSize(self.ui.preview_image1.pixmap().size())
+       
     def refresh_preview_image2(self):
         if self.original_preview_image2 is not None:
             width = self.ui.preview_image2.width()
@@ -518,6 +562,16 @@ class ImageMaskDialog(QDialog):
 
             # Scale pixmap to follow available space
             self.ui.preview_image2.setPixmap(self.original_preview_image2.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+
+            scaling_factor = self.ui.preview_image2.pixmap().width() / self.original_preview_image2.width()
+
+            if not self.roi_grid2:
+                items = self.main_window.experiment.roi_info.roi_items(1.0)
+                self.roi_grid2 = RoiGrid(self.ui.preview_image2, self, items)
+                self.roi_grid2.setVisible(self.ui.show_rois_checkbox.isChecked())
+
+            self.roi_grid2.scaling_factor = scaling_factor
+            self.roi_grid2.setFixedSize(self.ui.preview_image2.pixmap().size())
 
     def refresh_reference_image1(self):
         if self.ui.reference_image1 is not None:

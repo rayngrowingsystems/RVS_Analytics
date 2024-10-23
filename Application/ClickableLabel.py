@@ -21,18 +21,20 @@ from plantcv import plantcv as pcv
 
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import QRect, QPoint, QSize
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QTransform
 
 from PySide6 import QtCore
 
 import rayn_utils
 
+from Helper import tprint
 
 class ClickableLabel(QLabel):
     pressed = QtCore.Signal(QPoint)
     clicked = QtCore.Signal(QPoint)
     right_clicked = QtCore.Signal(QPoint)
     moved = QtCore.Signal(QPoint)
+    double_clicked = QtCore.Signal(QPoint)
     rubberband_changed = QtCore.Signal(QRect)
     image_file_name_changed = QtCore.Signal()
 
@@ -47,13 +49,18 @@ class ClickableLabel(QLabel):
 
         self.image_file_name = ""
 
-        self.original_image_size = QSize(0, 0)
         self.original_image = QPixmap()
 
         self.roi_grid = None
 
-    def set_image_file_name(self, file_name, lens_angle, normalize, light_correction):
-        # print("Set preview file:", fileName)
+    def set_image_file_name(self, file_name, image_options):
+        # tprint("Set preview file:", fileName)
+
+        lens_angle = image_options["lensAngle"]
+        normalize = image_options["normalize"]
+        light_correction = image_options["lightCorrection"]
+        rotation = image_options["rotation"]
+        crop = image_options["crop"]
 
         if file_name != "" and file_name != ".":
             self.image_file_name = file_name
@@ -62,46 +69,22 @@ class ClickableLabel(QLabel):
             with tempfile.TemporaryDirectory() as tmp:
                 temp_file_name = os.path.join(tmp, 'imageCubeConversion.png')
 
-                print("Preview: Read imagecube and convert to visible image:", file_name)
-                # print("Convert to a visible file through tempfile:", tempFileName)
+                tprint("Preview: Read imagecube and convert to visible image:", file_name)
+                # tprint("Convert to a visible file through tempfile:", tempFileName)
 
                 # Create preview image
-                image_cube = os.path.splitext(file_name)[0]
-                spectral_array = pcv.readimage(filename=image_cube, mode='envi')
-                spectral_array.array_data = spectral_array.array_data.astype("float32")
-                spectral_array.pseudo_rgb = spectral_array.pseudo_rgb.astype("float32")
-
-                # Apply light correction
-                if light_correction:
-                    correction_matrix = rayn_utils.get_correction_matrix_from_file("calibration_data/120_correction_matrix.npy")
-                    spectral_array = rayn_utils.light_intensity_correction(spectral_array, correction_matrix)
-
-                # Apply undistort
-                if lens_angle != 0:  # if a lens angle is selected, undistortion is applied.
-                    cam_calibration_file = f"calibration_data/{lens_angle}_calibration_data.yml"
-                    mtx, dist = rayn_utils.load_coefficients(cam_calibration_file)
-                    spectral_array.array_data = rayn_utils.undistort_data_cube(spectral_array.array_data, mtx, dist)
-                    spectral_array.pseudo_rgb = rayn_utils.undistort_data_cube(spectral_array.pseudo_rgb, mtx, dist)
-
-                # Normalize the image cube
-                if normalize:
-                    spectral_array.array_data = rayn_utils.dark_normalize_array_data(spectral_array)
-
+                spectral_array = rayn_utils.prepare_spectral_data(image_options, file_name, preview=True)
                 pcv.print_image(spectral_array.pseudo_rgb, temp_file_name)
 
-                # print("Load resulting image to preview box")
+                # tprint("Load resulting image to preview box")
 
                 pixmap = QPixmap(temp_file_name)
-                self.setPixmap(pixmap.scaledToWidth(self.width()))
 
-                self.set_original_image_size(pixmap.size())
+                self.setPixmap(pixmap.scaledToWidth(self.width()))                   
+
                 self.original_image = pixmap
 
             self.image_file_name_changed.emit()
-
-    def set_original_image_size(self, size):
-        print("Preview image: setOriginalImageSize:", size)
-        self.original_image_size = size
 
     def set_roi_grid(self, roi_grid):
         self.roi_grid = roi_grid
@@ -140,6 +123,9 @@ class ClickableLabel(QLabel):
                 self.right_clicked.emit(event.pos())
 
         self.mouse_pressed = False
+
+    def mouseDoubleClickEvent(self, event):  # Note: Qt override
+        self.double_clicked.emit(event.pos())
 
     def resizeEvent(self, event):  # Note: Qt override
         if not self.roi_grid is None:

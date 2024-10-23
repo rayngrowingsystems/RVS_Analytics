@@ -17,6 +17,7 @@ import struct
 import platform
 import json
 
+from Helper import tprint
 
 class EtcDiscover:
     MULTICAST_ADDRESS = "239.69.84.67"
@@ -52,7 +53,7 @@ class EtcDiscover:
             sock.settimeout(1)
         except:
             sock = None
-            print('opening mulitcast failed')
+            tprint('opening mulitcast failed')
         return sock
 
     # check frame data on valid size and valid header
@@ -70,7 +71,7 @@ class EtcDiscover:
             str += chr(item)
         str += chr(0)                    # add null char to get end of string
         json_string = str[len(self.HEADER):-1]  # split string, remove Header
-        # print( jsonString )
+        # tprint( jsonString )
         return json.loads(json_string)
 
     # receive new devices and convert them to json

@@ -19,11 +19,10 @@ import shutil
 import tempfile
 
 import datetime
-# from datetime import datetime
 
-from threading import Thread
-from multiprocessing import Process, Queue
-# from multiprocessing import active_children
+import traceback
+from multiprocessing import Queue
+
 import importlib
 
 import glob
@@ -34,8 +33,10 @@ import warnings
 
 import csv
 
+from importlib.metadata import version
+
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog, QStyle, QMessageBox, QInputDialog, QLineEdit, QFileDialog, QLabel
-from PySide6.QtCore import QUrl, QTimer, QStandardPaths, QDir
+from PySide6.QtCore import QUrl, QTimer, QStandardPaths, QDir, QObject, QRunnable, QThreadPool
 from PySide6 import QtCore
 from PySide6.QtGui import QPixmap, QIcon, QScreen, QDesktopServices
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -60,6 +61,8 @@ from FolderStartDialog import FolderStartDialog
 import Config
 import Helper
 
+from Helper import tprint
+
 import CameraApp_rc
 
 from ui_MainWindow import Ui_MainWindow
@@ -74,60 +77,52 @@ from Mqtt import Mqtt
 
 from Chart import Chart
 
-print("Loading MainWindow module", __name__)
+tprint("Loading MainWindow module", __name__)
 
-# This is the function that is running as a background Process, iterating over all the files
-def script_runner(script_name, feedback_queue, file_names, settings, mask_file_name):
-    print("Analysis: Starting ScriptRunner for", len(file_names), "files. Script:", script_name)
+class AnalysisWorkerSignals(QObject):
+    '''
+    Defines the signals available from the worker thread.
+    '''
+    status = QtCore.Signal(str, str)
 
-    analysis_script = importlib.import_module(script_name)
+class CameraDiscoveryWorkerSignals(QObject):
+    '''
+    Defines the signals available from the worker thread.
+    '''
+    add_camera = QtCore.Signal(str, str)
+    remove_camera = QtCore.Signal(str)
 
-    progress = 0
-    for file_name in file_names:
-        print("Analysis: Processing file:", file_name)
+class Worker(QRunnable):
+    '''
+    Worker thread
 
-        date, time, camera, wavelength = Helper.info_from_header_file(file_name)
+    Inherits from QRunnable to handle worker thread setup, signals and wrap-up.
 
-        print("Analysis: Info from HDR file: Camera:", camera, "Date/time:", date, time)
+    :param callback: The function callback to run on this worker thread. Supplied args and kwargs will be passed through to the runner.
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+    '''
 
-        # capture date = 2022-12-16
-        # capture time = 07:00:00
+    def __init__(self, fn, signals, *args, **kwargs):
+        super(Worker, self).__init__()
 
-        # feedbackQueue.put([scriptName, "timestamp", time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(os.path.getmtime(fileName)))])
-        feedback_queue.put([script_name, "timestamp", date + ' ' + time])
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = signals
 
-        feedback_queue.put([script_name, "cameraName", camera])
-        feedback_queue.put([script_name, "fileName", file_name])
-
-        settings["inputImage"] = file_name  # Set image specific setting on top of basic settings
-
-        if Config.verbose_mode:
-            print("Settings:", settings)
-
-        print("ScriptRunner:", mask_file_name)
-
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+        # Retrieve args/kwargs here; and fire processing using them
         try:
-            analysis_script.execute(feedback_queue, script_name, settings, mask_file_name)
-        except RuntimeError as err:
-            print("RuntimeError in script:", err)
-            feedback_queue.put([script_name, "error", str(err)])
-
-        # Update progress
-        feedback_queue.put([script_name, "progress", progress])  # Make sure progressbar is updated
-        progress = progress + 1
-
-    print("Analysis: ScriptRunner: No more files to analyze")
-    feedback_queue.put([script_name, "done"])
-
-
-def camera_discovery_function(main_window, ip):
-    print("Camera: Starting cameraDiscoveryFunction in a thread:", ip)
-
-    # main_window.cameraDiscovery =
-    CameraDiscovery(ip, main_window, main_window.camera_discovery_feedback_queue)
-
-    # Note: This function will never return
-
+            result = self.fn(*self.args, **self.kwargs)
+        except:
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            tprint("Exception", exctype, value)
 
 class FileSystemEventHandler(PatternMatchingEventHandler):
     def __init__(self, parent, patterns, ignore_patterns, ignore_directories, case_sensitive):
@@ -137,12 +132,12 @@ class FileSystemEventHandler(PatternMatchingEventHandler):
 
     def on_created(self, event):
         if Config.verbose_mode:
-            print(f"{event.src_path} created")
+            tprint(f"{event.src_path} created")
         self.main_window.on_file_created(event.src_path)
 
     def on_deleted(self, event):
         if Config.verbose_mode:
-            print(f"{event.src_path} deleted")
+            tprint(f"{event.src_path} deleted")
         self.main_window.on_file_deleted(event.src_path)
 
     # def on_modified(self, event):
@@ -150,19 +145,22 @@ class FileSystemEventHandler(PatternMatchingEventHandler):
 
     def on_moved(self, event):
         if Config.verbose_mode:
-            print(f"{event.src_path} moved to {event.dest_path}")
+            tprint(f"{event.src_path} moved to {event.dest_path}")
 
 
 class MainWindow(QMainWindow):
+    add_status_text = QtCore.Signal(str)
+    analysis_done = QtCore.Signal()
+
     def __init__(self, script_folder, mask_folder):
         super().__init__()
         # super(MainWindow, self).__init__()
 
         self.CAMERA_STATUS_DIVIDER = 30
 
-        print ("Qt version:", QtCore.__version_info__)
+        tprint ("Qt version:", QtCore.__version_info__)
 
-        print("Create MainWindow...")
+        tprint("Create MainWindow...")
 
         self.camera_configuration_view = None
         self.script_folder = script_folder
@@ -173,20 +171,24 @@ class MainWindow(QMainWindow):
 
         self.experiment_folder = os.path.join(documents_path, 'Experiments')
         QDir().mkpath(self.experiment_folder)
-        print("Experiment folder", self.experiment_folder)
+        tprint("Experiment folder", self.experiment_folder)
 
         # Set up the experiment file path
         self.experiment_file_name = os.path.join(documents_path, 'analysis.xp')
 
         self.current_experiment_file = ""
+        self.current_analysis_file = ""
 
-        self.analysis_process = None
-        self.analysis_script_queue = Queue()
-
+        self.analysis_worker = None
         self.analysis_running = False
+
+        self.camera_discovery_worker = None
 
         self.file_system_event_handler = None
 
+        self.experiment_dirty = False
+        self.analysis_dirty = False
+        
         self.experiment = Experiment(self.experiment_file_name)
 
         self.experiment.from_json()
@@ -200,15 +202,26 @@ class MainWindow(QMainWindow):
         self.camera = None
         self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
 
-        # Need to be before selectNetwork
-        self.camera_discovery_feedback_queue = Queue()
-
         # Need to configure NIC?
         if self.experiment.camera_discovery_ip == "":
             self.select_network()
 
+        # Set up background processing of images
+        self.threadpool = QThreadPool()
+        tprint("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+
         self.camera_discovery = None
-        self.camera_discovery_thread = self.start_camera_discovery_thread(self.experiment.camera_discovery_ip)
+
+        # Set up camera discovery as a background worker thread
+        self.camera_discovery_worker = Worker(self.camera_discovery_function, CameraDiscoveryWorkerSignals(), self, self.experiment.camera_discovery_ip) # Any other args, kwargs are passed to the run function
+        self.camera_discovery_worker.signals.add_camera.connect(self.on_camera_discovery_add_camera)
+        self.camera_discovery_worker.signals.remove_camera.connect(self.on_camera_discovery_remove_camera)
+        
+        self.stop_camera_discovery_worker = False
+        self.stop_analysis_worker = False
+
+        # Start the camera discovery thread
+        self.threadpool.start(self.camera_discovery_worker)
 
         # Set up the current session file path
         self.current_session_file_name = os.path.join(documents_path, 'currentSession.json')
@@ -223,6 +236,8 @@ class MainWindow(QMainWindow):
         self.cameras = {}
 
         self.chart = None
+
+        self.help_dialog = None
 
         self.load_ui()
 
@@ -242,12 +257,11 @@ class MainWindow(QMainWindow):
         self.ui.play_button.clicked.connect(self.play)
         self.ui.play_button.setCheckable(True)
         self.ui.play_button.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.ui.play_button.setStyleSheet('background-color: #494949')
 
         # Set-up Stop button
         self.ui.stop_button.clicked.connect(self.stop)
+        self.ui.stop_button.setCheckable(True)
         self.ui.stop_button.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
-        self.ui.stop_button.setStyleSheet('background-color: #494949')
 
         # Set-up the items in the Experiment menu
         self.ui.action_new_experiment.triggered.connect(self.new_experiment)
@@ -325,8 +339,8 @@ class MainWindow(QMainWindow):
             self.ui.mask_selection_combobox.addItem(base_mask_file)
             self.mask_paths[base_mask_file] = full_mask_file
 
-        print("Script paths:", self.script_paths)
-        print("Mask paths:", self.mask_paths)
+        tprint("Script paths:", self.script_paths)
+        tprint("Mask paths:", self.mask_paths)
 
         # Find related combobox indexes for script and mask
         script_index = self.ui.script_selection_combobox.findText(self.experiment.selected_script)
@@ -354,6 +368,10 @@ class MainWindow(QMainWindow):
         self.chart_preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
 
         self.chart_preview_view.hide()
+
+        # Use thread safe signal/slot to allow use from the background thread
+        self.analysis_done.connect(self.on_analysis_done)
+        self.add_status_text.connect(self.on_add_status_text)
 
         # If ongoing analysis, continue
         if path.exists(self.current_session_file_name):
@@ -384,9 +402,10 @@ class MainWindow(QMainWindow):
 
         # If broker defined, start MQTT
         if self.experiment.mqtt_broker != "":
-            self.mqtt = Mqtt(self.experiment.mqtt_broker, 1883)
+            self.start_mqtt()
         else:
             self.mqtt = None
+            self.on_mqtt_status_changed("No broker defined", True)
 
         self.refresh_camera_selection()
 
@@ -406,15 +425,18 @@ class MainWindow(QMainWindow):
 
     def __del__(self):
         print("Destructor")
-        # if self.analysisProcess is not None:
-        #     self.analysisProcess.terminate()
 
     def closeEvent(self, event):  # Qt override, keep casing
-        print("CloseEvent")
+        tprint("CloseEvent")
 
-        print("Stopping process", self.analysis_process)
-        if self.analysis_process is not None:
-            self.analysis_process.terminate()
+        self.hide();
+
+        # Ask threads to stop
+        self.stop_camera_discovery_worker = True
+        self.stop_analysis_worker = True
+
+        # Wait for threads to actually stop
+        self.threadpool.waitForDone()
 
         QMainWindow.closeEvent(self, event)
 
@@ -427,15 +449,131 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+    def camera_discovery_function(self, main_window, ip):
+        tprint("Camera: Starting cameraDiscoveryFunction:", ip)
+
+        CameraDiscovery(ip, main_window) #, main_window.camera_discovery_feedback_queue)
+
+        # Note: This function will never return
+
+    def script_runner(self, script_name, file_names, settings, mask_file_name):
+        tprint("Starting script_runner. Script:", script_name, "Filenames:", file_names, "Settings", settings, "Mask:", mask_file_name)
+        
+        analysis_script = importlib.import_module(script_name)
+
+        progress = 0
+
+        for file_name in file_names:
+            tprint("Analysis: Processing file:", file_name)
+
+            d, t, camera, wavelength = Helper.info_from_header_file(file_name)
+
+            tprint("Analysis: Info from HDR file: Camera:", camera, "Date/time:", d, t)
+
+            # capture date = 2022-12-16
+            # capture time = 07:00:00
+
+            self.analysis_worker.signals.status.emit("timestamp", d + ' ' + t)
+            # feedback_queue.put([script_name, "timestamp", date + ' ' + time])
+
+            self.analysis_worker.signals.status.emit("cameraName", camera)
+            # feedback_queue.put([script_name, "cameraName", camera])
+            
+            self.analysis_worker.signals.status.emit("fileName", file_name)
+            # feedback_queue.put([script_name, "fileName", file_name])
+
+            settings["inputImage"] = file_name  # Set image specific setting on top of basic settings
+
+            if Config.verbose_mode:
+                tprint("Settings:", settings)
+
+            tprint("ScriptRunner:", mask_file_name)
+
+            feedback_queue = Queue()
+
+            try:
+                analysis_script.execute(feedback_queue, script_name, settings, mask_file_name)
+
+                # Process script feedback queue. TODO Should we change the concept for feedback and eliminate the queue?
+                while not feedback_queue.empty():
+                    data = feedback_queue.get()
+                    command = data[1]
+                    if len(data) > 2:
+                        value = data[2]
+                    else:
+                        value = None
+
+                    self.handle_script_feedback(command, value)
+
+            except RuntimeError as err:
+                tprint("RuntimeError in script:", err)
+                self.analysis_worker.signals.status.emit("error", str(err))
+                # feedback_queue.put([script_name, "error", str(err)])
+            
+            # Update progress
+            self.analysis_worker.signals.status.emit("progress", str(progress))  # Make sure progressbar is updated
+            # feedback_queue.put([script_name, "progress", progress])  # Make sure progressbar is updated
+            progress = progress + 1
+
+            if self.stop_analysis_worker:
+                return
+
+        tprint("Analysis: ScriptRunner: No more files to analyze")
+        self.analysis_worker.signals.status.emit("done", "")  # Make sure progressbar is updated
+        # feedback_queue.put([script_name, "done"])
+
+    def on_script_runner_status(self, command, value):
+        # tprint("script_runner_status", command, value)
+        self.handle_script_feedback(command, value)
+
+    def on_camera_discovery_add_camera(self, cid, camera):
+        tprint("Camera: Discovery: addCamera")
+        
+        if not cid in self.cameras:
+            self.cameras[cid] = json.loads(camera)
+
+            if len(self.cameras) == 1:  # Auto-select if it is the first one
+                self.experiment.camera_cid = cid
+                self.update_experiment_file(False)
+
+            self.refresh_camera_selection()
+
+    def on_camera_discovery_remove_camera(self, cid):
+        tprint("Camera: Discovery: removeCamera")
+        
+        if cid == self.experiment.camera_cid:
+            self.camera = None
+
+        if cid in self.cameras:
+            del self.cameras[cid]
+            self.refresh_camera_selection()
+
+    def update_experiment_file(self, analysis_dirty):
+        self.experiment.update_experiment_file()
+        self.experiment_dirty = True
+
+        if analysis_dirty:
+            self.analysis_dirty = True
+
+    def start_mqtt(self):
+        self.on_mqtt_status_changed("", False)
+        QApplication.instance().processEvents()
+
+        self.mqtt = Mqtt(self.experiment.mqtt_broker, 1883)
+        self.mqtt.status_changed.connect(self.on_mqtt_status_changed)
+        self.mqtt.start()
+
     def refresh_window_title(self):
-        self.setWindowTitle("RAYN Vision System " + AboutDialog.version_number() + " - " + self.current_experiment_file)
+        text = "RAYN Vision System " + AboutDialog.version_number() + " - " + self.current_experiment_file + " - " + self.current_analysis_file
+        text = text + f"(PlantCV: {version('plantCV')})"
+        self.setWindowTitle(text)
 
     def display_instructions(self):
         self.ui.image_preview.setText("1. Select image source<br>2. Select experiment options, like Regions<br>3. Select Masking and Options for the analysis script<br>4. Run analysis")
 
     def mywarning(self, message, category, filename, lineno, file=None, line=None):
-        print(message, category)
-        self.add_status_text("Warning: " + str(message))
+        tprint(message, category)
+        self.add_status_text.emit("Warning: " + str(message))
 
     def all_ip_addresses(self):
         nic_list = []
@@ -466,16 +604,16 @@ class MainWindow(QMainWindow):
                 self.experiment.camera_discovery_ip = ip
 
                 if change_existing: # This is a change, not selecting the network on first startup
-                    print("Network changed:", ip)
+                    tprint("Network changed:", ip)
 
                     if self.camera_discovery:
-                        print("Camera: Change discovery IP:", self.experiment.camera_discovery_ip)
+                        tprint("Camera: Change discovery IP:", self.experiment.camera_discovery_ip)
 
                         self.camera_discovery.change_ip_address(self.experiment.camera_discovery_ip)
                     else:
-                        print("Camera: cameraDiscovery is None. Cannot change ip")
+                        tprint("Camera: cameraDiscovery is None. Cannot change ip")
 
-                self.experiment.to_json()
+                self.update_experiment_file(False)
 
     def select_mqtt_broker(self):
         text, ok = QInputDialog.getText(self, 'MQTT Broker', 'Enter IP address:', QLineEdit.Normal, self.experiment.mqtt_broker)
@@ -483,9 +621,11 @@ class MainWindow(QMainWindow):
             self.experiment.mqtt_broker = str(text)
 
             if self.experiment.mqtt_broker != "":
-                self.mqtt = Mqtt(self.experiment.mqtt_broker, 1883)
+                self.start_mqtt()
+            else:
+                self.on_mqtt_status_changed("No broker defined", True)
 
-            self.experiment.to_json()
+            self.update_experiment_file(False)
 
     def refresh_comboboxes(self):
         script_index = self.ui.script_selection_combobox.findText(self.experiment.selected_script)
@@ -512,8 +652,24 @@ class MainWindow(QMainWindow):
 
         self.refresh_window_title()
 
+    def save_experiment_first(self):
+        if QMessageBox.question(self, "Unsaved changes", "Do you want to save changes to the experiment first?") == QMessageBox.StandardButton.Yes:
+            return True
+        
+        return False
+
+    def save_analysis_first(self):
+        if QMessageBox.question(self, "Unsaved changes", "Do you want to save changes to the analysis first?") == QMessageBox.StandardButton.Yes:
+            return True
+
+        return False
+
     def new_experiment(self):
-        print("New experiment")
+        tprint("New experiment")
+
+        if self.experiment_dirty:
+            if self.save_experiment_first():
+                return
 
         if path.exists(self.experiment_file_name):
             os.remove(self.experiment_file_name)
@@ -532,10 +688,17 @@ class MainWindow(QMainWindow):
 
         self.display_instructions()
 
-        print("Selected first", self.experiment.selected_script)
+        self.experiment_dirty = False
+
+        tprint("Selected first", self.experiment.selected_script)
 
     def open_experiment(self):
-        print("Open experiment")
+        tprint("Open experiment")
+
+        if self.experiment_dirty:
+            if self.save_experiment_first():
+                return
+
         file_name, filter = QFileDialog.getOpenFileName(self, "Open experiment", self.experiment_folder, "Experiment Files (*.xp)")
 
         if file_name != "":
@@ -550,8 +713,10 @@ class MainWindow(QMainWindow):
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
 
+            self.experiment_dirty = False
+
     def save_experiment(self):
-        print("Save experiment", self.current_experiment_file)
+        tprint("Save experiment", self.current_experiment_file)
 
         if self.current_experiment_file == "":
             self.save_as_experiment()
@@ -561,8 +726,10 @@ class MainWindow(QMainWindow):
 
             shutil.copy2(self.experiment_file_name, self.current_experiment_file)
 
+        self.experiment_dirty = False
+
     def save_as_experiment(self):
-        print("Save As experiment")
+        tprint("Save As experiment")
         file_name, filter = QFileDialog.getSaveFileName(self, "Save experiment", self.experiment_folder, "Experiment Files (*.xp)")
 
         if file_name != "":
@@ -571,8 +738,17 @@ class MainWindow(QMainWindow):
             self.current_experiment_file = file_name
             self.refresh_window_title()
 
+            self.experiment_dirty = False
+
     def new_analysis(self):
-        print("New analysis")
+        tprint("New analysis")
+
+        if self.analysis_dirty:
+            if self.save_analysis_first():
+                return
+
+        self.current_analysis_file = ""
+        self.refresh_window_title()
 
         self.experiment.clear_analysis()
 
@@ -585,8 +761,15 @@ class MainWindow(QMainWindow):
         self.refresh_play_button_status()
         self.refresh_ready_to_play()
 
+        self.analysis_dirty = False
+
     def open_analysis(self):
-        print("Open analysis")
+        tprint("Open analysis")
+    
+        if self.analysis_dirty:
+            if self.save_analysis_first():
+                return
+
         file_name, filter = QFileDialog.getOpenFileName(self, "Open analysis", self.experiment_folder, "Analysis Files (*.af)")
 
         if file_name != "":
@@ -596,17 +779,38 @@ class MainWindow(QMainWindow):
 
                 self.experiment.from_dict(d)  # An analysis file is just the "analysis" section of the experiment file
 
+            self.current_analysis_file = file_name
+            self.refresh_window_title()
+
             # self.refreshAnalysis() # TODO?
             self.refresh_comboboxes()
 
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
+   
+            self.analysis_dirty = False
 
     def save_analysis(self):
-        print("Save analysis")
+        tprint("Save analysis")
+
+        if self.current_analysis_file == "":
+            self.save_as_analysis()
+        else:
+            d = self.experiment.analysis_to_dict()
+
+            j = json.dumps(d, indent=4)
+
+            with open(self.current_analysis_file, 'w') as f:
+                f.write(j)
+
+            self.current_analysis_file = self.current_analysis_file
+            self.refresh_window_title()
+
+        self.analysis_dirty = False
 
     def save_as_analysis(self):
-        print("Save As analysis")
+        tprint("Save As analysis")
+
         file_name, filter = QFileDialog.getSaveFileName(self, "Save analysis", self.experiment_folder, "Analysis Files (*.af)")
 
         if file_name != "":
@@ -617,17 +821,16 @@ class MainWindow(QMainWindow):
             with open(file_name, 'w') as f:
                 f.write(j)
 
-    def start_camera_discovery_thread(self, ip):
-        thread = Thread(target=camera_discovery_function, args=(self, ip,), daemon=True, name='CameraDiscovery')
-        thread.start()
+            self.current_analysis_file = file_name
+            self.refresh_window_title()
 
-        return thread
+            self.analysis_dirty = False
 
     def default_script_options(self):
         if self.experiment.selected_script != "":
             config_file_name = self.script_paths[self.experiment.selected_script].replace(".py", ".config")
 
-            # print("Config:", configFileName)
+            # tprint("Config:", configFileName)
 
             script_options = {}
 
@@ -641,7 +844,7 @@ class MainWindow(QMainWindow):
                     elif option["type"] == "dropdown":
                         script_options[option["name"]] = ''
 
-            print("Set default script options:", os.path.basename(config_file_name), script_options)
+            tprint("Set default script options:", os.path.basename(config_file_name), script_options)
 
             return script_options
 
@@ -667,14 +870,14 @@ class MainWindow(QMainWindow):
         cameras = []
         for cid, camera_json in self.cameras.items():
             cameras.append(camera_json['name'])
-        print("Camera: cameraSelectionChanged: New index:", index, "Cameras:", cameras)
+        tprint("Camera: cameraSelectionChanged: New index:", index, "Cameras:", cameras)
 
         item = 0
         for cid, camera_json in self.cameras.items():
             if item == index:
                 self.experiment.camera_cid = cid
 
-                print("Camera: New selected camera:", cid)
+                tprint("Camera: New selected camera:", cid)
 
                 if self.camera:
                     del self.camera
@@ -686,14 +889,14 @@ class MainWindow(QMainWindow):
 
                 self.ui.camera_status.setText("")
 
-                self.experiment.to_json()
+                self.update_experiment_file(False)
 
                 break
 
             item = item + 1
 
     def configure_camera(self, index):
-        print("ConfigureCamera:", index)
+        tprint("ConfigureCamera:", index)
 
         self.camera_configuration_view = QWidget()
         vbox = QVBoxLayout(self.camera_configuration_view)
@@ -711,7 +914,7 @@ class MainWindow(QMainWindow):
 
             item = item + 1
 
-        print("Camera:", camera_ip, camera_name)
+        tprint("Camera:", camera_ip, camera_name)
 
         if camera_ip is not None:
             webEngineView = QWebEngineView()
@@ -732,18 +935,31 @@ class MainWindow(QMainWindow):
             self.camera_configuration_view.setWindowTitle('Configure camera: ' + camera_name + " (" + camera_ip + ")")
             self.camera_configuration_view.show()
 
+    def on_mqtt_status_changed(self, message, error):
+        if error :
+            color = "#800"
+        else:
+            color = "#080"
+        self.ui.mqtt_status.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.ui.mqtt_status.setStyleSheet('color: #fff; background-color: ' + color)
+    
+        if message != "":
+            self.ui.mqtt_status.setText("MQTT: " + message)
+        else:
+            self.ui.mqtt_status.setText("")
+
     def on_scrollbar_range_changed(self):
         self.ui.scrollArea.verticalScrollBar().setValue(self.ui.scrollArea.verticalScrollBar().maximum())
 
     def on_file_created(self, file_name):
         if Config.verbose_mode:
-            print("onFileCreated:", file_name)
+            tprint("onFileCreated:", file_name)
 
         self.images_added = True
 
     def on_file_deleted(self, file_name):
         if Config.verbose_mode:
-            print("onFileDeleted:", file_name)
+            tprint("onFileDeleted:", file_name)
 
     def refresh_image_source_text(self):
         if self.experiment.ImageSource is self.experiment.ImageSource.Image:
@@ -766,7 +982,7 @@ class MainWindow(QMainWindow):
         elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
             self.watch_folder(self.experiment.camera_file_path)
 
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
         self.refresh_image_source_text()
 
@@ -774,7 +990,7 @@ class MainWindow(QMainWindow):
         location = os.path.normpath(location)
 
         self.experiment.image_file_path = location
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
         self.refresh_image_source_text()
 
@@ -782,7 +998,7 @@ class MainWindow(QMainWindow):
         location = os.path.normpath(location)
 
         self.experiment.folder_file_path = location
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
         if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
             self.watch_folder(location)
@@ -793,7 +1009,7 @@ class MainWindow(QMainWindow):
         location = os.path.normpath(location)
 
         self.experiment.camera_file_path = location
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
         if self.experiment.ImageSource is self.experiment.ImageSource.Camera:
             self.watch_folder(location)
@@ -804,11 +1020,11 @@ class MainWindow(QMainWindow):
         location = os.path.normpath(location)
 
         self.experiment.output_file_path = location
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
     def script_selection_changed(self, index):
         self.experiment.selected_script = self.ui.script_selection_combobox.currentText()
-        print("Selected script changed:", self.experiment.selected_script)
+        tprint("Selected script changed:", self.experiment.selected_script)
 
         if self.experiment.selected_script != "":
             if self.experiment.selected_script in self.script_paths:
@@ -816,22 +1032,22 @@ class MainWindow(QMainWindow):
 
                 with open(config_file_name) as config_file:
                     data = json.load(config_file)
-                    print("Selection changed:", os.path.basename(config_file_name), data)
+                    tprint("Selection changed:", os.path.basename(config_file_name), data)
 
                     # Refresh script options
                     self.experiment.script_options = {}  # self.defaultScriptOptions()
 
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
         self.refresh_ready_to_play()
 
     def mask_selection_changed(self, index):
         self.experiment.selected_mask = self.ui.mask_selection_combobox.currentText()
-        print("Selected mask changed:", self.experiment.selected_mask)
+        tprint("Selected mask changed:", self.experiment.selected_mask)
 
         self.experiment.mask_defined = False  # Force mask settings to be updated
 
-        self.experiment.to_json()
+        self.update_experiment_file(False)
 
         self.refresh_ready_to_play()
 
@@ -850,7 +1066,7 @@ class MainWindow(QMainWindow):
 
             if os.path.exists(folder):
                 # Set up new observer for the new path
-                print("Image folder to watch:", folder)
+                tprint("Image folder to watch:", folder)
 
                 self.file_system_observer = Observer()
 
@@ -862,132 +1078,27 @@ class MainWindow(QMainWindow):
 
         self.images_added = False
 
+    def on_analysis_done(self):
+        tprint("Analysis: Done")
+
+        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+            self.add_status_text.emit("Image processed")
+
+            self.stop_analysis(False)
+        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+            self.add_status_text.emit("All images processed")
+
+            self.stop_analysis(False)
+        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+            self.add_status_text.emit("Waiting for new images...")
+
+            self.ui.image_preview_progressbar.setValue(self.ui.image_preview_progressbar.maximum())
+
     def tick(self):
-        # print("Tick")
+        # tprint("Tick")
 
         if self.camera is not None:
             self.camera.tick()
-
-        # if self.cameraDiscovery != None:
-        #    self.cameraDiscovery.tick()
-
-        # Monitor camera discovery feedback queue
-        while not self.camera_discovery_feedback_queue.empty():
-            data = self.camera_discovery_feedback_queue.get()
-
-            if Config.verbose_mode:
-                print("Discovery feedback", data)
-
-            command = data[0]
-            if command == "addCamera":
-                cid = data[1]
-                camera = data[2]
-
-                if not cid in self.cameras:
-                    self.cameras[cid] = camera
-
-                    if len(self.cameras) == 1:  # Auto-select if it is the first one
-                        self.experiment.camera_cid = cid
-                        self.experiment.to_json()
-
-                    self.refresh_camera_selection()
-            elif command == "removeCamera":
-                if data[1] in self.cameras:
-                    del self.cameras[data[1]]
-                    self.refresh_camera_selection()
-
-        # Monitor feedback queue
-        while not self.analysis_script_queue.empty():
-            data = self.analysis_script_queue.get()
-            command = data[1]
-            if len(data) > 2:
-                value = data[2]
-            else:
-                value = None
-
-            handled = False
-
-            # From scriptRunner process: # For each file
-            if command == "timestamp":  # <timestamp>
-                self.ui.timestamp_label.setText("Timestamp: " + value)
-                self.current_image_timestamp = value
-                handled = True
-
-            if command == "progress":  # <percent>
-                self.ui.image_preview_progressbar.setValue(int(value))
-                handled = True
-
-            if command == "cameraName":  # <cameraName>
-                self.current_camera_name = value
-                handled = True
-
-            if command == "fileName":  # <fileName>
-                # Update current session
-                processed_images = []
-                if "processedImages" in self.current_session:
-                    processed_images = self.current_session["processedImages"]
-
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                processed_images.append({"image": os.path.normpath(value), "processedAt": timestamp})
-
-                self.current_session["processedImages"] = processed_images
-
-                self.update_current_session_file()
-                self.current_file_name = value
-                handled = True
-
-            # From scriptRunner process: when all files have been processed
-            if command == "done":
-                print("Analysis: Done")
-                if self.experiment.ImageSource is self.experiment.ImageSource.Image:
-                    self.add_status_text("Image processed")
-
-                    self.stop_analysis(False)
-                elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
-                    self.add_status_text("All images processed")
-
-                    self.stop_analysis(False)
-                else:
-                    self.add_status_text("Waiting for new images...")
-
-                    self.ui.image_preview_progressbar.setValue(self.ui.image_preview_progressbar.maximum())
-
-                handled = True
-
-            # From analysis script
-            if command == "preview":  # Psuedo RGB: <fileName>
-                # width = self.ui.image_preview.width() - 4  # The - 4 is a workaround for the images slowly growing with each iteration, probably layout oriented
-                # height = self.ui.image_preview.height() - 4
-
-                # self.ui.image_preview.setPixmap(QPixmap(value).scaled(width, height, QtCore.Qt.KeepAspectRatio))
-                self.ui.image_preview.setPixmap(QPixmap(value))
-
-                self.refresh_image_preview_size()
-
-                self.ui.image_preview.setText("")
-                handled = True
-
-            if command == "results":  # When processing is done: <dict of results>
-                self.add_status_text("Results:")
-                for text in value:
-                    if isinstance(value[text], str):
-                        self.add_status_text(value[text])
-                        print(value[text])
-                    elif isinstance(value[text], dict):
-                        self.process_results(self.current_camera_name, value[text], self.current_image_timestamp)
-                handled = True
-
-            if command == "error":
-                self.add_status_text("Script error: " + value)
-                handled = True
-
-            # Unknown response
-            if not handled:
-                self.add_status_text(data[1])
-
-            if handled:
-                QApplication.instance().processEvents()
 
         # Poll camera status
         if self.camera is not None and self.experiment.ImageSource is self.experiment.ImageSource.Camera:
@@ -995,7 +1106,7 @@ class MainWindow(QMainWindow):
                 status = self.camera.get_status()
 
                 if status is not None:
-                    # print("Camera status", status["sdCard"]["freeSpace"])
+                    # tprint("Camera status", status["sdCard"]["freeSpace"])
 
                     free_space = status["sdCard"]["freeSpace"]
 
@@ -1007,6 +1118,79 @@ class MainWindow(QMainWindow):
                     self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
             else:
                 self.camera_status_divider = self.camera_status_divider - 1
+
+    def handle_script_feedback(self, command, value):
+        handled = False
+
+        # From scriptRunner process: # For each file
+        if command == "timestamp":  # <timestamp>
+            self.ui.timestamp_label.setText("Timestamp: " + value)
+            self.current_image_timestamp = value
+            handled = True
+
+        if command == "progress":  # <percent>
+            self.ui.image_preview_progressbar.setValue(int(value))
+            handled = True
+
+        if command == "cameraName":  # <cameraName>
+            self.current_camera_name = value
+            handled = True
+
+        if command == "fileName":  # <fileName>
+            # Update current session
+            processed_images = []
+            if "processedImages" in self.current_session:
+                processed_images = self.current_session["processedImages"]
+
+            now = datetime.datetime.now()
+            timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+            processed_images.append({"image": os.path.normpath(value), "processedAt": timestamp})
+
+            self.current_session["processedImages"] = processed_images
+
+            self.update_current_session_file()
+            self.current_file_name = value
+            handled = True
+
+        # From scriptRunner process: when all files have been processed
+        if command == "done":
+            self.analysis_done.emit()
+            
+            handled = True
+
+        # From analysis script
+        if command == "preview":  # Psuedo RGB: <fileName>
+            # width = self.ui.image_preview.width() - 4  # The - 4 is a workaround for the images slowly growing with each iteration, probably layout oriented
+            # height = self.ui.image_preview.height() - 4
+
+            # self.ui.image_preview.setPixmap(QPixmap(value).scaled(width, height, QtCore.Qt.KeepAspectRatio))
+            self.ui.image_preview.setPixmap(QPixmap(value))
+
+            self.refresh_image_preview_size()
+
+            self.ui.image_preview.setText("")
+            handled = True
+
+        if command == "results":  # When processing is done: <dict of results>
+            self.add_status_text.emit("Results:")
+            for text in value:
+                if isinstance(value[text], str):
+                    self.add_status_text.emit(value[text])
+                    tprint(value[text])
+                elif isinstance(value[text], dict):
+                    self.process_results(self.current_camera_name, value[text], self.current_image_timestamp)
+            handled = True
+
+        if command == "error":
+            self.add_status_text.emit("Script error: " + value)
+            handled = True
+
+        # Unknown response
+        if not handled:
+            self.add_status_text.emit(command)
+
+        # if handled:
+        #    QApplication.instance().processEvents()
 
     def refresh_image_preview_size(self):
         # Use contentsMargins trick to preserve pixmap aspect ratio on resize
@@ -1027,16 +1211,16 @@ class MainWindow(QMainWindow):
 
     def process_results(self, camera_name, results, timestamp):
         if Config.verbose_mode:
-            print("Script results:", camera_name, results)
+            tprint("Script results:", camera_name, results)
 
         roi_list = results["rois"]
 
         if not Config.verbose_mode:
-            print("Analysis: Processing Rois:", len(roi_list))
+            tprint("Analysis: Processing Rois:", len(roi_list))
 
         for index, roi in enumerate(roi_list):
             if Config.verbose_mode:
-                print("Analysis: Processing Roi:", roi)
+                tprint("Analysis: Processing Roi:", roi)
 
             dt = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
             epoch = dt.timestamp()
@@ -1073,7 +1257,7 @@ class MainWindow(QMainWindow):
 
             # Chart
             self.chart.add_roi(timestamp, roi["plot_value"], "Roi " + str(roi['roi']))
-            # print(timestamp, roi["area"], "Roi " + str(roi['roi'] + 1))
+            # tprint(timestamp, roi["area"], "Roi " + str(roi['roi'] + 1))
 
         self.chart_preview_label.setPixmap(self.chart.pixmap())
 
@@ -1102,23 +1286,23 @@ class MainWindow(QMainWindow):
 
                 if "cameras" in data:
                     self.cameras = data["cameras"]
-                    print("Loaded cameras:", self.cameras)
+                    tprint("Loaded cameras:", self.cameras)
 
                 if self.experiment.camera_cid != "":
-                    print("Camera cid", self.experiment.camera_cid)
+                    tprint("Camera cid", self.experiment.camera_cid)
                     if self.experiment.camera_cid in self.cameras:
-                        print("In cameras:", self.cameras[self.experiment.camera_cid])
+                        tprint("In cameras:", self.cameras[self.experiment.camera_cid])
 
                 processed_images = data["processedImages"]
                 if len(processed_images) > 0:
-                    print("Last image:", processed_images[-1]["processedAt"])
+                    tprint("Last image:", processed_images[-1]["processedAt"])
                     # TODO Use this as the starting point for camera polling
 
-                # print("Resume:", self.currentSession) # self.experiment.selectedScript, self.experiment.toDict(), self.scriptOptions, processedImages)
+                # tprint("Resume:", self.currentSession) # self.experiment.selectedScript, self.experiment.toDict(), self.scriptOptions, processedImages)
 
                 self.start_analysis(True, False, False)
                 self.ui.play_status_label.setText("")
-                self.add_status_text("Resuming previous session")
+                self.add_status_text.emit("Resuming previous session")
 
     def start_analysis(self, resume, all_images, force):
         if self.analysis_running and not force:  # Check if analysis is already running
@@ -1141,14 +1325,14 @@ class MainWindow(QMainWindow):
             folder_to_watch = self.experiment.camera_file_path
 
         if folder_to_watch == "" or folder_to_watch == ".":
-            self.add_status_text("Select an image target folder")
+            self.add_status_text.emit("Select an image target folder")
         elif self.experiment.selected_script == "":
-            self.add_status_text("Select a script")
+            self.add_status_text.emit("Select a script")
         else:
             self.ui.play_button.setChecked(True)
             self.ui.play_button.setStyleSheet('background-color: #FC4')
 
-            print("Analysis: Selected script: " + self.experiment.selected_script)
+            tprint("Analysis: Selected script: " + self.experiment.selected_script)
 
             # Set-up list of image header files
             image_header_list = []
@@ -1159,7 +1343,7 @@ class MainWindow(QMainWindow):
                 image_header_list = sorted(glob.glob(folder_to_watch + '/*.hdr'))
                 image_header_list = list(map(os.path.normpath, image_header_list))  # Normalize delimiters
 
-            print("ImageHeaderList", image_header_list)
+            tprint("ImageHeaderList", image_header_list)
 
             if all_images:  # If all images should be processed
                 self.current_session["processedImages"] = []  # Force all images to be processed
@@ -1167,15 +1351,15 @@ class MainWindow(QMainWindow):
             # Remove images we already processed
 
             if "processedImages" in self.current_session.keys():
-                print("Cleaning up duplicates")
-                # print("Processed", self.currentSession["processedImages"])
-                # print("List", imageHeaderList)
+                tprint("Cleaning up duplicates")
+                # tprint("Processed", self.currentSession["processedImages"])
+                # tprint("List", imageHeaderList)
 
                 for t in self.current_session["processedImages"]:
                     norm = os.path.normpath(t["image"])
                     if norm in image_header_list:
                         image_header_list.remove(norm)
-                        print("Cleaned", norm)
+                        tprint("Cleaned", norm)
 
             # TODO How does the remove-already-processed-images logic above work? Conflict?
             # Check if existing image timestamps are earlier than self.camera.startDateTime
@@ -1184,11 +1368,11 @@ class MainWindow(QMainWindow):
                     date, time, camera, wavelength = Helper.info_from_header_file(i)
                     if datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(seconds=1) < self.camera.start_date_time:
                         image_header_list.remove(i)
-                        print("Filtered by startDateTime", i, datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S'), self.camera.start_date_time)
+                        tprint("Filtered by startDateTime", i, datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S'), self.camera.start_date_time)
 
-            print("Analysis: Images to run:")
+            tprint("Analysis: Images to run:")
             for i in image_header_list:
-                print(i)
+                tprint(i)
 
             # Create basic set of settings, the imageFileName will be added in the iteration
             now = datetime.datetime.now()
@@ -1206,7 +1390,7 @@ class MainWindow(QMainWindow):
                 settings["outputFolder"] = os.path.join(self.experiment.output_file_path, 'Analysis_' + timestamp)
 
             if Config.verbose_mode:
-                print("Play settings:", settings)
+                tprint("Play settings:", settings)
 
             # Get the display texts for the Chart
             analytics_script_name = self.experiment.selected_script
@@ -1217,7 +1401,7 @@ class MainWindow(QMainWindow):
 
             if self.chart is None:
                 # Create the Chart
-                print("Chart:", title, y_label)
+                tprint("Chart:", title, y_label)
                 self.chart = Chart(title, y_label)
 
             if (path.exists(self.chart.web_page())):
@@ -1234,14 +1418,12 @@ class MainWindow(QMainWindow):
             else:
                 mask_file_name = ''
 
-            # Start analysis as a background process
-            self.analysis_process = Process(target=script_runner,
-                                           args=(self.experiment.selected_script.replace(".py", ""),
-                                                 self.analysis_script_queue,
-                                                 image_header_list,
-                                                 settings,
-                                                 mask_file_name,))
+            # Set up analysis as a background thread
+            self.stop_analysis_worker = False
 
+            self.analysis_worker = Worker(self.script_runner, AnalysisWorkerSignals(), self.experiment.selected_script.replace(".py", ""), image_header_list, settings, mask_file_name) # Any other args, kwargs are passed to the run function
+            self.analysis_worker.signals.status.connect(self.on_script_runner_status)
+           
             # Set-up Progress bar and Preview
             if len(image_header_list) > 0:
                 self.ui.image_preview_progressbar.setRange(0, len(image_header_list))
@@ -1255,8 +1437,8 @@ class MainWindow(QMainWindow):
 
             self.ui.status_text.setText("Starting background process...")
 
-            # Start the analysis process
-            self.analysis_process.start()
+            # Start the analysis thread
+            self.threadpool.start(self.analysis_worker)
 
             self.analysis_running = True
 
@@ -1266,10 +1448,10 @@ class MainWindow(QMainWindow):
 
             if resume:
                 settings["processedImages"] = self.current_session["processedImages"]  # Keep existing ones
-                print("Resume existing session: Kept images:", len(settings["processedImages"]))
+                tprint("Resume existing session: Kept images:", len(settings["processedImages"]))
             else:
                 settings["processedImages"] = []
-                print("Starting new session: Cleared images")
+                tprint("Starting new session: Cleared images")
 
             settings["cameras"] = self.cameras
 
@@ -1305,50 +1487,41 @@ class MainWindow(QMainWindow):
         csvfile.close()
 
     def stop_analysis(self, terminate_process):
-        if self.analysis_process is not None:
-            if terminate_process:
-                self.analysis_process.terminate()
-                print("Analysis: Stop: Process terminated")
-            else:
-                print("Analysis: Stop: Done")
+        tprint("Analysis: Stop: Done")
 
-            self.analysis_process = None
-            self.ui.image_preview_progressbar.hide()
-            self.ui.image_preview_progressbar.setValue(0)
-            self.ui.play_button.setChecked(False)
-            self.ui.play_button.setStyleSheet('background-color: #494949')
+        self.ui.image_preview_progressbar.hide()
+        self.ui.image_preview_progressbar.setValue(0)
+        self.ui.play_button.setChecked(False)
+        self.ui.play_button.setStyleSheet("")
 
-            self.add_status_text("Done")
-            self.ui.timestamp_label.setText("")
-            # self.ui.image_preview.setPixmap(QPixmap())
-            # self.ui.image_preview.setText("Done")
-            self.analysis_running = False
+        self.add_status_text.emit("Done")
+        self.ui.timestamp_label.setText("")
+        # self.ui.image_preview.setPixmap(QPixmap())
+        # self.ui.image_preview.setText("Done")
+        self.analysis_running = False
 
-            self.analysis_script_queue.close()
-            self.analysis_script_queue = Queue()
+        # Move current session to the output folder for documentation
+        now = datetime.datetime.now()
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        self.current_session["status"]["running"] = "false"
+        self.current_session["status"]["stoppedAt"] = timestamp
+        self.update_current_session_file()
 
-            # Move current session to the output folder for documentation
-            now = datetime.datetime.now()
-            timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-            self.current_session["status"]["running"] = "false"
-            self.current_session["status"]["stoppedAt"] = timestamp
-            self.update_current_session_file()
+        if os.path.exists(self.current_session_file_name) and os.path.exists(self.current_session["outputFolder"]):
+            shutil.move(self.current_session_file_name, os.path.join(self.current_session["outputFolder"], 'session.json'))
+        else:
+            tprint("Path missing:", self.current_session_file_name, self.current_session["outputFolder"])
 
-            if os.path.exists(self.current_session_file_name) and os.path.exists(self.current_session["outputFolder"]):
-                shutil.move(self.current_session_file_name, os.path.join(self.current_session["outputFolder"], 'session.json'))
-            else:
-                print("Path missing:", self.current_session_file_name, self.current_session["outputFolder"])
+        self.ui.results_button.setEnabled(True)
 
-            self.ui.results_button.setEnabled(True)
+        if os.path.exists(self.chart.web_page()):
+            self.chart_preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), self.chart.web_page())))
+            self.chart_preview_view.show()
 
-            if os.path.exists(self.chart.web_page()):
-                self.chart_preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), self.chart.web_page())))
-                self.chart_preview_view.show()
-
-                # Copy webPage() to "outputFolder"
-                shutil.copy(self.chart.web_page(), os.path.join(self.current_session["outputFolder"], "chart.html"))
-            self.chart_preview_label.hide()
-            self.chart_preview_label.setPixmap(QPixmap())
+            # Copy webPage() to "outputFolder"
+            shutil.copy(self.chart.web_page(), os.path.join(self.current_session["outputFolder"], "chart.html"))
+        self.chart_preview_label.hide()
+        self.chart_preview_label.setPixmap(QPixmap())
 
     def play(self):
         ready, reason = self.ready_to_run()
@@ -1371,6 +1544,11 @@ class MainWindow(QMainWindow):
                     self.start_analysis(False, False, False)
 
     def stop(self):
+        if self.camera and len(self.camera.files_to_fetch) > 0:
+            self.camera.files_to_fetch = []
+            self.refresh_stop_button_status()
+            tprint("Fetch queue cleared")
+
         self.stop_analysis(True)
 
     def ready_to_run(self):
@@ -1405,10 +1583,6 @@ class MainWindow(QMainWindow):
             ready = False
             reason = "No mask defined"
 
-        if len(self.experiment.roi_info.roi_items()) == 0:
-            ready = False
-            reason = "Region coordinates missing"
-
         self.ui.play_button.setEnabled(ready)
 
         return ready, reason
@@ -1425,15 +1599,27 @@ class MainWindow(QMainWindow):
             else:
                 self.ui.play_status_label.setText("Not Ready:<br>" + reason)
 
+    def refresh_stop_button_status(self):
+        active = (self.camera and len(self.camera.files_to_fetch) > 0)
+
+        self.ui.stop_button.setChecked(active)
+        if self.ui.stop_button.isChecked():
+            self.ui.stop_button.setStyleSheet('background-color: #FC4')
+        else:
+            self.ui.stop_button.setStyleSheet("")
+
     def open_about_dialog(self):
         about_dialog = AboutDialog()
 
         about_dialog.exec()
 
     def open_help_dialog(self):
-        help_dialog = HelpDialog()
+        # Since HelpDialog is a non-modal dialog (to be able to have it open while using the application), we need to keep the instance around
+        # by assigning it to a class variable
+        self.help_dialog = HelpDialog()
+        self.help_dialog.show()
 
-        help_dialog.exec()
+        # help_dialog.exec()
 
     def open_eula_dialog(self):
         eula_dialog = EulaDialog()
@@ -1452,23 +1638,37 @@ class MainWindow(QMainWindow):
 
             if camera_start_dialog.exec() == QDialog.Accepted:
                 if camera_start_dialog.ui.new_images_only.isChecked():
-                    print("Camera: Set startDateTime to now")
+                    tprint("Camera: Set startDateTime to now")
                     self.camera.start_date_time = datetime.datetime.now()  # Start collecting images now
                 elif camera_start_dialog.ui.include_existing.isChecked():
                     file_name = camera_start_dialog.files[camera_start_dialog.ui.start_combo_box.currentIndex()]
                     hdr_file = self.camera.get_file('scheduler', file_name)
 
                     with tempfile.TemporaryDirectory() as tmp:
-                        # print("Temp:", tmp)
+                        # tprint("Temp:", tmp)
 
                         f = open(os.path.join(tmp, file_name), "wb")  # save image to temp file
                         f.write(hdr_file)
                         f.close()
 
+                        # Get date time from hdr file content
                         date, time, camera, wavelength = Helper.info_from_header_file(os.path.join(tmp, file_name))
-                        print("Camera: Set startDateTime from selected hdr file:", date, time)
+                        hdr_date_time = datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S')
 
-                        self.camera.start_date_time = datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S')
+                        # Get date time from filename                        
+                        date_time_part = file_name[-19:][:15]  # Extract the date and time part
+                        filename_date_time = datetime.datetime.strptime(date_time_part, '%Y%m%d_%H%M%S')
+
+                        # There can be a mismatch between the date/time in the hdr file and the filename
+                        # Therefore, we use the lowest time to make sure we get all the files we are asking for with get_first_in_range
+                        if hdr_date_time < filename_date_time:
+                           self.camera.start_date_time = hdr_date_time
+                           tprint("Camera: Set startDateTime from selected hdr file content:", date, time)
+                        else:
+                           self.camera.start_date_time = filename_date_time
+                           tprint("Camera: Set startDateTime from selected hdr file name:", date, time)
+
+                    self.camera.delete_from_camera = camera_start_dialog.ui.delete_from_camera_checkbox.isChecked()
                 return True
         else:
             QMessageBox.warning(self, "No camera", "You must have a camera connected")
@@ -1512,31 +1712,17 @@ class MainWindow(QMainWindow):
 
         if image_mask_dialog.exec() == QDialog.Accepted:
             # Capture the mask parameters
-            settings = {}
 
-            # TODO: Can we unify the processing of options in all dialogs? This gets duplicated a lot
-
-            # Note: If you change ui elements here, you are likely to have to update runMaskScript
-            for name, checkbox in image_mask_dialog.option_checkboxes:
-                settings[name] = checkbox.isChecked()
-
-            for name, slider, min, step_size in image_mask_dialog.option_sliders:
-                settings[name] = slider.value()
-
-            for name, wavelength in image_mask_dialog.option_wavelengths:
-                settings[name] = wavelength.currentText()
-
-            for name, dropdown in image_mask_dialog.option_dropdowns:
-                settings[name] = dropdown.currentData()
+            settings = Helper.get_settings_for_ui_elements(image_mask_dialog)
 
             self.experiment.mask = settings
 
             self.experiment.mask_reference_image1 = image_mask_dialog.ui.reference_image1.image_file_name
             self.experiment.mask_reference_image2 = image_mask_dialog.ui.reference_image2.image_file_name
 
-            self.experiment.to_json()
+            self.update_experiment_file(True)
 
-            print("Exit", self.experiment.mask)
+            tprint("Exit", self.experiment.mask)
 
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
@@ -1554,17 +1740,13 @@ class MainWindow(QMainWindow):
             self.experiment.roi_info.height = image_roi_dialog.ui.height_spinbox.value()
             self.experiment.roi_info.shape = image_roi_dialog.shape
             self.experiment.roi_info.placement_mode = image_roi_dialog.placement_mode
+            self.experiment.roi_info.detection_mode = image_roi_dialog.detection_mode
             self.experiment.roi_info.manual_roi_items = image_roi_dialog.manual_roi_items
-
-            self.experiment.roi_info.original_image_size = image_roi_dialog.ui.reference_image1.original_image_size
-            self.experiment.roi_info.preview_image_size = image_roi_dialog.ui.reference_image1.pixmap().size()
-            # Note: If we ever let the referenceImage be cropped in the dialog layout, this might no longer work since it will capture the currently visible
-            # size in the dialog, not the actual image size.
 
             self.experiment.roi_reference_image1 = image_roi_dialog.ui.reference_image1.image_file_name
             self.experiment.roi_reference_image2 = image_roi_dialog.ui.reference_image2.image_file_name
 
-            self.experiment.to_json()
+            self.update_experiment_file(False)
 
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
@@ -1574,20 +1756,14 @@ class MainWindow(QMainWindow):
 
         if script_options_dialog.exec() == QDialog.Accepted:
             # Capture the script parameters
-            settings = {}
-
-            for name, checkbox in script_options_dialog.option_checkboxes:
-                settings[name] = checkbox.isChecked()
-
-            for name, slider in script_options_dialog.option_sliders:
-                settings[name] = slider.value()
-
-            for name, dropdown in script_options_dialog.option_dropdowns:
-                settings[name] = dropdown.currentData()
+            settings = Helper.get_settings_for_ui_elements(script_options_dialog)
 
             self.experiment.script_options = settings
 
-            self.experiment.to_json()
+            self.experiment.script_reference_image1 = script_options_dialog.ui.reference_image1.image_file_name
+            self.experiment.script_reference_image2 = script_options_dialog.ui.reference_image2.image_file_name
+
+            self.update_experiment_file(False)
 
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
@@ -1597,20 +1773,11 @@ class MainWindow(QMainWindow):
 
         if chart_options_dialog.exec() == QDialog.Accepted:
             # Capture the chart parameters
-            settings = {}
-
-            for name, checkbox in chart_options_dialog.option_checkboxes:
-                settings[name] = checkbox.isChecked()
-
-            for name, slider, min, step_size in chart_options_dialog.option_sliders:
-                settings[name] = slider.value()
-
-            for name, dropdown in chart_options_dialog.option_dropdowns:
-                settings[name] = dropdown.currentData()
+            settings = Helper.get_settings_for_ui_elements(chart_options_dialog)
 
             self.experiment.chart_options = settings
 
-            self.experiment.to_json()
+            self.update_experiment_file(False)
 
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
@@ -1624,7 +1791,7 @@ class MainWindow(QMainWindow):
         # os.startfile(self.currentSession["outputFolder"])
         QDesktopServices.openUrl(QUrl.fromLocalFile(self.current_session["outputFolder"]))
 
-    def add_status_text(self, text):
+    def on_add_status_text(self, text):
         self.ui.status_text.setText(self.ui.status_text.text() + "<br>" + text)
 
     def mask_info(self):
@@ -1642,7 +1809,11 @@ class MainWindow(QMainWindow):
 
         sys.path.append(mask_path)
 
-        # print("Mask ranges: Running script:", maskFile, "from", maskPath)
+        # tprint("Mask ranges: Running script:", maskFile, "from", maskPath)
 
         return importlib.import_module(mask_file.replace(".py", ""))
 
+    def current_analysis_script(self):
+        analytics_script_name = self.experiment.selected_script
+        sys.path.append(os.path.dirname(self.script_paths[analytics_script_name]))
+        return importlib.import_module(analytics_script_name.replace(".py", ""))
