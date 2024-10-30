@@ -26,6 +26,7 @@ Please refer to the User Guide for more details. You can download it through the
 **Customizable** - Add your own analysis scripts. \
 **Preview Data Visualization** - Quickly preview output.
 
+For all spectral indices available for analysis, see [this document](https://github.com/rayngrowingsystems/RVS_Analytics/blob/main/spectral_index.md).
 
 ## Setup
 ### Windows installer

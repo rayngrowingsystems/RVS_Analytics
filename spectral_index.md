@@ -1,14 +1,9 @@
-## Spectral Index
+## Available Spectral Indices
 
-The `plantcv.spectral_index` subpackage contains functions that calculate indices from multi-channel image data, 
-typically from a hyperspectral datacube, which is a [`Spectral_data` class](Spectral_data.md) instance created while 
-reading in with the [pcv.readimage](read_image.md) function with `mode='envi'` or `mode='arcgis'`. RGB images are valid input for certain 
-indices. There is also a parameter to allow some flexibility if the required wavelengths are not available for a specific index.
+The following spectral indices from [plantCV](https://plantcv.org/) are currently available in RAYN Vision Analytics. 
+Please contact us if you are missing an important index, you want us to add to the list. 
 
-!!! note
-    We are adding potential indices as needed by PlantCV community members, however the functions added to PlantCV are 
-    shaped in large part by the end users so please post feature requests (including a specific index), questions, 
-    and comments on the [GitHub issues page](https://github.com/danforthcenter/plantcv/issues).
+(original list from plantCV documentation is available [HERE](https://plantcv.readthedocs.io/en/stable/spectral_index/))
 
 ### ARI
 
@@ -22,42 +17,6 @@ ARI = (1 / R550) - (1 / R700)
 Index range: -∞, ∞
 
 **plantcv.spectral_index.ari**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### CI_REDEDGE
-
-Calculates the Chlorophyll Index Rededge using reflectance values ([Gitelson et al., 2003](#references)):
-
-```
-CI_REDEDGE = (R800 / R700) - 1
-```
-
-Index range: -1.0, ∞
-
-**plantcv.spectral_index.ci_rededge**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### CRI550
-
-Calculates the Carotenoid Reflectance Index 550 using reflectance values ([Gitelson et al., 2002a](#references)):
-
-```
-CRI550 = (1 / R510) - (1 / R550)
-```
-
-Index range: -∞, ∞
-
-**plantcv.spectral_index.cri550**(*hsi, distance=20*)
 
 **returns** calculated index array (instance of the `Spectral_data` class)
 
@@ -83,34 +42,6 @@ Index range: -∞, ∞
     - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
     - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
 
-### EGI
-
-Calculates the Excess Green Index using RGB values ([Woebbecke et al., 1995](#references)):
-
-```
-r = R / (R + G + B)
-g = G / (R + G + B)
-b = B / (R + G + B)
-EGI = 2g - r - b
-```
-If the input image is hyperspectral, we use ~R700 for RED, ~R530 for GREEN, and ~R460 for BLUE
-```
-r = R700 / (R700 + R530 + R460)
-g = R530 / (R700 + R530 + R460)
-b = R460 / (R700 + R530 + R460)
-EGI = 2g - r - b
-```
-
-Index range: -1, 2
-
-**plantcv.spectral_index.egi**(*rgb_img, distance=40*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - rgb_img     - Color image or hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`).
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index when using a hyperspectral images as input.
-  
 ### EVI
 
 Calculates the Enhanced Vegetation index using reflectance values ([Huete et al., 1997](#references)):
@@ -218,42 +149,6 @@ Index range: -∞, ∞
     - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
     - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
 
-### MTCI
-
-Calculates the MERIS Terrestrial Chlorophyll Index using reflectance values ([Dash and Curran 2004](#references)):
-
-```
-MTCI = (R753.75 - R708.75) / (R708.75 - R681.25)
-```
-
-Index range: -∞, ∞
-
-**plantcv.spectral_index.mtci**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### NDRE
-
-Calculates the Normalized Difference Red Edge index using reflectance values ([Barnes et al., 2000](#references)):
-
-```
-NDRE = (R790 - R720) / (R790 + R720)
-```
-
-Index range: -1.0, 1.0
-
-**plantcv.spectral_index.ndre**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
 ### NDVI
 
 Calculates the Normalized Difference Vegetation Index using reflectance values ([Rouse et al., 1974](#references)):
@@ -278,25 +173,7 @@ Index range: -1.0, 1.0
     - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
     - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
 
-
-### NPCI
-
-Calculates the Normalized Pigments Chlorophyll index using reflectance values ([Penuelas et al., 1994](#references)):
-
-```
-NPCI = (R680 - R430) / (R680 + R430)
-```
-
-Index range: -1.0, 1.0
-
-**plantcv.spectral_index.npci**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
+  
 ### PRI
 
 Calculates the Photochemical Reflectance Index using reflectance values ([Penuelas et al., 1995a](#references)):
@@ -471,24 +348,6 @@ Index range: 0.0, ∞
     - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
     - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
 
-### RVSI
-
-Calculates the Red-Edge Vegetation Stress Index using reflectance values ([Merton and Huntington 1999](#references)):
-
-```
-RVSI = ((R714 + R752) / 2) - R733
-```
-
-Index range: -1.0, 1.0
-
-**plantcv.spectral_index.rvsi**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
 ### SAVI
 
 Calculates the Soil Adjusted Vegetation Index using reflectance values ([Huete 1988](#references)):
@@ -560,211 +419,6 @@ Index range: 0.0, ∞
 - **Parameters:**
     - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
     - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### VARI
-
-Calculates the Visible Atmospherically Resistant Index using reflectance values ([Gitelson et al., 2002b](#references)):
-
-```
-VARI = (GREEN - RED) / (GREEN + RED - BLUE)
-```
-
-Here, we use ~R480 for BLUE, ~R550 for GREEN, and ~R670 for RED:
-
-```
-VARI = (R550 - R670) / (R550 + R670 - R480)
-```
-
-Index range: -∞, ∞
-
-**plantcv.spectral_index.vari**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### VI_GREEN
-
-Calculates the Vegetation Index using green bands using reflectance values ([Gitelson et al., 2002b](#references)):
-
-```
-VIgreen = (GREEN - RED) / (GREEN + RED)
-```
-
-Here, we use ~R550 for GREEN and ~R670 for RED:
-
-```
-VIgreen = (R550 - R670) / (R550 + R670)
-```
-
-Index range: -1.0, 1.0
-
-**plantcv.spectral_index.vi_green**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### WI
-
-Calculates the Water Index using reflectance values ([Penuelas et al., 1997](#references)):
-
-```
-WI = R900 / R970
-```
-
-Index range: 0.0, ∞
-
-**plantcv.spectral_index.wi**(*hsi, distance=20*)
-
-**returns** calculated index array (instance of the `Spectral_data` class)
-
-- **Parameters:**
-    - hsi         - Hyperspectral image object, an instance of the `Spectral_data` class in plantcv (read in using [pcv.readimage](read_image.md) with `mode='envi'`)
-    - distance    - Amount of flexibility (in nanometers) regarding the bands used to calculate an index.
-
-### Examples
-
-```python
-
-from plantcv import plantcv as pcv
-
-# Set global debug behavior to None (default), "print" (to file), 
-# or "plot" (Jupyter Notebooks or X11)
-pcv.params.debug = "plot"
-
-# Extract NDVI index from the datacube 
-ndvi_array = pcv.spectral_index.ndvi(hsi=spectral_data, distance=20)
-
-# Extract GDVI index from the datacube
-gdvi_array = pcv.spectral_index.gdvi(hsi=spectral_data, distance=20)
-
-# Extract SAVI index from the datacube
-savi_array = pcv.spectral_index.savi(hsi=spectral_data, distance=20)
-
-# Extract ARI index from the datacube
-ari_array = pcv.spectral_index.ari(hsi=spectral_data, distance=20)
-
-# Extract CI_REDEDGE index from the datacube 
-ci_rededge_array = pcv.spectral_index.ci_rededge(hsi=spectral_data, distance=20)
-
-# Extract CRI550 index from the datacube 
-cri550_array = pcv.hyperspectral.extract_index.cri550(hsi=spectral_data, distance=20)
-
-# Extract CRI700 index from the datacube 
-cri700_array = pcv.spectral_index.cri700(hsi=spectral_data, distance=20)
-
-# Extract EGI index from the datacube 
-egi_array = pcv.spectral_index.egi(rgb_img=spectral_data, distance=40)
-
-# Extract EVI index from the datacube 
-evi_array = pcv.spectral_index.evi(hsi=spectral_data, distance=20)
-
-# Extract GLI index from the datacube 
-gli_array = pcv.spectral_index.gli(img=spectral_data, distance=20)
-
-# Extract MARI index from the datacube 
-mari_array = pcv.spectral_index.mari(hsi=spectral_data, distance=20)
-
-# Extract MCARI index from the datacube 
-mcari_array = pcv.spectral_index.mcari(hsi=spectral_data, distance=20)
-
-# Extract MTCI index from the datacube 
-mtci_array = pcv.spectral_index.mtci(hsi=spectral_data, distance=20)
-
-# Extract NDRE index from the datacube 
-ndre_array = pcv.spectral_index.ndre(hsi=spectral_data, distance=20)
-
-# Extract NPCRI index from the datacube 
-npci_array = pcv.spectral_index.npci(hsi=spectral_data, distance=20)
-
-# Extract PSND_CHLA index from the datacube 
-psnd_chla_array = pcv.spectral_index.psnd_chla(hsi=spectral_data, distance=20)
-
-# Extract PSND_CHLB index from the datacube 
-psnd_chlb_array = pcv.spectral_index.psnd_chlb(hsi=spectral_data, distance=20)
-
-# Extract PSND_CAR index from the datacube 
-psnd_car_array = pcv.spectral_index.psnd_car(hsi=spectral_data, distance=20)
-
-# Extract PSRI index from the datacube 
-psri_array = pcv.spectral_index.psri(hsi=spectral_data, distance=20)
-
-# Extract PSSR_CHLA index from the datacube 
-pssr_chla_array = pcv.spectral_index.pssr_chla(hsi=spectral_data, distance=20)
-
-# Extract PSSR_CHLB index from the datacube 
-pssr_chlb_array = pcv.spectral_index.pssr_chlb(hsi=spectral_data, distance=20)
-
-# Extract PSSR_CAR index from the datacube 
-pssr_car_array = pcv.spectral_index.pssr_car(hsi=spectral_data, distance=20)
-
-# Extract RGRI index from the datacube 
-rgri_array = pcv.spectral_index.rgri(hsi=spectral_data, distance=20)
-
-# Extract RVSI index from the datacube 
-rvsi_array = pcv.spectral_index.rvsi(hsi=spectral_data, distance=20)
-
-# Extract SIPI index from the datacube 
-sipi_array = pcv.spectral_index.sipi(hsi=spectral_data, distance=20)
-
-# Extract SR index from the datacube 
-sr_array = pcv.spectral_index.sr(hsi=spectral_data, distance=20)
-
-# Extract VARI index from the datacube 
-vari_array = pcv.spectral_index.vari(hsi=spectral_data, distance=20)
-
-# Extract VI_GREEN index from the datacube 
-vi_green_array = pcv.spectral_index.vi_green(hsi=spectral_data, distance=20)
-
-# Extract WI index from the datacube 
-wi_array = pcv.spectral_index.wi(hsi=spectral_data, distance=20)
-
-# Extract EGI index from RGB image
-egi_array_rgb = pcv.spectral_index.egi(rgb_img=img)
-
-# Extract GLI index from RGB image
-gli_array_rgb = pcv.spectral_index.gli(img=img)
-
-```
-
-**NDVI array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/NDVI_index.jpg)
-
-**GDVI array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/gdvi.jpg)
-
-**SAVI array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/savi_index.jpg)
-
-**ARI array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/ari_index.jpg)
-
-**NDRE array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/ndre_index.jpg)
-
-**PSND_CHLA array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/psnd_chla_index.jpg)
-
-**PSND_CHLB array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/psnd_chlb_index.jpg)
-
-**WI array image**
-
-![Screenshot](img/tutorial_images/hyperspectral/wbi_index.jpg)
-
-**Source Code:** [Here](https://github.com/danforthcenter/plantcv/blob/main/plantcv/plantcv/spectral_index/spectral_index.py)
 
 ### References
 
