@@ -1,4 +1,4 @@
-# Copyright 2024 ETC Inc d/b/a RAYN Growing Systems
+# Copyright 2024 RAYN Growing Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -109,6 +109,9 @@ class ImageSourceDialog(QDialog):
 
             self.main_window.experiment.roi_reference_image1 = file_name
             self.main_window.experiment.roi_reference_image2 = ""
+
+            self.main_window.experiment.script_reference_image1 = file_name
+            self.main_window.experiment.script_reference_image2 = ""
 
     def set_folder_file_path(self):
         folder = QFileDialog.getExistingDirectory(self, "Select a folder", self.main_window.experiment.current_folder())

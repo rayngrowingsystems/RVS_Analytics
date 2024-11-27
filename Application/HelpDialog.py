@@ -1,4 +1,4 @@
-# Copyright 2024 ETC Inc d/b/a RAYN Growing Systems
+# Copyright 2024 RAYN Growing Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 import os
 from os import path
 
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QVBoxLayout
 from PySide6 import QtCore
+from PySide6.QtCore import QUrl, QDir
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWebEngineCore import QWebEnginePage
 
 import CameraApp_rc
 
@@ -35,13 +38,23 @@ class HelpDialog(QDialog):
 
         self.setModal(False)
 
-        self.ui.help_browser.setSearchPaths([ 'Help' ])
-        self.ui.help_browser.setSource(os.path.join('.', 'Help', 'Help.htm'))
+        layout = QVBoxLayout(self.ui.help_widget)
+        self.help_view = QWebEngineView()
+        layout.addWidget(self.help_view)
 
-        self.ui.home_button.clicked.connect(self.ui.help_browser.home)
-        self.ui.back_button.clicked.connect(self.ui.help_browser.backward)
+        self.url = QUrl.fromLocalFile(path.join(QDir.currentPath(), 'Help/Default.htm'));
+        self.help_view.load(self.url)
+
+        self.ui.home_button.clicked.connect(self.home)
+        self.ui.back_button.clicked.connect(self.backward)
 
         self.ui.done_button.clicked.connect(self.accept)
+
+    def home(self):
+        self.help_view.load(self.url)
+
+    def backward(self):
+        self.help_view.page().triggerAction(QWebEnginePage.Back)
 
     def load_ui(self):
         self.ui = Ui_HelpDialog()

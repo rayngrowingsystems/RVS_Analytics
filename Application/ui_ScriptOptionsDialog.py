@@ -20,14 +20,13 @@ from PySide6.QtWidgets import (QApplication, QDialog, QFrame, QGridLayout,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 from ClickableLabel import ClickableLabel
-import CameraApp_rc
 
 class Ui_ScriptOptionsDialog(object):
     def setupUi(self, ScriptOptionsDialog):
         if not ScriptOptionsDialog.objectName():
             ScriptOptionsDialog.setObjectName(u"ScriptOptionsDialog")
         ScriptOptionsDialog.setWindowModality(Qt.NonModal)
-        ScriptOptionsDialog.resize(619, 354)
+        ScriptOptionsDialog.resize(628, 602)
         ScriptOptionsDialog.setModal(True)
         self.gridLayout_3 = QGridLayout(ScriptOptionsDialog)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
@@ -102,6 +101,11 @@ class Ui_ScriptOptionsDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
+        self.preview_button = QPushButton(ScriptOptionsDialog)
+        self.preview_button.setObjectName(u"preview_button")
+
+        self.verticalLayout.addWidget(self.preview_button)
+
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.script_options_box = QGroupBox(ScriptOptionsDialog)
@@ -116,14 +120,6 @@ class Ui_ScriptOptionsDialog(object):
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.preview_button = QPushButton(ScriptOptionsDialog)
-        self.preview_button.setObjectName(u"preview_button")
-        icon = QIcon()
-        icon.addFile(u":/images/Refresh.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.preview_button.setIcon(icon)
-
-        self.verticalLayout_3.addWidget(self.preview_button)
-
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_3.addItem(self.verticalSpacer)
@@ -141,7 +137,7 @@ class Ui_ScriptOptionsDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.verticalLayout.setStretch(7, 1)
+        self.verticalLayout.setStretch(8, 1)
 
         self.gridLayout_3.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
@@ -169,8 +165,8 @@ class Ui_ScriptOptionsDialog(object):
         self.label_3.setText(QCoreApplication.translate("ScriptOptionsDialog", u"Preview", None))
         self.preview_image1.setText("")
         self.preview_image2.setText("")
+        self.preview_button.setText(QCoreApplication.translate("ScriptOptionsDialog", u"Create Preview", None))
         self.script_options_box.setTitle(QCoreApplication.translate("ScriptOptionsDialog", u"Select script options", None))
-        self.preview_button.setText(QCoreApplication.translate("ScriptOptionsDialog", u"Preview", None))
         self.done_button.setText(QCoreApplication.translate("ScriptOptionsDialog", u"Done", None))
     # retranslateUi
 

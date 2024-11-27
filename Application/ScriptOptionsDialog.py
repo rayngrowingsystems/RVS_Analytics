@@ -1,4 +1,4 @@
-# Copyright 2024 ETC Inc d/b/a RAYN Growing Systems
+# Copyright 2024 RAYN Growing Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ class ScriptOptionsDialog(QDialog):
         self.load_ui()
 
         # Connect signals of reference images to the slot for running preview script
-        self.ui.reference_image1.image_file_name_changed.connect(self.run_preview_script)
-        self.ui.reference_image2.image_file_name_changed.connect(self.run_preview_script)
+        # self.ui.reference_image1.image_file_name_changed.connect(self.run_preview_script)
+        # self.ui.reference_image2.image_file_name_changed.connect(self.run_preview_script)
 
         # Initialize variables to hold original preview images
         self.original_preview_image1 = None
@@ -89,88 +89,6 @@ class ScriptOptionsDialog(QDialog):
                                                     execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
                                                     slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
                                                     script_for_dropdown_values=self.main_window.current_analysis_script())
-
-                '''for option in data['script']['options']:
-                    if option["type"] == "checkBox":
-                        option_checkbox = QCheckBox(option["displayName"])
-                        option_checkbox.toggled.connect(self.refresh_values)
-                        if option["name"] in self.main_window.experiment.script_options:
-                            option_checkbox.setChecked(self.main_window.experiment.script_options[option["name"]])
-                        else:
-                            option_checkbox.setChecked(option["value"] == "true")
-                        option_checkbox.setToolTip(option["hint"])
-                        vbox.addWidget(option_checkbox)
-
-                        self.option_checkboxes.append((option["name"], option_checkbox,))
-                    elif option["type"] == "slider":
-                        option_label = QLabel()
-                        option_label.setToolTip(option["hint"])
-                        vbox.addWidget(option_label)
-
-                        display_name = option["displayName"]
-
-                        option_slider = QSlider(QtCore.Qt.Orientation.Horizontal)
-                        option_slider.setRange(int(option["minimum"]), int(option["maximum"]))
-                        option_slider.valueChanged.connect(lambda a, displayName=display_name, optionLabel=option_label, optionSlider=option_slider: optionLabel.setText(displayName + ": " + str(optionSlider.value())))
-                        option_slider.valueChanged.connect(self.refresh_values)
-                        option_slider.valueChanged.emit(0) # Force refresh of label
-                        if option["name"] in self.main_window.experiment.script_options:
-                            option_slider.setValue(self.main_window.experiment.script_options[option["name"]])
-                        else:
-                            option_slider.setValue(int(option["value"]))
-                        option_slider.setToolTip(option["hint"])
-                        vbox.addWidget(option_slider)
-
-                        self.option_sliders.append((option["name"], option_slider,))
-                    elif option["type"] == "dropdown":
-                        option_label = QLabel()
-                        option_label.setText(option["displayName"])
-                        option_label.setToolTip(option["hint"])
-                        vbox.addWidget(option_label)
-
-                        option_dropdown = QComboBox()
-                        # optionDropdown.setFixedWidth(150)
-                        option_dropdown.setToolTip(option["hint"])
-                        vbox.addWidget(option_dropdown)
-
-                        if "getValuesFor" in option:
-                            analytics_script_name = self.main_window.experiment.selected_script
-                            sys.path.append(os.path.dirname(self.main_window.script_paths[analytics_script_name]))
-                            analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
-
-                            display_names, names = analytics_script.dropdown_values(option["getValuesFor"], [])
-
-                            for index, display_name in enumerate(display_names):
-                                option_dropdown.addItem(display_name, names[index])
-                        else:
-                            for index, display_name in enumerate(option["displayNames"]):
-                                option_dropdown.addItem(display_name, option["names"][index])
-
-                        if option["name"] in self.main_window.experiment.script_options:
-                            value = self.main_window.experiment.script_options[option["name"]]
-                            index = option_dropdown.findData(value)
-
-                            if index != -1:
-                                option_dropdown.setCurrentIndex(index)
-                            else:
-                                option_dropdown.currentIndexChanged.emit(0)
-                        else:
-                            option_dropdown.currentIndexChanged.emit(option["value"])
-
-                        name = option["name"];
-                        display_name = option["displayName"]
-
-                        self.option_dropdowns.append((name, option_dropdown,))
-
-                        option_dropdown.currentIndexChanged.connect(self.refresh_values)
-
-                        # optionDropdown.currentIndexChanged.connect(
-                        # lambda a, name=name, optionDropdown=optionDropdown : self.dropdownChanged(name, optionDropdown))
-                    elif option["type"] == "divider":
-                        line = QFrame()
-                        line.setFrameShape(QFrame.HLine)
-                        line.setStyleSheet('color: rgb(100,100,100)')
-                        vbox.addWidget(line)'''
 
                 self.ui.script_options_box.setLayout(grid)
 
@@ -281,7 +199,12 @@ class ScriptOptionsDialog(QDialog):
             self.ui.reference_image2.set_image_file_name(self.main_window.experiment.script_reference_image2, self.main_window.experiment.image_options_to_dict())
             tprint("Script: Load right preview image:", self.main_window.experiment.script_reference_image2)
 
-        self.run_preview_script()
+        # self.run_preview_script()
+
+        if self.ui.reference_image1.image_file_name != "":
+            self.ui.preview_image1.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
+        if self.ui.reference_image2.image_file_name != "":
+            self.ui.preview_image2.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
 
         self.refresh_image_sizes()
 
@@ -344,23 +267,38 @@ class ScriptOptionsDialog(QDialog):
 
                     tprint("Script preview", settings)
 
-                    analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name)
-                    # TODO: We should clean this up and be able to specify an output file, like we can when processing the mask
-                    temp_file_name = os.path.join(temp_path, "ProcessedImages", os.path.splitext(os.path.basename(self.ui.reference_image1.image_file_name))[0]) + ".png"
-                    self.original_preview_image1 = QPixmap(temp_file_name)
-                    self.refresh_preview_image1()
+                    try:
+                        analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name)
+                        
+                        # TODO: We should clean this up and be able to specify an output file, like we can when processing the mask
+                        temp_file_name = os.path.join(temp_path, "ProcessedImages", os.path.splitext(os.path.basename(self.ui.reference_image1.image_file_name))[0]) + ".png"
+                        self.original_preview_image1 = QPixmap(temp_file_name)
+                        self.refresh_preview_image1()
 
-                    tprint("Reading preview from", temp_file_name)
+                        tprint("Reading preview from", temp_file_name)
+                    except BaseException as e:
+                        tprint("Preview 1 failed: Unknown exception", e)
+ 
+                        ready, reason = self.main_window.ready_to_run()
+                        if not ready and self.ui.reference_image1.image_file_name != "":
+                            self.ui.preview_image1.setText(reason)
 
                 # Process preview image 2 if available
                 if self.ui.reference_image2.image_file_name != "":
                     settings["inputImage"] = self.ui.reference_image2.image_file_name
 
-                    analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name)
-                    # TODO: We should clean this up and be able to specify an output file, like we can when processing the mask
-                    temp_file_name = os.path.join(temp_path, "ProcessedImages", os.path.splitext(os.path.basename(self.ui.reference_image2.image_file_name))[0]) + ".png"
-                    self.original_preview_image2 = QPixmap(temp_file_name)
-                    self.refresh_preview_image2()
+                    try:
+                        analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name)
+                        # TODO: We should clean this up and be able to specify an output file, like we can when processing the mask
+                        temp_file_name = os.path.join(temp_path, "ProcessedImages", os.path.splitext(os.path.basename(self.ui.reference_image2.image_file_name))[0]) + ".png"
+                        self.original_preview_image2 = QPixmap(temp_file_name)
+                        self.refresh_preview_image2()
+                    except BaseException as e:
+                        tprint("Preview 2 failed: Unknown exception", e)
+
+                        ready, reason = self.main_window.ready_to_run()
+                        if not ready and self.ui.reference_image2.image_file_name != "":
+                            self.ui.preview_image2.setText(reason)
 
             # Restore the cursor to its original state
             QGuiApplication.restoreOverrideCursor()

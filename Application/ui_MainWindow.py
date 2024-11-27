@@ -245,19 +245,87 @@ class Ui_MainWindow(object):
         self.gridLayout_3 = QGridLayout(self.dock_widget_contents)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_3.setContentsMargins(4, 4, 4, 4)
-        self.script_options_button = QPushButton(self.dock_widget_contents)
-        self.script_options_button.setObjectName(u"script_options_button")
+        self.image_mask_button = QPushButton(self.dock_widget_contents)
+        self.image_mask_button.setObjectName(u"image_mask_button")
 
-        self.gridLayout_3.addWidget(self.script_options_button, 6, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.image_mask_button, 5, 0, 1, 1)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_3.addItem(self.verticalSpacer, 10, 0, 1, 1)
+
+        self.mask_selection_combobox = QComboBox(self.dock_widget_contents)
+        self.mask_selection_combobox.setObjectName(u"mask_selection_combobox")
+
+        self.gridLayout_3.addWidget(self.mask_selection_combobox, 4, 0, 1, 1)
+
+        self.label_2 = QLabel(self.dock_widget_contents)
+        self.label_2.setObjectName(u"label_2")
+        font1 = QFont()
+        font1.setPointSize(10)
+        font1.setBold(True)
+        self.label_2.setFont(font1)
+
+        self.gridLayout_3.addWidget(self.label_2, 1, 0, 1, 1)
+
+        self.line_3 = QFrame(self.dock_widget_contents)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout_3.addWidget(self.line_3, 11, 0, 1, 1)
+
+        self.label_4 = QLabel(self.dock_widget_contents)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayout_3.addWidget(self.label_4, 3, 0, 1, 1)
+
+        self.chart_options_button = QPushButton(self.dock_widget_contents)
+        self.chart_options_button.setObjectName(u"chart_options_button")
+        self.chart_options_button.setEnabled(True)
+
+        self.gridLayout_3.addWidget(self.chart_options_button, 7, 0, 1, 1)
+
+        self.script_selection_combobox = QComboBox(self.dock_widget_contents)
+        self.script_selection_combobox.setObjectName(u"script_selection_combobox")
+
+        self.gridLayout_3.addWidget(self.script_selection_combobox, 2, 0, 1, 1)
+
+        self.label_3 = QLabel(self.dock_widget_contents)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setFont(font1)
+
+        self.gridLayout_3.addWidget(self.label_3, 12, 0, 1, 1)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.play_button = QToolButton(self.dock_widget_contents)
+        self.play_button.setObjectName(u"play_button")
+        self.play_button.setMinimumSize(QSize(32, 32))
+        self.play_button.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_2.addWidget(self.play_button)
+
+        self.stop_button = QToolButton(self.dock_widget_contents)
+        self.stop_button.setObjectName(u"stop_button")
+        self.stop_button.setMinimumSize(QSize(32, 32))
+        self.stop_button.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_2.addWidget(self.stop_button)
+
+
+        self.gridLayout_3.addLayout(self.horizontalLayout_2, 14, 0, 1, 1)
+
+        self.play_status_label = QLabel(self.dock_widget_contents)
+        self.play_status_label.setObjectName(u"play_status_label")
+
+        self.gridLayout_3.addWidget(self.play_status_label, 13, 0, 1, 1)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.label = QLabel(self.dock_widget_contents)
         self.label.setObjectName(u"label")
-        font1 = QFont()
-        font1.setPointSize(10)
-        font1.setBold(True)
         self.label.setFont(font1)
 
         self.verticalLayout_3.addWidget(self.label)
@@ -294,84 +362,16 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
 
-        self.chart_options_button = QPushButton(self.dock_widget_contents)
-        self.chart_options_button.setObjectName(u"chart_options_button")
-        self.chart_options_button.setEnabled(True)
-
-        self.gridLayout_3.addWidget(self.chart_options_button, 7, 0, 1, 1)
-
-        self.script_selection_combobox = QComboBox(self.dock_widget_contents)
-        self.script_selection_combobox.setObjectName(u"script_selection_combobox")
-
-        self.gridLayout_3.addWidget(self.script_selection_combobox, 2, 0, 1, 1)
-
-        self.line_3 = QFrame(self.dock_widget_contents)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout_3.addWidget(self.line_3, 10, 0, 1, 1)
-
         self.results_button = QPushButton(self.dock_widget_contents)
         self.results_button.setObjectName(u"results_button")
         self.results_button.setEnabled(False)
 
-        self.gridLayout_3.addWidget(self.results_button, 14, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.results_button, 15, 0, 1, 1)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.script_options_button = QPushButton(self.dock_widget_contents)
+        self.script_options_button.setObjectName(u"script_options_button")
 
-        self.gridLayout_3.addItem(self.verticalSpacer, 9, 0, 1, 1)
-
-        self.mask_selection_combobox = QComboBox(self.dock_widget_contents)
-        self.mask_selection_combobox.setObjectName(u"mask_selection_combobox")
-
-        self.gridLayout_3.addWidget(self.mask_selection_combobox, 4, 0, 1, 1)
-
-        self.play_status_label = QLabel(self.dock_widget_contents)
-        self.play_status_label.setObjectName(u"play_status_label")
-
-        self.gridLayout_3.addWidget(self.play_status_label, 12, 0, 1, 1)
-
-        self.image_mask_button = QPushButton(self.dock_widget_contents)
-        self.image_mask_button.setObjectName(u"image_mask_button")
-
-        self.gridLayout_3.addWidget(self.image_mask_button, 5, 0, 1, 1)
-
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.play_button = QToolButton(self.dock_widget_contents)
-        self.play_button.setObjectName(u"play_button")
-        self.play_button.setMinimumSize(QSize(32, 32))
-        self.play_button.setIconSize(QSize(32, 32))
-
-        self.horizontalLayout_2.addWidget(self.play_button)
-
-        self.stop_button = QToolButton(self.dock_widget_contents)
-        self.stop_button.setObjectName(u"stop_button")
-        self.stop_button.setMinimumSize(QSize(32, 32))
-        self.stop_button.setIconSize(QSize(32, 32))
-
-        self.horizontalLayout_2.addWidget(self.stop_button)
-
-
-        self.gridLayout_3.addLayout(self.horizontalLayout_2, 13, 0, 1, 1)
-
-        self.label_3 = QLabel(self.dock_widget_contents)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setFont(font1)
-
-        self.gridLayout_3.addWidget(self.label_3, 11, 0, 1, 1)
-
-        self.label_2 = QLabel(self.dock_widget_contents)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font1)
-
-        self.gridLayout_3.addWidget(self.label_2, 1, 0, 1, 1)
-
-        self.label_4 = QLabel(self.dock_widget_contents)
-        self.label_4.setObjectName(u"label_4")
-
-        self.gridLayout_3.addWidget(self.label_4, 3, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.script_options_button, 9, 0, 1, 1)
 
         self.dockWidget.setWidget(self.dock_widget_contents)
         MainWindow.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget)
@@ -452,19 +452,19 @@ class Ui_MainWindow(object):
         self.statusDockWidget.setWindowTitle(QCoreApplication.translate("MainWindow", u"Status", None))
         self.status_text.setText("")
         self.dockWidget.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sidebar", None))
-        self.script_options_button.setText(QCoreApplication.translate("MainWindow", u"Script Options", None))
+        self.image_mask_button.setText(QCoreApplication.translate("MainWindow", u"Masking", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Analysis", None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Mask Script", None))
+        self.chart_options_button.setText(QCoreApplication.translate("MainWindow", u"Chart Options", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Run", None))
+        self.play_button.setText("")
+        self.stop_button.setText("")
+        self.play_status_label.setText("")
         self.label.setText(QCoreApplication.translate("MainWindow", u"Setup", None))
         self.image_source_button.setText(QCoreApplication.translate("MainWindow", u"Image Source", None))
         self.image_option_button.setText(QCoreApplication.translate("MainWindow", u"Image Options", None))
         self.image_roi_button.setText(QCoreApplication.translate("MainWindow", u"Regions", None))
-        self.chart_options_button.setText(QCoreApplication.translate("MainWindow", u"Chart Options", None))
         self.results_button.setText(QCoreApplication.translate("MainWindow", u"Results", None))
-        self.play_status_label.setText("")
-        self.image_mask_button.setText(QCoreApplication.translate("MainWindow", u"Masking", None))
-        self.play_button.setText("")
-        self.stop_button.setText("")
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Run", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Analysis", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Mask Script", None))
+        self.script_options_button.setText(QCoreApplication.translate("MainWindow", u"Script Options", None))
     # retranslateUi
 

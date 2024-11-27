@@ -1,4 +1,4 @@
-# Copyright 2024 ETC Inc d/b/a RAYN Growing Systems
+# Copyright 2024 RAYN Growing Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,6 +68,9 @@ class SelectImageDialog(QDialog):
 
                 self.main_window.experiment.roi_reference_image1 = file_name
                 self.main_window.experiment.roi_reference_image2 = hdr_list[-1]
+
+                self.main_window.experiment.script_reference_image1 = file_name
+                self.main_window.experiment.script_reference_image2 = hdr_list[-1]
 
                 self.dialog.load_reference_images()  # Reload images in this dialog
             else:

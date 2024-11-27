@@ -16,8 +16,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QGridLayout, QHBoxLayout,
-    QPushButton, QSizePolicy, QSpacerItem, QTextBrowser,
-    QWidget)
+    QPushButton, QSizePolicy, QSpacerItem, QWidget)
 
 class Ui_HelpDialog(object):
     def setupUi(self, HelpDialog):
@@ -49,10 +48,15 @@ class Ui_HelpDialog(object):
 
         self.gridLayout.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
 
-        self.help_browser = QTextBrowser(HelpDialog)
-        self.help_browser.setObjectName(u"help_browser")
+        self.help_widget = QWidget(HelpDialog)
+        self.help_widget.setObjectName(u"help_widget")
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.help_widget.sizePolicy().hasHeightForWidth())
+        self.help_widget.setSizePolicy(sizePolicy)
 
-        self.gridLayout.addWidget(self.help_browser, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.help_widget, 1, 0, 1, 1)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")

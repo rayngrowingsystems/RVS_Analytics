@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>619</width>
-    <height>354</height>
+    <width>628</width>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,1">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,1">
      <item>
       <widget class="QLabel" name="script_label">
        <property name="font">
@@ -140,6 +140,13 @@ Click the Image button to pick</string>
       </layout>
      </item>
      <item>
+      <widget class="QPushButton" name="preview_button">
+       <property name="text">
+        <string>Create Preview</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0">
        <item>
         <widget class="QGroupBox" name="script_options_box">
@@ -156,17 +163,6 @@ Click the Image button to pick</string>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QPushButton" name="preview_button">
-           <property name="text">
-            <string>Preview</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/CameraApp.qrc">
-             <normaloff>:/images/Refresh.png</normaloff>:/images/Refresh.png</iconset>
-           </property>
-          </widget>
-         </item>
          <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
@@ -208,9 +204,7 @@ Click the Image button to pick</string>
    <header>ClickableLabel</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources/CameraApp.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>done_button</sender>

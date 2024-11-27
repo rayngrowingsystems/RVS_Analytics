@@ -1,4 +1,4 @@
-# Copyright 2024 ETC Inc d/b/a RAYN Growing Systems
+# Copyright 2024 RAYN Growing Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -937,14 +937,14 @@ class MainWindow(QMainWindow):
 
     def on_mqtt_status_changed(self, message, error):
         if error :
-            color = "#800"
+            color = "#500"
         else:
-            color = "#080"
+            color = "#060"
         self.ui.mqtt_status.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.ui.mqtt_status.setStyleSheet('color: #fff; background-color: ' + color)
     
         if message != "":
-            self.ui.mqtt_status.setText("MQTT: " + message)
+            self.ui.mqtt_status.setText(" MQTT: " + message + " ")
         else:
             self.ui.mqtt_status.setText("")
 
