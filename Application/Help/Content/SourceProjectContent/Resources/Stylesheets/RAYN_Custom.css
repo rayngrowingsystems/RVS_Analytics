@@ -1,0 +1,222 @@
+﻿/*<meta conditions="Default.RAYNOnly" />*/
+
+@import url('RAYN_Styles.css');
+
+/*ul li, ul li a, ul li i, ul li b, ul li MadCap|xref, ul li MadCap|conditionalText
+{
+	vertical-align: -4px;
+}*/
+
+ul li
+{
+	background-position: 0px -4px;
+}
+
+@media Print_LargeBook
+{
+	p.BoilerP
+	{
+		line-height: 7.5pt;
+		margin-top: 0;
+		margin-bottom: 1pt;
+	}
+
+	a.RaynURL:link
+	{
+		color: #ffa626;
+		letter-spacing: 2px;
+		margin-left: 0px;
+		margin-top: 2px;
+		font-weight: bold;
+	}
+
+	.TableStyle-Rows tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_8pt tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_8pt thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_leftmargin tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_leftmargin thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	p.ProductName
+	{
+		color: black;
+	}
+}
+
+@media Print_LargeGeneric
+{
+	p.BoilerP
+	{
+		line-height: 9.0pt;
+		margin-top: 0;
+		margin-bottom: 1.4pt;
+	}
+
+	a.RaynURL:link
+	{
+		color: #ffa626;
+		letter-spacing: 2px;
+		margin-left: 0px;
+		margin-top: 5px;
+		font-weight: bold;
+	}
+
+	.TableStyle-Rows tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_8pt tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_8pt thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_leftmargin tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_leftmargin thead tr th
+	{
+		padding-top: 10px;
+	}
+}
+
+@media Print_SmallGeneric
+{
+	/*Fixing letter-spacing tracking for Helvetica Neue*/
+
+	p,
+	body,
+	ul,
+	ol,
+	p.BoilerP
+	{
+		letter-spacing: 0.05em;
+	}
+
+	/**/
+
+	p.BoilerP
+	{
+		line-height: 6pt;
+		margin-top: 0;
+		margin-bottom: 1pt;
+	}
+
+	a.RaynURL:link
+	{
+		color: #ffa626;
+		letter-spacing: 2px;
+		margin-left: 0px;
+		margin-top: 1.5px;
+		font-weight: bold;
+	}
+	
+	ul li /*2022-04-25*/
+	{
+		background-image:none;
+		margin-left: 0.5em;
+		padding-left: -0.5em;
+	}
+	
+	ul ul li
+	{
+		background-image: none;
+		margin-left: 0.5em;
+		padding-left: -0.5em;
+	}
+	
+	ul>li::marker
+	{
+		content: '•';
+		font-size: 6pt;
+
+	}
+	
+	ul ul>li::marker
+	{
+		content: '-';
+		font-size: 9pt;
+	}
+
+
+	.TableStyle-Rows tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_8pt tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_8pt thead tr th
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_leftmargin tbody tr td
+	{
+		padding-top: 10px;
+	}
+
+	.TableStyle-Rows_leftmargin thead tr th
+	{
+		padding-top: 10px;
+	}
+}
+
+@media Print_ReleaseDoc
+{
+	a.RaynURL:link
+	{
+		color: #ffa626;
+		margin-left: 0px;
+		margin-top: 5px;
+	}
+		p.BoilerP
+	{
+		line-height: 8.5pt;
+		margin-top: 0;
+		margin-bottom: 1pt;
+	}
+}

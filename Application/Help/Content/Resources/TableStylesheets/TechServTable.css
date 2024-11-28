@@ -1,0 +1,406 @@
+/* MadCap Table Style: */
+
+/*<meta Version="9" />*/
+
+mcTableStyle
+{
+	name: TechServTable;
+	border-collapse: collapse;
+	border-left-style: none;
+	border-left-width: 1px;
+	border-right-style: none;
+	border-right-width: 1px;
+	border-top-style: none;
+	border-top-width: 1px;
+	border-bottom-style: none;
+	border-bottom-width: 1px;
+	max-id: 3;
+}
+
+mcTableColumnStyle
+{
+	span: 1;
+	separator-style: none;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Column1;
+	id: 0;
+}
+
+mcTableHeadStyle
+{
+	span: 1;
+	separator-style: none;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Header1;
+	id: 2;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: none;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Body1;
+	id: 1;
+}
+
+mcTableFootStyle
+{
+	span: 1;
+	separator-style: none;
+	separator-width: 1px;
+	separator-color: #000000;
+	name: Footer1;
+	id: 3;
+}
+
+
+/* Cell Styles: */
+ 
+.TableStyle-TechServTable
+{
+	border-collapse: collapse;
+	border-left-style: none;
+	border-left-width: 1px;
+	border-right-style: none;
+	border-right-width: 1px;
+	border-top-style: none;
+	border-top-width: 1px;
+	border-bottom-style: none;
+	border-bottom-width: 1px;
+	border-spacing: 0px 0px;
+}
+
+.TableStyle-TechServTable-Column-Column1
+{
+	
+}
+
+.TableStyle-TechServTable-Head-Header1
+{
+	
+}
+
+.TableStyle-TechServTable-HeadI-Column1-Header1
+{
+	
+}
+
+.TableStyle-TechServTable-HeadI-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadE-Column1-Header1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: none;
+}
+
+.TableStyle-TechServTable-HeadE-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadF-Column1-Header1
+{
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: none;
+}
+
+.TableStyle-TechServTable-HeadF-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadH-Column1-Header1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-HeadH-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadD-Column1-Header1
+{
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: none;
+}
+
+.TableStyle-TechServTable-HeadD-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadC-Column1-Header1
+{
+	
+}
+
+.TableStyle-TechServTable-HeadC-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadB-Column1-Header1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-HeadB-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadA-Column1-Header1
+{
+	
+}
+
+.TableStyle-TechServTable-HeadA-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-HeadG-Column1-Header1
+{
+	
+}
+
+.TableStyle-TechServTable-HeadG-Column1-Header1 p
+{
+	
+}
+
+.TableStyle-TechServTable-Foot-Footer1
+{
+	
+}
+
+.TableStyle-TechServTable-FootI-Column1-Footer1
+{
+	
+}
+
+.TableStyle-TechServTable-FootI-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootE-Column1-Footer1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: none;
+}
+
+.TableStyle-TechServTable-FootE-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootF-Column1-Footer1
+{
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: none;
+}
+
+.TableStyle-TechServTable-FootF-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootH-Column1-Footer1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-FootH-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootD-Column1-Footer1
+{
+	border-top-width: 1px;
+	border-top-color: #000000;
+	border-top-style: none;
+}
+
+.TableStyle-TechServTable-FootD-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootC-Column1-Footer1
+{
+	
+}
+
+.TableStyle-TechServTable-FootC-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootB-Column1-Footer1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-FootB-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootA-Column1-Footer1
+{
+	
+}
+
+.TableStyle-TechServTable-FootA-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-FootG-Column1-Footer1
+{
+	
+}
+
+.TableStyle-TechServTable-FootG-Column1-Footer1 p
+{
+	
+}
+
+.TableStyle-TechServTable-Body-Body1
+{
+	
+}
+
+.TableStyle-TechServTable-BodyI-Column1-Body1
+{
+	
+}
+
+.TableStyle-TechServTable-BodyI-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyE-Column1-Body1
+{
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: none;
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-BodyE-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyF-Column1-Body1
+{
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: none;
+}
+
+.TableStyle-TechServTable-BodyF-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyH-Column1-Body1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-BodyH-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyD-Column1-Body1
+{
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-bottom-style: none;
+}
+
+.TableStyle-TechServTable-BodyD-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyC-Column1-Body1
+{
+	
+}
+
+.TableStyle-TechServTable-BodyC-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyB-Column1-Body1
+{
+	border-right-width: 1px;
+	border-right-color: #000000;
+	border-right-style: none;
+}
+
+.TableStyle-TechServTable-BodyB-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyA-Column1-Body1
+{
+	
+}
+
+.TableStyle-TechServTable-BodyA-Column1-Body1 p
+{
+	
+}
+
+.TableStyle-TechServTable-BodyG-Column1-Body1
+{
+	
+}
+
+.TableStyle-TechServTable-BodyG-Column1-Body1 p
+{
+	
+}
+
+

@@ -1,0 +1,2285 @@
+/* MadCap Table Style: */
+
+/*<meta Version="9" />*/
+
+mcTableStyle
+{
+	name: BugList;
+	border-collapse: separate;
+	border-left-style: solid;
+	border-left-width: 0px;
+	border-left-color: #ff0000;
+	border-right-style: solid;
+	border-right-width: 0px;
+	border-right-color: #ff0000;
+	border-top-style: solid;
+	border-top-width: 0px;
+	border-top-color: #ff0000;
+	border-bottom-style: solid;
+	border-bottom-width: 0px;
+	border-bottom-color: #ff0000;
+	max-id: 14;
+	margin-bottom: 0pt;
+	cell-padding-top: 4pt;
+	cell-padding-left: 7pt;
+}
+
+mcTableColumnStyle
+{
+	span: 1;
+	id: 6;
+	name: BugTableSCR;
+	font-size: 8pt;
+	font-family: 'Frutiger LT 45 Light';
+	text-align: right;
+	size: 12%;
+	separator-style: solid;
+	separator-width: 0px;
+}
+
+mcTableColumnStyle
+{
+	span: 1;
+	id: 5;
+	name: BugTableContent;
+	font-size: 8pt;
+	font-family: 'Frutiger LT 45 Light';
+	text-align: left;
+	cell-padding-left: 0.153in;
+	separator-style: solid;
+	separator-width: 0px;
+	size: 88%;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 0px;
+	separator-color: #0000ff;
+	name: BugTableContent_default;
+	id: 13;
+	size: 10px;
+	font-size: 8pt;
+	font-family: 'Frutiger LT 45 Light';
+	vertical-align: top;
+	page-break-inside: avoid;
+	page-break-before: auto;
+	page-break-after: auto;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 0px;
+	separator-color: #0000ff;
+	name: BugTableContent_break_before;
+	id: 10;
+	size: 10px;
+	font-size: 8pt;
+	font-family: 'Frutiger LT 45 Light';
+	vertical-align: top;
+	page-break-inside: avoid;
+	page-break-before: always;
+	page-break-after: avoid;
+	type: Manual;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	separator-style: solid;
+	separator-width: 0px;
+	separator-color: #0000ff;
+	name: BugTableContent_break_after;
+	id: 11;
+	size: 10px;
+	font-size: 8pt;
+	font-family: 'Frutiger LT 45 Light';
+	vertical-align: top;
+	page-break-inside: avoid;
+	page-break-before: avoid;
+	page-break-after: always;
+	type: Manual;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	id: 14;
+	name: BugTableWorkaround_default;
+	type: Manual;
+	page-break-before: avoid;
+	page-break-inside: avoid;
+	cell-content-style-tag: none;
+	cell-content-style-class: AWorkaround;
+	page-break-after: auto;
+}
+
+mcTableBodyStyle
+{
+	span: 1;
+	id: 12;
+	name: BugTableWorkaround_break_after;
+	type: Manual;
+	page-break-before: avoid;
+	page-break-inside: avoid;
+	cell-content-style-tag: none;
+	cell-content-style-class: AWorkaround;
+	page-break-after: always;
+}
+
+
+/* Cell Styles: */
+ 
+.TableStyle-BugList
+{
+	border-collapse: separate;
+	border-left-style: solid;
+	border-left-color: #ff0000;
+	border-left-width: 0px;
+	border-right-style: solid;
+	border-right-color: #ff0000;
+	border-right-width: 0px;
+	border-top-style: solid;
+	border-top-color: #ff0000;
+	border-top-width: 0px;
+	border-bottom-style: solid;
+	border-bottom-color: #ff0000;
+	border-bottom-width: 0px;
+	margin-bottom: 0pt;
+	border-spacing: 0px 0px;
+}
+
+.TableStyle-BugList-Column-BugTableSCR
+{
+	width: 12%;
+}
+
+.TableStyle-BugList-Column-BugTableContent
+{
+	width: 88%;
+}
+
+.TableStyle-BugList-HeadI-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-HeadI-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadE-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-HeadE-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadF-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-HeadF-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadH-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-HeadH-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadD-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-HeadD-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadC-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-HeadC-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadB-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-HeadB-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadA-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-HeadA-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadG-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-HeadG-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadI-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-HeadI-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadE-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-HeadE-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadF-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-HeadF-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadH-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-HeadH-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadD-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-HeadD-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadC-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-HeadC-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadB-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-HeadB-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadA-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-HeadA-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-HeadG-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-HeadG-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootI-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-FootI-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootE-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-FootE-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootF-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-FootF-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootH-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-FootH-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootD-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-FootD-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootC-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-FootC-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootB-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-FootB-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootA-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-FootA-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootG-BugTableSCR-
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-FootG-BugTableSCR- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootI-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-FootI-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootE-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-FootE-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootF-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-FootF-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootH-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-FootH-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootD-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-FootD-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootC-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-FootC-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootB-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-FootB-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootA-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-FootA-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-FootG-BugTableContent-
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-FootG-BugTableContent- p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-Body-BugTableContent_default
+{
+	height: 10px;
+	page-break-before: auto;
+	page-break-after: auto;
+	page-break-inside: avoid;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableContent_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableContent_default
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableContent_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-Body-BugTableContent_break_before
+{
+	height: 10px;
+	page-break-before: always;
+	page-break-after: avoid;
+	page-break-inside: avoid;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableContent_break_before
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableContent_break_before
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableContent_break_before p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-Body-BugTableContent_break_after
+{
+	height: 10px;
+	page-break-before: avoid;
+	page-break-after: always;
+	page-break-inside: avoid;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableContent_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	border-bottom-width: 0px;
+	border-bottom-color: #0000ff;
+	border-bottom-style: solid;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableContent_break_after
+{
+	padding-top: 4pt;
+	vertical-align: top;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableContent_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-Body-BugTableWorkaround_default
+{
+	page-break-before: avoid;
+	page-break-after: auto;
+	page-break-inside: avoid;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableWorkaround_default
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableWorkaround_default
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableWorkaround_default p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-Body-BugTableWorkaround_break_after
+{
+	page-break-before: avoid;
+	page-break-after: always;
+	page-break-inside: avoid;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyI-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyF-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyD-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyC-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyA-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableWorkaround_break_after
+{
+	padding-left: 7pt;
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: right;
+}
+
+.TableStyle-BugList-BodyG-BugTableSCR-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyI-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyE-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyF-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyH-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyD-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyC-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+	border-right-width: 0px;
+	border-right-style: solid;
+}
+
+.TableStyle-BugList-BodyB-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyA-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableWorkaround_break_after
+{
+	padding-top: 4pt;
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+	text-align: left;
+	padding-left: 0.153in;
+}
+
+.TableStyle-BugList-BodyG-BugTableContent-BugTableWorkaround_break_after p
+{
+	font-family: 'Frutiger LT 45 Light';
+	font-size: 8pt;
+}
+
+
