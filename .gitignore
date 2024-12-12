@@ -70,8 +70,6 @@ Application/RaynVisionSystem.ini
 
 Application/.rvs
 
-Application/Help/
-
 Application/old scripts/
 
 *.xp
@@ -114,3 +112,5 @@ Application/resources/rc_CameraApp.py
 Application/generated/
 
 Application/runUiRcc.bat
+
+Application/Installer

@@ -77,6 +77,9 @@ from Mqtt import Mqtt
 
 from Chart import Chart
 
+from plantcv.parallel import process_results
+from plantcv.utils.converters import json2csv
+
 tprint("Loading MainWindow module", __name__)
 
 class AnalysisWorkerSignals(QObject):
@@ -1173,12 +1176,13 @@ class MainWindow(QMainWindow):
 
         if command == "results":  # When processing is done: <dict of results>
             self.add_status_text.emit("Results:")
-            for text in value:
+            '''for text in value:
                 if isinstance(value[text], str):
                     self.add_status_text.emit(value[text])
                     tprint(value[text])
-                elif isinstance(value[text], dict):
-                    self.process_results(self.current_camera_name, value[text], self.current_image_timestamp)
+                elif isinstance(value[text], dict):'''
+                
+            self.process_results(self.current_camera_name, value, self.current_image_timestamp)
             handled = True
 
         if command == "error":
@@ -1213,51 +1217,60 @@ class MainWindow(QMainWindow):
         if Config.verbose_mode:
             tprint("Script results:", camera_name, results)
 
-        roi_list = results["rois"]
+        tprint("Results", results)
 
-        if not Config.verbose_mode:
-            tprint("Analysis: Processing Rois:", len(roi_list))
+        json_file_name = results["rawDataJsonFileName"] 
+        with open(json_file_name, 'r') as f:
+            j = f.read()
+            d = json.loads(j)
 
-        for index, roi in enumerate(roi_list):
-            if Config.verbose_mode:
-                tprint("Analysis: Processing Roi:", roi)
+            observations = d["observations"];
+            plant_index = 1
+            plant_key = f"plant_{plant_index}"
 
-            dt = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-            epoch = dt.timestamp()
+            while plant_key in observations:
+                if Config.verbose_mode:
+                    tprint("Plant", plant_key)
 
-            # roi['roi'] = roi['roi'] + 1  # Start at 1
-            roi["timestamp"] = timestamp
-            roi["timestampUnix"] = epoch
-            roi["experiment"] = "TBD"
-            roi["camera"] = camera_name
+                plant = observations[plant_key]
 
-            payload = {}
-            payload["results"] = roi
+                width = plant["width"]["value"]
+                height = plant["height"]["value"]
+                area = plant["area"]["value"]
+                perimeter = plant["perimeter"]["value"]
 
-            # MQTT
-            if self.mqtt and self.experiment.ImageSource is self.experiment.ImageSource.Camera:  # Only send in camera mode
-                self.mqtt.publish_roi(camera_name, index + 1, payload)
+                if Config.verbose_mode:
+                    tprint(plant_index, width, height, area, perimeter)
 
-            # CSV
-            d = {}
-            d['camera'] = camera_name
-            d['experiment_id'] = 'TBD'
-            d['image_timestamp'] = timestamp
-            d['image'] = os.path.basename(self.current_file_name)
-            d['ROI'] = roi['roi']
-            d['perimeter'] = roi['perimeter']
-            d['width'] = roi['width']
-            d['height'] = roi['height']
-            d['area'] = roi['area']
-            d['index'] = roi['index']
-            d['mean'] = roi['mean']
-            d['median'] = roi['median']
-            d['std'] = roi['std']
-            self.append_csv(d)
+                roi = {}
 
-            # Chart
-            self.chart.add_roi(timestamp, roi["plot_value"], "Roi " + str(roi['roi']))
-            # tprint(timestamp, roi["area"], "Roi " + str(roi['roi'] + 1))
+                dt = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+                epoch = dt.timestamp()
+
+                roi["timestamp"] = timestamp
+                roi["timestampUnix"] = epoch
+                roi["experiment"] = "TBD"
+                roi["camera"] = camera_name
+ 
+                roi["width"] = width
+                roi["height"] = height
+                roi["area"] = area
+                roi["perimeter"] = perimeter
+
+                payload = {}
+                payload["results"] = roi
+
+                print("Roi:", roi)
+                
+                # MQTT
+                if self.mqtt and self.experiment.ImageSource is self.experiment.ImageSource.Camera:  # Only send in camera mode
+                    self.mqtt.publish_roi(camera_name, plant_index, payload)
+
+                # Chart
+                self.chart.add_roi(timestamp, roi["area"], "Roi " + str(plant_index))  # TODO replace "area" with "plot_value"
+
+                plant_index = plant_index + 1
+                plant_key = f"plant_{plant_index}"
 
         self.chart_preview_label.setPixmap(self.chart.pixmap())
 
@@ -1460,31 +1473,31 @@ class MainWindow(QMainWindow):
             self.update_current_session_file()
 
             # Create corresponding CSV file with header
-            self.csv_field_names = ['camera', 'experiment_id',
+            '''self.csv_field_names = ['camera', 'experiment_id',
                                   'image_timestamp', 'image',
                                   'ROI', 'perimeter',
                                   'width', 'height',
                                   'area', 'index',
                                   'mean', 'median',
-                                  'std']
+                                  'std']'''
 
             if not os.path.exists(settings["outputFolder"]):
                 os.mkdir(settings["outputFolder"])
                 os.mkdir(os.path.join(settings["outputFolder"], "ProcessedImages"))
 
-            self.csv_result_file = os.path.join(settings["outputFolder"], "results.csv")
+            '''self.csv_result_file = os.path.join(settings["outputFolder"], "results.csv")
             csvfile = open(self.csv_result_file, "w", newline='')
             writer = csv.DictWriter(csvfile, fieldnames=self.csv_field_names)
             writer.writeheader()
-            csvfile.close()
+            csvfile.close()'''
 
             self.ui.results_button.setEnabled(False)
 
-    def append_csv(self, dict):
+    '''def append_csv(self, dict):
         csvfile = open(self.csv_result_file, "a", newline='')
         writer = csv.DictWriter(csvfile, fieldnames=self.csv_field_names)
         writer.writerow(dict)
-        csvfile.close()
+        csvfile.close()'''
 
     def stop_analysis(self, terminate_process):
         tprint("Analysis: Stop: Done")
@@ -1522,6 +1535,13 @@ class MainWindow(QMainWindow):
             shutil.copy(self.chart.web_page(), os.path.join(self.current_session["outputFolder"], "chart.html"))
         self.chart_preview_label.hide()
         self.chart_preview_label.setPixmap(QPixmap())
+        
+        output_folder = os.path.join(self.current_session["outputFolder"], "RawData")
+        
+        combined_json = os.path.join(output_folder, "combined.json")
+        process_results(output_folder, combined_json)
+        
+        json2csv(combined_json, os.path.join(self.current_session["outputFolder"], "combined"))
 
     def play(self):
         ready, reason = self.ready_to_run()
