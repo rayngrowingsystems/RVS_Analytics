@@ -156,11 +156,15 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         warnings.warn("No header file provided. Processing not possible.")
         return
 
-    # begin masking workflow
+    # read image data
     spectral_data = readimage(filename=img_file, mode='envi')
+
+    # prepare image data
     spectral_data.array_data = spectral_data.array_data.astype("float32")  # required for further calculations
     if spectral_data.d_type == np.uint8:  # only convert if data seems to be uint8
         spectral_data.array_data = spectral_data.array_data / 255  # convert 0-255 (orig.) to 0-1 range
+
+    rvs_dict = parse_rvs_header(f"{img_file}.hdr")
 
     # Apply light correction
     if light_correction:
@@ -183,7 +187,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         spectral_data.array_data = rotate(spectral_data.array_data, rotation, crop)
         spectral_data.pseudo_rgb = rotate(spectral_data.pseudo_rgb, rotation, crop)
 
-    return spectral_data
+    return spectral_data, rvs_dict
 
 
 def get_index_functions():
@@ -233,3 +237,60 @@ def get_index_functions():
     }
 
     return index_dict
+
+
+def parse_rvs_header(headername):
+
+    # Initialize dictionary
+    header_dict = {}
+    with open(headername, "r") as f:
+        # Replace characters for easier parsing
+        hdata = f.read()
+        hdata = hdata.replace(",\n", ",")
+        hdata = hdata.replace("\n,", ",")
+        hdata = hdata.replace("{\n", "{")
+        hdata = hdata.replace("\n}", "}")
+        hdata = hdata.replace(" \n ", "")
+        hdata = hdata.replace(" \n", "")
+        hdata = hdata.replace(";", "")
+    hdata = hdata.split("\n")
+
+    # Loop through and create a dictionary from the header file
+    # Try to reformat strings by replacing all " = " with '=' and " : "
+    for string in hdata:
+        # Remove white space for consistency across header file formats
+        if '=' in string:
+            header_data = string.split("=")
+            header_data[0] = header_data[0].lower()
+            header_dict.update({header_data[0].rstrip(): header_data[1].rstrip()})
+        elif ':' in string:
+            header_data = string.split(":")
+            header_data[0] = header_data[0].lower()
+            header_dict.update({header_data[0].rstrip(): header_data[1].rstrip()})
+
+    # Delete redundant entries
+    entries_to_remove = ["samples", "lines", "bands", "header offset", "file type", "data type", "interleave",
+                         "byte order", "wavelength"]
+    for key in entries_to_remove:
+        if key in header_dict:
+            del header_dict[key]
+
+    # Reformat header dict
+    if "description" in header_dict:
+        header_dict["description"] = header_dict["description"].replace("{", "")
+        header_dict["description"] = header_dict["description"].replace("}", "")
+
+    # remove initial white space
+    for key in header_dict.keys():
+        if header_dict[key][0] == " ":
+            header_dict[key] = header_dict[key][1:]
+
+    list_entries_to_reformat = ["brightness", "exposure", "sensitivity", "reflective factor", "image output"]
+    for key in list_entries_to_reformat:
+        if key in header_dict:
+            header_dict[key] = header_dict[key].replace(" ", "")
+            header_dict[key] = header_dict[key].replace("{", "")
+            header_dict[key] = header_dict[key].replace("}", "")
+            header_dict[key] = header_dict[key].split(",")
+
+    return header_dict
