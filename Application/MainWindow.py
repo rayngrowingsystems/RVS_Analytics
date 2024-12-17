@@ -1219,7 +1219,7 @@ class MainWindow(QMainWindow):
 
         tprint("Results", results)
 
-        json_file_name = results["rawDataJsonFileName"] 
+        json_file_name = results 
         with open(json_file_name, 'r') as f:
             j = f.read()
             d = json.loads(j)
