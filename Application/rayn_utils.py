@@ -188,6 +188,12 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         spectral_data.array_data = rotate(spectral_data.array_data, rotation, crop)
         spectral_data.pseudo_rgb = rotate(spectral_data.pseudo_rgb, rotation, crop)
 
+    # calculate pixel to mm conversion factor
+    rvs_dict["px to mm ratio"] = 0
+    if lens_angle == 60:
+        pixel_per_mm = 1000/rvs_dict["exact distance (mm)"]  # with a 60° lens at 1000 mm the px to mm ratio is 1
+        rvs_dict["px to mm ratio"] = pixel_per_mm
+
     return spectral_data, rvs_dict
 
 
