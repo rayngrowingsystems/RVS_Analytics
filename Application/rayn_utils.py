@@ -16,6 +16,7 @@ import warnings
 import cv2
 import numpy as np
 import os
+from os import path
 from plantcv.plantcv import spectral_index
 from plantcv.plantcv import readimage
 from plantcv.plantcv.transform import rotate
@@ -168,7 +169,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
 
     # Apply light correction
     if light_correction:
-        correction_matrix = get_correction_matrix_from_file("calibration_data/120_correction_matrix.npy")
+        correction_matrix = get_correction_matrix_from_file(path.join(path.dirname(__file__), "calibration_data/120_correction_matrix.npy"))
         spectral_data = light_intensity_correction(spectral_data, correction_matrix)
 
     # normalize the image cube
@@ -177,7 +178,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
 
     # undistort the image cube
     if lens_angle != 0:  # only undistort if angle is selected
-        cam_calibration_file = f"calibration_data/{lens_angle}_calibration_data.yml"  # select the data set
+        cam_calibration_file = path.join(path.dirname(__file__), f"calibration_data/{lens_angle}_calibration_data.yml")  # select the data set
         mtx, dist = load_coefficients(cam_calibration_file)  # depending on the lens angle
         spectral_data.array_data = undistort_data_cube(spectral_data.array_data, mtx, dist)
         spectral_data.pseudo_rgb = undistort_data_cube(spectral_data.pseudo_rgb, mtx, dist)
