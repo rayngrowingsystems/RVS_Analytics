@@ -191,7 +191,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
     # calculate pixel to mm conversion factor
     rvs_dict["px to mm ratio"] = 0
     if lens_angle == 60 and "exact distance (mm)" in rvs_dict:
-        pixel_per_mm = 1000/rvs_dict["exact distance (mm)"]  # with a 60° lens at 1000 mm the px to mm ratio is 1
+        pixel_per_mm = 1000/int(rvs_dict["exact distance (mm)"])  # with a 60° lens at 1000 mm the px to mm ratio is 1
         rvs_dict["px to mm ratio"] = pixel_per_mm
 
     return spectral_data, rvs_dict
