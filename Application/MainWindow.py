@@ -35,7 +35,7 @@ import csv
 
 from importlib.metadata import version
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog, QStyle, QMessageBox, QInputDialog, QLineEdit, QFileDialog, QLabel
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog, QStyle, QMessageBox, QInputDialog, QLineEdit, QFileDialog, QLabel, QCheckBox
 from PySide6.QtCore import QUrl, QTimer, QStandardPaths, QDir, QObject, QRunnable, QThreadPool
 from PySide6 import QtCore
 from PySide6.QtGui import QPixmap, QIcon, QScreen, QDesktopServices
@@ -49,8 +49,8 @@ from ImageSourceDialog import ImageSourceDialog
 from ImageOptionDialog import ImageOptionDialog
 from ImageMaskDialog import ImageMaskDialog
 from ImageRoiDialog import ImageRoiDialog
-from ScriptOptionsDialog import ScriptOptionsDialog
-from ChartOptionsDialog import ChartOptionsDialog
+from AnalysisPreviewDialog import AnalysisPreviewDialog
+from AnalysisOptionsDialog import AnalysisOptionsDialog
 from DownloadImagesDialog import DownloadImagesDialog
 from AboutDialog import AboutDialog
 from HelpDialog import HelpDialog
@@ -252,8 +252,8 @@ class MainWindow(QMainWindow):
         self.ui.image_option_button.clicked.connect(self.open_image_option_dialog)
         self.ui.image_mask_button.clicked.connect(self.open_image_mask_dialog)
         self.ui.image_roi_button.clicked.connect(self.open_image_roi_dialog)
-        self.ui.script_options_button.clicked.connect(self.open_script_options_dialog)
-        self.ui.chart_options_button.clicked.connect(self.open_chart_options_dialog)
+        self.ui.analysis_preview_button.clicked.connect(self.open_analysis_preview_dialog)
+        self.ui.analysis_options_button.clicked.connect(self.open_analysis_options_dialog)
         self.ui.results_button.clicked.connect(self.show_results)
 
         # Set-up Play button
@@ -1771,31 +1771,31 @@ class MainWindow(QMainWindow):
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
 
-    def open_script_options_dialog(self):
-        script_options_dialog = ScriptOptionsDialog(self)
+    def open_analysis_preview_dialog(self):
+        analysis_preview_dialog = AnalysisPreviewDialog(self)
 
-        if script_options_dialog.exec() == QDialog.Accepted:
-            # Capture the script parameters
-            settings = Helper.get_settings_for_ui_elements(script_options_dialog)
-
-            self.experiment.script_options = settings
-
-            self.experiment.script_reference_image1 = script_options_dialog.ui.reference_image1.image_file_name
-            self.experiment.script_reference_image2 = script_options_dialog.ui.reference_image2.image_file_name
+        if analysis_preview_dialog.exec() == QDialog.Accepted:
+            self.experiment.script_reference_image1 = analysis_preview_dialog.ui.reference_image1.image_file_name
+            self.experiment.script_reference_image2 = analysis_preview_dialog.ui.reference_image2.image_file_name
 
             self.update_experiment_file(False)
 
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
 
-    def open_chart_options_dialog(self):
-        chart_options_dialog = ChartOptionsDialog(self)
+    def open_analysis_options_dialog(self):
+        analysis_options_dialog = AnalysisOptionsDialog(self)
 
-        if chart_options_dialog.exec() == QDialog.Accepted:
+        if analysis_options_dialog.exec() == QDialog.Accepted:
+            # Capture the script parameters
+            settings = Helper.get_settings_for_ui_elements(analysis_options_dialog)
+            self.experiment.script_options = settings 
+
             # Capture the chart parameters
-            settings = Helper.get_settings_for_ui_elements(chart_options_dialog)
-
-            self.experiment.chart_options = settings
+            child_checkboxes = analysis_options_dialog.ui.chart_options_box.findChildren(QCheckBox)
+            for child_checkbox in child_checkboxes:
+                print(child_checkbox.objectName(), child_checkbox.isChecked())
+                # TODO change
 
             self.update_experiment_file(False)
 

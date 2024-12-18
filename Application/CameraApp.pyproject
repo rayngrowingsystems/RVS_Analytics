@@ -1,13 +1,14 @@
 {
     "files": [
         "AboutDialog.py",
+        "AnalysisOptionsDialog.py",
+        "AnalysisPreviewDialog.py",
         "Camera.py",
         "CameraApp.py",
         "CameraApp_rc.py",
         "CameraDiscovery.py",
         "CameraStartDialog.py",
         "Chart.py",
-        "ChartOptionsDialog.py",
         "ClickableLabel.py",
         "Config.py",
         "DoubleSlider.py",
@@ -25,14 +26,13 @@
         "Label.py",
         "MainWindow.py",
         "Mqtt.py",
-        "ScriptOptionsDialog.py",
         "SelectImageDialog.py",
         "rayn_utils.py",
         "resources/CameraApp.qrc",
         "ui/AboutDialog.ui",
         "ui/CameraApp.qrc",
         "ui/CameraStartDialog.ui",
-        "ui/ChartOptionsDialog.ui",
+        "ui/AnalysisOptionsDialog.ui",
         "ui/DownloadImagesDialog.ui",
         "ui/EulaDialog.ui",
         "ui/FolderStartDialog.ui",
@@ -42,7 +42,7 @@
         "ui/ImageRoiDialog.ui",
         "ui/ImageSourceDialog.ui",
         "ui/MainWindow.ui",
-        "ui/ScriptOptionsDialog.ui",
+        "ui/AnalysisPreviewDialog.ui",
         "ui/SelectImageDialog.ui"
     ]
 }

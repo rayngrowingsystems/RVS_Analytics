@@ -280,11 +280,11 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addWidget(self.label_4, 3, 0, 1, 1)
 
-        self.chart_options_button = QPushButton(self.dock_widget_contents)
-        self.chart_options_button.setObjectName(u"chart_options_button")
-        self.chart_options_button.setEnabled(True)
+        self.analysis_options_button = QPushButton(self.dock_widget_contents)
+        self.analysis_options_button.setObjectName(u"analysis_options_button")
+        self.analysis_options_button.setEnabled(True)
 
-        self.gridLayout_3.addWidget(self.chart_options_button, 7, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.analysis_options_button, 7, 0, 1, 1)
 
         self.script_selection_combobox = QComboBox(self.dock_widget_contents)
         self.script_selection_combobox.setObjectName(u"script_selection_combobox")
@@ -368,10 +368,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addWidget(self.results_button, 15, 0, 1, 1)
 
-        self.script_options_button = QPushButton(self.dock_widget_contents)
-        self.script_options_button.setObjectName(u"script_options_button")
+        self.analysis_preview_button = QPushButton(self.dock_widget_contents)
+        self.analysis_preview_button.setObjectName(u"analysis_preview_button")
 
-        self.gridLayout_3.addWidget(self.script_options_button, 9, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.analysis_preview_button, 9, 0, 1, 1)
 
         self.dockWidget.setWidget(self.dock_widget_contents)
         MainWindow.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget)
@@ -455,7 +455,7 @@ class Ui_MainWindow(object):
         self.image_mask_button.setText(QCoreApplication.translate("MainWindow", u"Masking", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Analysis", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Mask Script", None))
-        self.chart_options_button.setText(QCoreApplication.translate("MainWindow", u"Chart Options", None))
+        self.analysis_options_button.setText(QCoreApplication.translate("MainWindow", u"Options", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Run", None))
         self.play_button.setText("")
         self.stop_button.setText("")
@@ -465,6 +465,6 @@ class Ui_MainWindow(object):
         self.image_option_button.setText(QCoreApplication.translate("MainWindow", u"Image Options", None))
         self.image_roi_button.setText(QCoreApplication.translate("MainWindow", u"Regions", None))
         self.results_button.setText(QCoreApplication.translate("MainWindow", u"Results", None))
-        self.script_options_button.setText(QCoreApplication.translate("MainWindow", u"Script Options", None))
+        self.analysis_preview_button.setText(QCoreApplication.translate("MainWindow", u"Preview", None))
     # retranslateUi
 

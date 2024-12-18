@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScriptOptionsDialog</class>
- <widget class="QDialog" name="ScriptOptionsDialog">
+ <class>AnalysisPreviewDialog</class>
+ <widget class="QDialog" name="AnalysisPreviewDialog">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
@@ -10,11 +10,11 @@
     <x>0</x>
     <y>0</y>
     <width>628</width>
-    <height>602</height>
+    <height>605</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Script options</string>
+   <string>Analytic preview</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -147,19 +147,19 @@ Click the Image button to pick</string>
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
        <item>
-        <widget class="QGroupBox" name="script_options_box">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="title">
-          <string>Select script options</string>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -209,7 +209,7 @@ Click the Image button to pick</string>
   <connection>
    <sender>done_button</sender>
    <signal>clicked()</signal>
-   <receiver>ScriptOptionsDialog</receiver>
+   <receiver>AnalysisPreviewDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -422,12 +422,12 @@
       </widget>
      </item>
      <item row="7" column="0">
-      <widget class="QPushButton" name="chart_options_button">
+      <widget class="QPushButton" name="analysis_options_button">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>Chart Options</string>
+        <string>Options</string>
        </property>
       </widget>
      </item>
@@ -567,9 +567,9 @@
       </widget>
      </item>
      <item row="9" column="0">
-      <widget class="QPushButton" name="script_options_button">
+      <widget class="QPushButton" name="analysis_preview_button">
        <property name="text">
-        <string>Script Options</string>
+        <string>Preview</string>
        </property>
       </widget>
      </item>
