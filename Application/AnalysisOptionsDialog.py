@@ -57,6 +57,12 @@ class AnalysisOptionsDialog(QDialog):
                                                     script_for_dropdown_values=self.main_window.current_analysis_script())
                 
             self.ui.script_options_box.setLayout(grid)   
+            
+            # Set active checkboxes
+            chart_checkboxes = self.ui.chart_options_box.findChildren(QCheckBox)
+            for child_checkbox in chart_checkboxes:
+                if child_checkbox.objectName() in self.main_window.experiment.chart_options:
+                    child_checkbox.setChecked(self.main_window.experiment.chart_options[child_checkbox.objectName()])
 
     def load_ui(self):
         self.ui = Ui_AnalysisOptionsDialog()
