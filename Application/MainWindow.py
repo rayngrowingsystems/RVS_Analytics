@@ -238,7 +238,7 @@ class MainWindow(QMainWindow):
 
         self.cameras = {}
 
-        self.chart = None
+        self.charts = {}
 
         self.help_dialog = None
 
@@ -361,16 +361,6 @@ class MainWindow(QMainWindow):
         self.ui.mask_selection_combobox.currentIndexChanged.connect(self.mask_selection_changed)
 
         # self.experiment.script_options = self.defaultScriptOptions()
-
-        # Set-up chart
-        self.chart_preview_label = QLabel()
-        self.ui.chartPreviewLayout.addWidget(self.chart_preview_label)
-
-        self.chart_preview_view = QWebEngineView()
-        self.ui.chartPreviewLayout.addWidget(self.chart_preview_view)
-        self.chart_preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
-
-        self.chart_preview_view.hide()
 
         # Use thread safe signal/slot to allow use from the background thread
         self.analysis_done.connect(self.on_analysis_done)
@@ -1238,6 +1228,8 @@ class MainWindow(QMainWindow):
                 height = plant["height"]["value"]
                 area = plant["area"]["value"]
                 perimeter = plant["perimeter"]["value"]
+                convex_hull_area = plant["convex_hull_area"]["value"]   
+                longest_path = plant["longest_path"]["value"]
 
                 if Config.verbose_mode:
                     tprint(plant_index, width, height, area, perimeter)
@@ -1256,6 +1248,8 @@ class MainWindow(QMainWindow):
                 roi["height"] = height
                 roi["area"] = area
                 roi["perimeter"] = perimeter
+                roi["convexHullArea"] = convex_hull_area
+                roi["longestPath"] = longest_path
 
                 payload = {}
                 payload["results"] = roi
@@ -1267,12 +1261,28 @@ class MainWindow(QMainWindow):
                     self.mqtt.publish_roi(camera_name, plant_index, payload)
 
                 # Chart
-                self.chart.add_roi(timestamp, roi["area"], "Roi " + str(plant_index))  # TODO replace "area" with "plot_value"
+                for key, chart in self.charts.items():
+                    value = 0
+                    if key == "width":
+                        value = roi["width"]
+                    elif key == "height":
+                        value = roi["height"]
+                    elif key == "area":
+                        value = roi["area"] 
+                    elif key == "perimeter":
+                        value = roi["perimeter"]
+                    elif key == "convex_hull_area":
+                        value = roi["convexHullArea"]
+                    elif key == "longest_path":
+                        value = roi["longestPath"]  
+
+                    chart.add_roi(timestamp, value, "Roi " + str(plant_index))
 
                 plant_index = plant_index + 1
                 plant_key = f"plant_{plant_index}"
 
-        self.chart_preview_label.setPixmap(self.chart.pixmap())
+        for key, chart in self.charts.items():
+            chart.preview_label.setPixmap(chart.pixmap())
 
     def update_current_session_file(self):
         j = json.dumps(self.current_session, indent=4)
@@ -1324,9 +1334,6 @@ class MainWindow(QMainWindow):
         if not self.experiment.selected_script in self.script_paths:
             QMessageBox.warning(self, "Missing analysis script", self.experiment.selected_script + " is not available. Has it been removed?")
             return
-
-        self.chart_preview_label.show()
-        self.chart_preview_view.hide()
 
         # Initialize folder to watch
         folder_to_watch = ""
@@ -1408,20 +1415,35 @@ class MainWindow(QMainWindow):
             # Get the display texts for the Chart
             analytics_script_name = self.experiment.selected_script
             sys.path.append(os.path.dirname(self.script_paths[analytics_script_name]))
-            analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
+            # analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
+            # title, y_label = analytics_script.get_display_name_for_chart(settings) # TODO?
 
-            title, y_label = analytics_script.get_display_name_for_chart(settings)
+            # Remove old tabs
+            widgets = []
+            for key, chart in self.charts.items():
+                widgets.append(chart.widget)
+        
+            for w in widgets:
+                self.ui.tabWidget.removeTab(self.ui.tabWidget.indexOf(w))
+                del w
 
-            if self.chart is None:
-                # Create the Chart
-                tprint("Chart:", title, y_label)
-                self.chart = Chart(title, y_label)
+            self.charts = {}
 
-            if (path.exists(self.chart.web_page())):
-                self.chart_preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
-                os.remove(self.chart.web_page())
-            if (path.exists(self.chart.image_file())):
-                os.remove(self.chart.image_file())
+            # Create the Chart(s)
+            for key, value in self.experiment.chart_options.items():
+                y_label = key
+                title = key # TODO
+                tprint("Chart:", title, y_label, value)
+
+                if value is True:
+                    self.charts[key] = Chart(self, title, y_label)
+
+            for key, chart in self.charts.items():
+                if (path.exists(chart.web_page())):
+                    chart.preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
+                    os.remove(chart.web_page())
+                if (path.exists(chart.image_file())):
+                    os.remove(chart.image_file())
 
             # Find selected mask
             mask_path, mask_file = self.mask_info()
@@ -1527,14 +1549,15 @@ class MainWindow(QMainWindow):
 
         self.ui.results_button.setEnabled(True)
 
-        if os.path.exists(self.chart.web_page()):
-            self.chart_preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), self.chart.web_page())))
-            self.chart_preview_view.show()
+        for key, chart in self.charts.items():
+            if os.path.exists(chart.web_page()):
+                chart.preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), chart.web_page())))
+                chart.preview_view.show()
 
-            # Copy webPage() to "outputFolder"
-            shutil.copy(self.chart.web_page(), os.path.join(self.current_session["outputFolder"], "chart.html"))
-        self.chart_preview_label.hide()
-        self.chart_preview_label.setPixmap(QPixmap())
+                # Copy webPage() to "outputFolder"
+                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"], "chart.html"))
+            chart.preview_label.hide()
+            chart.preview_label.setPixmap(QPixmap())
         
         output_folder = os.path.join(self.current_session["outputFolder"], "RawData")
         
@@ -1792,10 +1815,10 @@ class MainWindow(QMainWindow):
             self.experiment.script_options = settings 
 
             # Capture the chart parameters
+            self.experiment.chart_options = {}
             child_checkboxes = analysis_options_dialog.ui.chart_options_box.findChildren(QCheckBox)
             for child_checkbox in child_checkboxes:
-                print(child_checkbox.objectName(), child_checkbox.isChecked())
-                # TODO change
+                self.experiment.chart_options[child_checkbox.objectName()] = child_checkbox.isChecked()
 
             self.update_experiment_file(False)
 

@@ -139,16 +139,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.image_preview)
 
         self.tabWidget.addTab(self.preview_tab, "")
-        self.chart_tab = QWidget()
-        self.chart_tab.setObjectName(u"chart_tab")
-        self.chartPreviewLayout = QHBoxLayout(self.chart_tab)
-        self.chartPreviewLayout.setObjectName(u"chartPreviewLayout")
-        self.chartPreviewLayout_2 = QVBoxLayout()
-        self.chartPreviewLayout_2.setObjectName(u"chartPreviewLayout_2")
-
-        self.chartPreviewLayout.addLayout(self.chartPreviewLayout_2)
-
-        self.tabWidget.addTab(self.chart_tab, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
 
@@ -443,7 +433,6 @@ class Ui_MainWindow(object):
         self.mqtt_status.setText("")
         self.image_preview.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"Preview", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.chart_tab), QCoreApplication.translate("MainWindow", u"Chart", None))
         self.timestamp_label.setText("")
         self.menu_file.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menu_help.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))

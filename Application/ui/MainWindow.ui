@@ -137,16 +137,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="chart_tab">
-       <attribute name="title">
-        <string>Chart</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="chartPreviewLayout">
-        <item>
-         <layout class="QVBoxLayout" name="chartPreviewLayout_2"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
     <item>

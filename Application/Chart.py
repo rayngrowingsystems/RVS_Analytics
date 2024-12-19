@@ -22,13 +22,17 @@ import uuid
 import plotly.graph_objects as go
 
 from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import QStandardPaths
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
 from Helper import tprint
 
 class Chart:
-    def __init__(self, title, y_label):
+    def __init__(self, main_window, title, y_label):
         tprint("Chart.init")
+
+        self.main_window = main_window
 
         self.fig = go.Figure()
 
@@ -53,6 +57,21 @@ class Chart:
         self.temp_html_file = os.path.normpath(os.path.join(QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".html"))
 
         tprint("Temp files:", self.temp_image_file, self.temp_html_file)
+
+        self.widget = QWidget()
+        layout = QVBoxLayout()
+        self.widget.setLayout(layout)
+
+        self.preview_label = QLabel()
+        layout.addWidget(self.preview_label)
+
+        self.preview_view = QWebEngineView()
+        layout.addWidget(self.preview_view)
+        self.preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
+
+        self.preview_view.hide()
+
+        self.tab_index = self.main_window.ui.tabWidget.addTab(self.widget, title)        
 
     def add_roi(self, timestamp, y, name):
         found = False

@@ -92,14 +92,14 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="1" column="0">
-          <widget class="QCheckBox" name="false_color_image_checkbox">
+          <widget class="QCheckBox" name="false_color_image">
            <property name="text">
             <string>False color image</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QCheckBox" name="mean_index_checkbox">
+          <widget class="QCheckBox" name="mean_index">
            <property name="text">
             <string>Mean index</string>
            </property>
@@ -117,7 +117,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="0" column="0">
-            <widget class="QCheckBox" name="spectral_signature_checkbox">
+            <widget class="QCheckBox" name="spectral_signature">
              <property name="text">
               <string>Spectral signature</string>
              </property>
@@ -135,42 +135,42 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="1" column="0">
-          <widget class="QCheckBox" name="hull_area_checkbox">
+          <widget class="QCheckBox" name="hull_area">
            <property name="text">
             <string>Convex hull area</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
-          <widget class="QCheckBox" name="width_checkbox">
+          <widget class="QCheckBox" name="width">
            <property name="text">
             <string>Width</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QCheckBox" name="area_checkbox">
+          <widget class="QCheckBox" name="area">
            <property name="text">
             <string>Area</string>
            </property>
           </widget>
          </item>
          <item row="5" column="0">
-          <widget class="QCheckBox" name="longest_path_checkbox">
+          <widget class="QCheckBox" name="longest_path">
            <property name="text">
             <string>Longest path</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QCheckBox" name="perimeter_checkbox">
+          <widget class="QCheckBox" name="perimeter">
            <property name="text">
             <string>Perimeter</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QCheckBox" name="height_checkbox">
+          <widget class="QCheckBox" name="height">
            <property name="text">
             <string>Height</string>
            </property>
