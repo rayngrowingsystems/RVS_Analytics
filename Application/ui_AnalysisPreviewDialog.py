@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
+    QGridLayout, QHBoxLayout, QLabel, QPushButton,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 from ClickableLabel import ClickableLabel
 
@@ -101,10 +101,21 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.preview_button = QPushButton(AnalysisPreviewDialog)
         self.preview_button.setObjectName(u"preview_button")
 
-        self.verticalLayout.addWidget(self.preview_button)
+        self.horizontalLayout_3.addWidget(self.preview_button)
+
+        self.show_rois_checkbox = QCheckBox(AnalysisPreviewDialog)
+        self.show_rois_checkbox.setObjectName(u"show_rois_checkbox")
+
+        self.horizontalLayout_3.addWidget(self.show_rois_checkbox)
+
+        self.horizontalLayout_3.setStretch(0, 1)
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
@@ -159,6 +170,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.preview_image1.setText("")
         self.preview_image2.setText("")
         self.preview_button.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"Create Preview", None))
+        self.show_rois_checkbox.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"Show ROIs", None))
         self.done_button.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"Done", None))
     # retranslateUi
 

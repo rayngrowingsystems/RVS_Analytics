@@ -1405,9 +1405,15 @@ class MainWindow(QMainWindow):
 
             # On resume, keep Out folder name
             if resume and "outputFolder" in self.current_session:
-                settings["outputFolder"] = self.current_session["outputFolder"]
+                settings["outputFolder"] = self.current_session["outputFolder"]  # This will copy the whole dict
             else:
-                settings["outputFolder"] = os.path.join(self.experiment.output_file_path, 'Analysis_' + timestamp)
+                base_folder = self.experiment.output_file_path, 'Analysis_' + timestamp
+
+                settings["outputFolder"] = {}
+                settings["outputFolder"]["appData"] = os.path.join(base_folder)
+                settings["outputFolder"]["images"] = os.path.join(base_folder, "images")
+                settings["outputFolder"]["visuals"] = os.path.join(base_folder, "visuals")
+                settings["outputFolder"]["data"] = os.path.join(base_folder, "rawData")
 
             if Config.verbose_mode:
                 tprint("Play settings:", settings)
@@ -1494,32 +1500,16 @@ class MainWindow(QMainWindow):
 
             self.update_current_session_file()
 
-            # Create corresponding CSV file with header
-            '''self.csv_field_names = ['camera', 'experiment_id',
-                                  'image_timestamp', 'image',
-                                  'ROI', 'perimeter',
-                                  'width', 'height',
-                                  'area', 'index',
-                                  'mean', 'median',
-                                  'std']'''
-
-            if not os.path.exists(settings["outputFolder"]):
-                os.mkdir(settings["outputFolder"])
-                os.mkdir(os.path.join(settings["outputFolder"], "ProcessedImages"))
-
-            '''self.csv_result_file = os.path.join(settings["outputFolder"], "results.csv")
-            csvfile = open(self.csv_result_file, "w", newline='')
-            writer = csv.DictWriter(csvfile, fieldnames=self.csv_field_names)
-            writer.writeheader()
-            csvfile.close()'''
+            if not os.path.exists(settings["outputFolder"]["appData"]):
+                os.mkdir(settings["outputFolder"]["appData"])
+            if not os.path.exists(settings["outputFolder"]["images"]):
+                os.mkdir(settings["outputFolder"]["images"])
+            if not os.path.exists(settings["outputFolder"]["visuals"]):
+                os.mkdir(settings["outputFolder"]["visuals"])
+            if not os.path.exists(settings["outputFolder"]["data"]):
+                os.mkdir(settings["outputFolder"]["data"])
 
             self.ui.results_button.setEnabled(False)
-
-    '''def append_csv(self, dict):
-        csvfile = open(self.csv_result_file, "a", newline='')
-        writer = csv.DictWriter(csvfile, fieldnames=self.csv_field_names)
-        writer.writerow(dict)
-        csvfile.close()'''
 
     def stop_analysis(self, terminate_process):
         tprint("Analysis: Stop: Done")
@@ -1542,10 +1532,10 @@ class MainWindow(QMainWindow):
         self.current_session["status"]["stoppedAt"] = timestamp
         self.update_current_session_file()
 
-        if os.path.exists(self.current_session_file_name) and os.path.exists(self.current_session["outputFolder"]):
-            shutil.move(self.current_session_file_name, os.path.join(self.current_session["outputFolder"], 'session.json'))
+        if os.path.exists(self.current_session_file_name) and os.path.exists(self.current_session["outputFolder"]["appData"]):
+            shutil.move(self.current_session_file_name, os.path.join(self.current_session["outputFolder"]["appData"], 'session.json'))
         else:
-            tprint("Path missing:", self.current_session_file_name, self.current_session["outputFolder"])
+            tprint("Path missing:", self.current_session_file_name, self.current_session["outputFolder"]["appData"])
 
         self.ui.results_button.setEnabled(True)
 
@@ -1555,16 +1545,16 @@ class MainWindow(QMainWindow):
                 chart.preview_view.show()
 
                 # Copy webPage() to "outputFolder"
-                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"], "chart.html"))
+                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"], "chart.html"))
             chart.preview_label.hide()
             chart.preview_label.setPixmap(QPixmap())
         
-        output_folder = os.path.join(self.current_session["outputFolder"], "RawData")
+        output_folder = self.current_session["outputFolder"]["data"]
         
         combined_json = os.path.join(output_folder, "combined.json")
         process_results(output_folder, combined_json)
         
-        json2csv(combined_json, os.path.join(self.current_session["outputFolder"], "combined"))
+        json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
     def play(self):
         ready, reason = self.ready_to_run()
@@ -1832,7 +1822,7 @@ class MainWindow(QMainWindow):
 
     def show_results(self):
         # os.startfile(self.currentSession["outputFolder"])
-        QDesktopServices.openUrl(QUrl.fromLocalFile(self.current_session["outputFolder"]))
+        QDesktopServices.openUrl(QUrl.fromLocalFile(self.current_session["outputFolder"]["appData"]))
 
     def on_add_status_text(self, text):
         self.ui.status_text.setText(self.ui.status_text.text() + "<br>" + text)

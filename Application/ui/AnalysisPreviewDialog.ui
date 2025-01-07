@@ -140,11 +140,22 @@ Click the Image button to pick</string>
       </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="preview_button">
-       <property name="text">
-        <string>Create Preview</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+       <item>
+        <widget class="QPushButton" name="preview_button">
+         <property name="text">
+          <string>Create Preview</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="show_rois_checkbox">
+         <property name="text">
+          <string>Show ROIs</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
