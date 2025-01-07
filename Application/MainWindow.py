@@ -154,6 +154,7 @@ class FileSystemEventHandler(PatternMatchingEventHandler):
 class MainWindow(QMainWindow):
     add_status_text = QtCore.Signal(str)
     analysis_done = QtCore.Signal()
+    add_preview_tab = QtCore.Signal(str, str)
 
     def __init__(self, script_folder, mask_folder):
         super().__init__()
@@ -365,6 +366,7 @@ class MainWindow(QMainWindow):
         # Use thread safe signal/slot to allow use from the background thread
         self.analysis_done.connect(self.on_analysis_done)
         self.add_status_text.connect(self.on_add_status_text)
+        self.add_preview_tab.connect(self.on_add_preview_tab)
 
         # If ongoing analysis, continue
         if path.exists(self.current_session_file_name):
@@ -1112,6 +1114,14 @@ class MainWindow(QMainWindow):
             else:
                 self.camera_status_divider = self.camera_status_divider - 1
 
+    def tab_exists(self, tab_name):
+        found = False
+        for index in range(self.ui.tabWidget.count()):
+            if self.ui.tabWidget.tabText(index) == tab_name:
+                found = True
+
+        return found
+    
     def handle_script_feedback(self, command, value):
         handled = False
 
@@ -1163,6 +1173,15 @@ class MainWindow(QMainWindow):
 
             self.ui.image_preview.setText("")
             handled = True
+
+        if command == "spectral_hist":
+            self.add_preview_tab.emit("spectral_hist", value)
+        
+        if command == "index_hist":
+            self.add_preview_tab.emit("index_hist", value)
+
+        if command == "index_pseudocolor":
+            self.add_preview_tab.emit("index_pseudocolor", value)
 
         if command == "results":  # When processing is done: <dict of results>
             self.add_status_text.emit("Results:")
@@ -1407,7 +1426,7 @@ class MainWindow(QMainWindow):
             if resume and "outputFolder" in self.current_session:
                 settings["outputFolder"] = self.current_session["outputFolder"]  # This will copy the whole dict
             else:
-                base_folder = self.experiment.output_file_path, 'Analysis_' + timestamp
+                base_folder = os.path.join(self.experiment.output_file_path, 'Analysis_' + timestamp)
 
                 settings["outputFolder"] = {}
                 settings["outputFolder"]["appData"] = os.path.join(base_folder)
@@ -1826,6 +1845,16 @@ class MainWindow(QMainWindow):
 
     def on_add_status_text(self, text):
         self.ui.status_text.setText(self.ui.status_text.text() + "<br>" + text)
+
+    def on_add_preview_tab(self, tab_name, file_name):
+        tprint("add_preview_tab", tab_name, file_name)
+        if not self.tab_exists(tab_name):
+            label = QLabel()
+            self.ui.tabWidget.addTab(label, tab_name)
+
+        for index in range(self.ui.tabWidget.count()):
+            if self.ui.tabWidget.tabText(index) == tab_name:
+                self.ui.tabWidget.widget(index).setPixmap(QPixmap(file_name))
 
     def mask_info(self):
         if self.ui.mask_selection_combobox.currentIndex() == 0:  ## Default item -> use mask in script
