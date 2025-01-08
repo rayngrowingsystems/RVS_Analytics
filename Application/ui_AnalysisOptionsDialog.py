@@ -70,6 +70,11 @@ class Ui_AnalysisOptionsDialog(object):
 
         self.gridLayout_5.addWidget(self.mean_index, 0, 0, 1, 1)
 
+        self.index_histogram = QCheckBox(self.index_box)
+        self.index_histogram.setObjectName(u"index_histogram")
+
+        self.gridLayout_5.addWidget(self.index_histogram, 2, 0, 1, 1)
+
 
         self.gridLayout_2.addWidget(self.index_box, 1, 0, 1, 1)
 
@@ -79,10 +84,10 @@ class Ui_AnalysisOptionsDialog(object):
         self.reflectance_box.setObjectName(u"reflectance_box")
         self.gridLayout_6 = QGridLayout(self.reflectance_box)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.spectral_signature = QCheckBox(self.reflectance_box)
-        self.spectral_signature.setObjectName(u"spectral_signature")
+        self.spectral_histogram = QCheckBox(self.reflectance_box)
+        self.spectral_histogram.setObjectName(u"spectral_histogram")
 
-        self.gridLayout_6.addWidget(self.spectral_signature, 0, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.spectral_histogram, 0, 0, 1, 1)
 
 
         self.gridLayout.addWidget(self.reflectance_box, 0, 0, 1, 1)
@@ -154,15 +159,26 @@ class Ui_AnalysisOptionsDialog(object):
         self.chart_options_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Select chart options", None))
         self.index_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Index", None))
         self.false_color_image.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"False color image", None))
+        self.false_color_image.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"image", None))
         self.mean_index.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Mean index", None))
+        self.mean_index.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
+        self.index_histogram.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Index histogram", None))
+        self.index_histogram.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"image", None))
         self.reflectance_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Reflectance", None))
-        self.spectral_signature.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Spectral signature", None))
+        self.spectral_histogram.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Spectral histogram", None))
+        self.spectral_histogram.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"image", None))
         self.shape_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Shape", None))
         self.hull_area.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Convex hull area", None))
+        self.hull_area.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
         self.width.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Width", None))
+        self.width.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
         self.area.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Area", None))
+        self.area.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
         self.longest_path.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Longest path", None))
+        self.longest_path.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
         self.perimeter.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Perimeter", None))
+        self.perimeter.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
         self.height.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Height", None))
+        self.height.setProperty("optionType", QCoreApplication.translate("AnalysisOptionsDialog", u"plot", None))
     # retranslateUi
 

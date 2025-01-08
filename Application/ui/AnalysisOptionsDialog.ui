@@ -96,12 +96,28 @@
            <property name="text">
             <string>False color image</string>
            </property>
+           <property name="optionType" stdset="0">
+            <string>image</string>
+           </property>
           </widget>
          </item>
          <item row="0" column="0">
           <widget class="QCheckBox" name="mean_index">
            <property name="text">
             <string>Mean index</string>
+           </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="index_histogram">
+           <property name="text">
+            <string>Index histogram</string>
+           </property>
+           <property name="optionType" stdset="0">
+            <string>image</string>
            </property>
           </widget>
          </item>
@@ -117,9 +133,12 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="0" column="0">
-            <widget class="QCheckBox" name="spectral_signature">
+            <widget class="QCheckBox" name="spectral_histogram">
              <property name="text">
-              <string>Spectral signature</string>
+              <string>Spectral histogram</string>
+             </property>
+             <property name="optionType" stdset="0">
+              <string>image</string>
              </property>
             </widget>
            </item>
@@ -139,12 +158,18 @@
            <property name="text">
             <string>Convex hull area</string>
            </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
+           </property>
           </widget>
          </item>
          <item row="4" column="0">
           <widget class="QCheckBox" name="width">
            <property name="text">
             <string>Width</string>
+           </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
            </property>
           </widget>
          </item>
@@ -153,12 +178,18 @@
            <property name="text">
             <string>Area</string>
            </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
+           </property>
           </widget>
          </item>
          <item row="5" column="0">
           <widget class="QCheckBox" name="longest_path">
            <property name="text">
             <string>Longest path</string>
+           </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
            </property>
           </widget>
          </item>
@@ -167,12 +198,18 @@
            <property name="text">
             <string>Perimeter</string>
            </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
+           </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QCheckBox" name="height">
            <property name="text">
             <string>Height</string>
+           </property>
+           <property name="optionType" stdset="0">
+            <string>plot</string>
            </property>
           </widget>
          </item>

@@ -1180,8 +1180,8 @@ class MainWindow(QMainWindow):
         if command == "index_hist":
             self.add_preview_tab.emit("index_hist", value)
 
-        if command == "index_pseudocolor":
-            self.add_preview_tab.emit("index_pseudocolor", value)
+        if command == "index_false_color":
+            self.add_preview_tab.emit("index_false_color", value)
 
         if command == "results":  # When processing is done: <dict of results>
             self.add_status_text.emit("Results:")
@@ -1249,6 +1249,7 @@ class MainWindow(QMainWindow):
                 perimeter = plant["perimeter"]["value"]
                 convex_hull_area = plant["convex_hull_area"]["value"]   
                 longest_path = plant["longest_path"]["value"]
+                mean_index = plant["mean_index_ari"]["value"]
 
                 if Config.verbose_mode:
                     tprint(plant_index, width, height, area, perimeter)
@@ -1269,6 +1270,7 @@ class MainWindow(QMainWindow):
                 roi["perimeter"] = perimeter
                 roi["convexHullArea"] = convex_hull_area
                 roi["longestPath"] = longest_path
+                roi["meanIndex"] = mean_index
 
                 payload = {}
                 payload["results"] = roi
@@ -1281,6 +1283,7 @@ class MainWindow(QMainWindow):
 
                 # Chart
                 for key, chart in self.charts.items():
+                    
                     value = 0
                     if key == "width":
                         value = roi["width"]
@@ -1293,7 +1296,9 @@ class MainWindow(QMainWindow):
                     elif key == "convex_hull_area":
                         value = roi["convexHullArea"]
                     elif key == "longest_path":
-                        value = roi["longestPath"]  
+                        value = roi["longestPath"]
+                    elif key == "mean_index":
+                        value = roi["meanIndex"]
 
                     chart.add_roi(timestamp, value, "Roi " + str(plant_index))
 
@@ -1443,14 +1448,19 @@ class MainWindow(QMainWindow):
             # analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
             # title, y_label = analytics_script.get_display_name_for_chart(settings) # TODO?
 
-            # Remove old tabs
-            widgets = []
+            # Remove old tabs except for the first one
+            while self.ui.tabWidget.count() > 1:
+                w = self.ui.tabWidget.widget(1)
+                self.ui.tabWidget.removeTab(1)
+                del w
+
+            '''widgets = []
             for key, chart in self.charts.items():
                 widgets.append(chart.widget)
         
             for w in widgets:
                 self.ui.tabWidget.removeTab(self.ui.tabWidget.indexOf(w))
-                del w
+                del w'''
 
             self.charts = {}
 
@@ -1460,7 +1470,7 @@ class MainWindow(QMainWindow):
                 title = key # TODO
                 tprint("Chart:", title, y_label, value)
 
-                if value is True:
+                if value is True and key in self.experiment.chart_option_types and self.experiment.chart_option_types[key] == "plot":
                     self.charts[key] = Chart(self, title, y_label)
 
             for key, chart in self.charts.items():
@@ -1825,9 +1835,14 @@ class MainWindow(QMainWindow):
 
             # Capture the chart parameters
             self.experiment.chart_options = {}
+            self.experiment.chart_option_types = {}
             child_checkboxes = analysis_options_dialog.ui.chart_options_box.findChildren(QCheckBox)
             for child_checkbox in child_checkboxes:
                 self.experiment.chart_options[child_checkbox.objectName()] = child_checkbox.isChecked()
+
+                self.experiment.chart_option_types[child_checkbox.objectName()] = child_checkbox.property("optionType")
+
+                tprint("Chart option:", child_checkbox.objectName(), child_checkbox.property("optionType"), child_checkbox.isChecked())
 
             self.update_experiment_file(False)
 
