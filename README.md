@@ -48,6 +48,8 @@ Required libraries and versions:
 - watchdog (2.1.6)
 - kaleido (0.1.0, other versions do not work)
 - pyside6 (6.6.0)
+- scikit-image (0.22.0)
+- scikit-learn (1.3.2)
 
 Here are the steps to set up everything to run the application using conda.
 
