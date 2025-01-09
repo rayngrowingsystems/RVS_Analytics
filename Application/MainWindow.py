@@ -1249,7 +1249,12 @@ class MainWindow(QMainWindow):
                 perimeter = plant["perimeter"]["value"]
                 convex_hull_area = plant["convex_hull_area"]["value"]   
                 longest_path = plant["longest_path"]["value"]
-                mean_index = plant["mean_index_ari"]["value"]
+
+                # Mean index is special as it contains the index name. So we need to browse the keys and match the start of the name to find the value
+                mean_index = 0
+                for key in plant.keys():
+                    if key.startswith("mean_index_"):
+                        mean_index = plant[key]["value"]
 
                 if Config.verbose_mode:
                     tprint(plant_index, width, height, area, perimeter)
