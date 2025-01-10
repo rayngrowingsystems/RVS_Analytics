@@ -28,6 +28,7 @@ import importlib
 import glob
 import json
 import os
+import platform
 
 import warnings
 
@@ -246,7 +247,10 @@ class MainWindow(QMainWindow):
         self.load_ui()
 
         self.refresh_window_title()
-        self.setWindowIcon(QIcon(":/images/Syrcadia.ico"))  # TODO
+        if platform.system() == "Windows":
+            self.setWindowIcon(QIcon(":/images/Syrcadia.ico"))
+        elif platform.system() == "Darwin":
+            self.setWindowIcon(QIcon(":/images/Syrcadia.icns"))
 
         # Connect buttons to their respective slot
         self.ui.image_source_button.clicked.connect(self.open_image_source_dialog)
