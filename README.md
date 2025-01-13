@@ -56,7 +56,7 @@ Here are the steps to set up everything to run the application using conda.
 ```bash
 conda create -n rvs python=3.10 # create virtual environment named "rvs" with python v3.10
 conda activate rvs # activate virtual environment
-conda install --channel=conda-forge plantcv plotly jupyterlab ipympl nodejs stackprinter paho-mqtt plotly watchdog
+conda install --channel=conda-forge plantcv plotly jupyterlab ipympl nodejs stackprinter paho-mqtt watchdog
 pip install kaleido==0.1.0
 pip install pyside6
 ```
