@@ -502,7 +502,7 @@ class MainWindow(QMainWindow):
                     else:
                         value = None
 
-                    self.handle_script_feedback(command, value)
+                    self.analysis_worker.signals.status.emit(command, value)  # self.handle_script_feedback(command, value)
 
             except RuntimeError as err:
                 tprint("RuntimeError in script:", err)
