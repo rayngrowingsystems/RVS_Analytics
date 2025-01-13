@@ -46,7 +46,7 @@ Required libraries and versions:
 - paho-mqtt (1.6.1)
 - plotly (5.9.0)
 - watchdog (2.1.6)
-- kaleido (0.1.0, other versions do not work)
+- kaleido (0.1.0.post1, other versions do not work)
 - pyside6 (6.6.0)
 - scikit-image (0.22.0)
 - scikit-learn (1.3.2)
