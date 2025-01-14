@@ -1583,7 +1583,7 @@ class MainWindow(QMainWindow):
                 chart.preview_view.show()
 
                 # Copy webPage() to "outputFolder"
-                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"], "chart.html"))
+                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"], f"chart_{key}.html"))
             chart.preview_label.hide()
             chart.preview_label.setPixmap(QPixmap())
         
