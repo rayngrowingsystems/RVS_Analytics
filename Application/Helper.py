@@ -26,7 +26,7 @@ debug_file_name = None
 def tprint(*args, **kwargs):
     timestamp = datetime.now().strftime("%Y-%d-%m %H:%M:%S")
 
-    print(timestamp + ":", *args, **kwargs)
+    # print(timestamp + ":", *args, **kwargs)
 
     # Build string and add to log file
     s = timestamp + ": "
@@ -35,6 +35,8 @@ def tprint(*args, **kwargs):
     for kwarg in kwargs.items():
         s += str(kwarg) + " "
 
+    print(s)
+    
     if debug_file_name:
         with open(debug_file_name, "a") as f:
            f.write(s + "\n")
