@@ -1170,7 +1170,7 @@ class MainWindow(QMainWindow):
             handled = True
 
         # From analysis script
-        if command == "preview":  # Psuedo RGB: <fileName>
+        if command == "preview":  # Pseudo RGB: <fileName>
             # width = self.ui.image_preview.width() - 4  # The - 4 is a workaround for the images slowly growing with each iteration, probably layout oriented
             # height = self.ui.image_preview.height() - 4
 
@@ -1183,13 +1183,13 @@ class MainWindow(QMainWindow):
             handled = True
 
         if command == "spectral_hist":
-            self.add_preview_tab.emit("spectral_hist", value)
+            self.add_preview_tab.emit("Spectral Histogram", value)
         
         if command == "index_hist":
-            self.add_preview_tab.emit("index_hist", value)
+            self.add_preview_tab.emit("Index Histogram", value)
 
         if command == "index_false_color":
-            self.add_preview_tab.emit("index_false_color", value)
+            self.add_preview_tab.emit("Index False Color", value)
 
         if command == "results":  # When processing is done: File name for results
             self.process_results(self.current_camera_name, value, self.current_image_timestamp)
@@ -1472,18 +1472,25 @@ class MainWindow(QMainWindow):
 
             # Create the Chart(s)
             for key, value in self.experiment.chart_options.items():
-                y_label = key
-                title = key # TODO
+
+                if key == "mean_index":
+                    y_label = f"{self.experiment.script_options['index_selection'].upper()} Value"  # TODO Alex
+                    title = (f"{self.experiment.script_options['index_selection'].upper()} "
+                             f"{key.replace('_', ' ').title()}")  # TODO Alex
+                else:
+                    y_label = key.replace("_", " ").title()  # TODO Alex
+                    title = key.replace("_", " ").title()  # TODO Alex
+
                 tprint("Chart:", title, y_label, value)
 
                 if value is True and key in self.experiment.chart_option_types and self.experiment.chart_option_types[key] == "plot":
                     self.charts[key] = Chart(self, title, y_label)
 
             for key, chart in self.charts.items():
-                if (path.exists(chart.web_page())):
+                if path.exists(chart.web_page()):
                     chart.preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
                     os.remove(chart.web_page())
-                if (path.exists(chart.image_file())):
+                if path.exists(chart.image_file()):
                     os.remove(chart.image_file())
 
             # Find selected mask
