@@ -19,6 +19,7 @@ import shutil
 import tempfile
 
 import datetime
+import time
 
 import traceback
 from multiprocessing import Queue
@@ -488,21 +489,24 @@ class MainWindow(QMainWindow):
 
             tprint("ScriptRunner:", mask_file_name)
 
-            feedback_queue = Queue()
+            # feedback_queue = Queue()
 
             try:
-                analysis_script.execute(feedback_queue, script_name, settings, mask_file_name)
+                return_list = analysis_script.execute(script_name, settings, mask_file_name)
 
                 # Process script feedback queue. TODO Should we change the concept for feedback and eliminate the queue?
-                while not feedback_queue.empty():
+                '''while not feedback_queue.empty():
                     data = feedback_queue.get()
                     command = data[1]
                     if len(data) > 2:
                         value = data[2]
                     else:
-                        value = None
-
-                    self.analysis_worker.signals.status.emit(command, value)  # self.handle_script_feedback(command, value)
+                        value = None'''
+                
+                for command, value in return_list:
+                    # self.analysis_worker.signals.status.emit(command, value)
+                    tprint("---> handle_script_feedback", command, value)
+                    self.handle_script_feedback(command, value)
 
             except RuntimeError as err:
                 tprint("RuntimeError in script:", err)
@@ -522,7 +526,7 @@ class MainWindow(QMainWindow):
         # feedback_queue.put([script_name, "done"])
 
     def on_script_runner_status(self, command, value):
-        # tprint("script_runner_status", command, value)
+        tprint("---> script_runner_status", command, value)
         self.handle_script_feedback(command, value)
 
     def on_camera_discovery_add_camera(self, cid, camera):
@@ -1187,14 +1191,7 @@ class MainWindow(QMainWindow):
         if command == "index_false_color":
             self.add_preview_tab.emit("index_false_color", value)
 
-        if command == "results":  # When processing is done: <dict of results>
-            self.add_status_text.emit("Results:")
-            '''for text in value:
-                if isinstance(value[text], str):
-                    self.add_status_text.emit(value[text])
-                    tprint(value[text])
-                elif isinstance(value[text], dict):'''
-                
+        if command == "results":  # When processing is done: File name for results
             self.process_results(self.current_camera_name, value, self.current_image_timestamp)
             handled = True
 
@@ -1583,7 +1580,7 @@ class MainWindow(QMainWindow):
                 chart.preview_view.show()
 
                 # Copy webPage() to "outputFolder"
-                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"], "chart.html"))
+                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"], f"chart_{key}.html"))
             chart.preview_label.hide()
             chart.preview_label.setPixmap(QPixmap())
         

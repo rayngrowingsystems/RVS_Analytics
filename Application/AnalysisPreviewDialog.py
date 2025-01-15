@@ -261,7 +261,7 @@ class AnalysisPreviewDialog(QDialog):
                 else:
                     mask_file_name = ''
 
-                analysis_script_queue = Queue()
+                # analysis_script_queue = Queue()
 
                 # Process preview image 1 if available
                 if self.ui.reference_image1.image_file_name != "":
@@ -270,7 +270,7 @@ class AnalysisPreviewDialog(QDialog):
                     tprint("Script preview", settings)
 
                     try:
-                        temp_file_name = analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name, True)
+                        temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
                         
                         self.original_preview_image1 = QPixmap(temp_file_name)
                         self.refresh_preview_image1()
@@ -288,7 +288,7 @@ class AnalysisPreviewDialog(QDialog):
                     settings["inputImage"] = self.ui.reference_image2.image_file_name
 
                     try:
-                        temp_file_name = analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name, True)
+                        temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
 
                         self.original_preview_image2 = QPixmap(temp_file_name)
                         self.refresh_preview_image2()
