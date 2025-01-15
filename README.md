@@ -46,15 +46,17 @@ Required libraries and versions:
 - paho-mqtt (1.6.1)
 - plotly (5.9.0)
 - watchdog (2.1.6)
-- kaleido (0.1.0, other versions do not work)
+- kaleido (0.1.0.post1, other versions do not work)
 - pyside6 (6.6.0)
+- scikit-image (0.22.0)
+- scikit-learn (1.3.2)
 
 Here are the steps to set up everything to run the application using conda.
 
 ```bash
 conda create -n rvs python=3.10 # create virtual environment named "rvs" with python v3.10
 conda activate rvs # activate virtual environment
-conda install --channel=conda-forge plantcv plotly jupyterlab ipympl nodejs stackprinter paho-mqtt plotly watchdog
+conda install --channel=conda-forge plantcv plotly jupyterlab ipympl nodejs stackprinter paho-mqtt watchdog
 pip install kaleido==0.1.0
 pip install pyside6
 ```
