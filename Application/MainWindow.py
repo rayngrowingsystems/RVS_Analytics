@@ -1183,13 +1183,16 @@ class MainWindow(QMainWindow):
             handled = True
 
         if command == "spectral_hist":
-            self.add_preview_tab.emit("Spectral Histogram", value)
+            self.add_preview_tab.emit("spectral_hist", value)
+            handled = True
         
         if command == "index_hist":
-            self.add_preview_tab.emit("Index Histogram", value)
+            self.add_preview_tab.emit("index_hist", value)
+            handled = True
 
         if command == "index_false_color":
-            self.add_preview_tab.emit("Index False Color", value)
+            self.add_preview_tab.emit("index_false_color", value)
+            handled = True
 
         if command == "results":  # When processing is done: File name for results
             self.process_results(self.current_camera_name, value, self.current_image_timestamp)
@@ -1594,6 +1597,7 @@ class MainWindow(QMainWindow):
         output_folder = self.current_session["outputFolder"]["data"]
         
         combined_json = os.path.join(output_folder, "combined.json")
+        
         process_results(output_folder, combined_json)
         
         json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
@@ -1623,6 +1627,13 @@ class MainWindow(QMainWindow):
             self.camera.files_to_fetch = []
             self.refresh_stop_button_status()
             tprint("Fetch queue cleared")
+
+        # Ask threads to stop
+        self.stop_camera_discovery_worker = True
+        self.stop_analysis_worker = True
+
+        # Wait for threads to actually stop
+        self.threadpool.waitForDone()
 
         self.stop_analysis(True)
 

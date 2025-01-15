@@ -432,7 +432,7 @@ class Ui_MainWindow(object):
         self.camera_status.setText("")
         self.mqtt_status.setText("")
         self.image_preview.setText("")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"preview", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"Preview", None))
         self.timestamp_label.setText("")
         self.menu_file.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menu_help.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
