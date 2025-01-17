@@ -45,7 +45,7 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtNetwork import QNetworkInterface, QAbstractSocket
 
 from watchdog.observers import Observer
-from watchdog.events import PatternMatchingEventHandler
+from watchdog.events import FileSystemEventHandler
 
 from ImageSourceDialog import ImageSourceDialog
 from ImageOptionDialog import ImageOptionDialog
@@ -129,9 +129,9 @@ class Worker(QRunnable):
             exctype, value = sys.exc_info()[:2]
             tprint("Exception", exctype, value)
 
-class FileSystemEventHandler(PatternMatchingEventHandler):
-    def __init__(self, parent, patterns, ignore_patterns, ignore_directories, case_sensitive):
-        super(FileSystemEventHandler, self).__init__(patterns, ignore_patterns, ignore_directories, case_sensitive)
+class MyFileEventHandler(FileSystemEventHandler):
+    def __init__(self, parent):
+        super().__init__()
 
         self.main_window = parent
 
@@ -385,11 +385,7 @@ class MainWindow(QMainWindow):
         timer.start(1000)
 
         # Watch folder for changes
-        patterns = ["*"]
-        ignore_patterns = None
-        ignore_directories = False
-        case_sensitive = True
-        self.file_system_event_handler = FileSystemEventHandler(self, patterns, ignore_patterns, ignore_directories, case_sensitive)
+        self.file_system_event_handler = MyFileEventHandler(self)
 
         self.file_system_observer = None
 
