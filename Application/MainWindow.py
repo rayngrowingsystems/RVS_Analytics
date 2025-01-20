@@ -1179,15 +1179,15 @@ class MainWindow(QMainWindow):
             handled = True
 
         if command == "spectral_hist":
-            self.add_preview_tab.emit("spectral_hist", value)
+            self.add_preview_tab.emit("Spectral Histogram", value)
             handled = True
         
         if command == "index_hist":
-            self.add_preview_tab.emit("index_hist", value)
+            self.add_preview_tab.emit("Index Histogram", value)
             handled = True
 
         if command == "index_false_color":
-            self.add_preview_tab.emit("index_false_color", value)
+            self.add_preview_tab.emit("Index False Color", value)
             handled = True
 
         if command == "results":  # When processing is done: File name for results
