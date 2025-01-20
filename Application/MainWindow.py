@@ -1247,7 +1247,7 @@ class MainWindow(QMainWindow):
                 height = plant["height"]["value"]
                 area = plant["area"]["value"]
                 perimeter = plant["perimeter"]["value"]
-                convex_hull_area = plant["convex_hull_area"]["value"]   
+                convex_hull_area = plant["convex_hull_area"]["value"]
                 longest_path = plant["longest_path"]["value"]
 
                 # Mean index is special as it contains the index name. So we need to browse the keys and match the start of the name to find the value
@@ -1298,12 +1298,14 @@ class MainWindow(QMainWindow):
                         value = roi["area"] 
                     elif key == "perimeter":
                         value = roi["perimeter"]
-                    elif key == "convex_hull_area":
+                    elif key == "hull_area":
                         value = roi["convexHullArea"]
                     elif key == "longest_path":
                         value = roi["longestPath"]
                     elif key == "mean_index":
                         value = roi["meanIndex"]
+                    else:
+                        tprint("Unknown chart parameter key", key)
 
                     chart.add_roi(timestamp, value, "Roi " + str(plant_index))
 
