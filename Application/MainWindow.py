@@ -1647,9 +1647,12 @@ class MainWindow(QMainWindow):
                 ready = False
                 reason = "No valid image source"
         elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
-            if self.experiment.camera_file_path == "" or self.experiment.camera_cid == "":
+            if self.experiment.camera_file_path == "":
                 ready = False
-                reason = "No valid image source"
+                reason = "No target folder defined"
+            elif self.experiment.camera_cid == "":
+                ready = False
+                reason = "No camera defined"
 
         if len(self.experiment.chart_options) == 0:
             ready = False
