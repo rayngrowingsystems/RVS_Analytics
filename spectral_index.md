@@ -22,6 +22,18 @@ Calculates the Carotenoid Reflectance Index 700 using reflectance values ([Gitel
 CRI700 = (1 / R510) - (1 / R700)
 ```
 
+### EGI
+
+Calculates the Excess Green Index using RGB values ([Woebbecke et al., 1995](#references)):
+
+```
+r = R700 / (R700 + R530 + R460)
+g = R530 / (R700 + R530 + R460)
+b = R460 / (R700 + R530 + R460)
+EGI = 2g - r - b
+```
+
+
 ### EVI
 
 Calculates the Enhanced Vegetation index using reflectance values ([Huete et al., 1997](#references)):
