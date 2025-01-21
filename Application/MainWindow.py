@@ -668,6 +668,7 @@ class MainWindow(QMainWindow):
 
         if self.experiment_dirty:
             if self.save_experiment_first():
+                self.save_experiment()
                 return
 
         if path.exists(self.experiment_file_name):
@@ -696,6 +697,7 @@ class MainWindow(QMainWindow):
 
         if self.experiment_dirty:
             if self.save_experiment_first():
+                self.save_experiment()
                 return
 
         file_name, filter = QFileDialog.getOpenFileName(self, "Open experiment", self.experiment_folder, "Experiment Files (*.xp)")
@@ -744,6 +746,7 @@ class MainWindow(QMainWindow):
 
         if self.analysis_dirty:
             if self.save_analysis_first():
+                self.save_analysis()
                 return
 
         self.current_analysis_file = ""
@@ -767,6 +770,7 @@ class MainWindow(QMainWindow):
     
         if self.analysis_dirty:
             if self.save_analysis_first():
+                self.save_analysis()
                 return
 
         file_name, filter = QFileDialog.getOpenFileName(self, "Open analysis", self.experiment_folder, "Analysis Files (*.af)")
