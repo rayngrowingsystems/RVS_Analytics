@@ -490,15 +490,6 @@ class MainWindow(QMainWindow):
             try:
                 return_list = analysis_script.execute(script_name, settings, mask_file_name)
 
-                # Process script feedback queue. TODO Should we change the concept for feedback and eliminate the queue?
-                '''while not feedback_queue.empty():
-                    data = feedback_queue.get()
-                    command = data[1]
-                    if len(data) > 2:
-                        value = data[2]
-                    else:
-                        value = None'''
-                
                 for command, value in return_list:
                     # self.analysis_worker.signals.status.emit(command, value)
                     tprint("---> handle_script_feedback", command, value)
