@@ -75,8 +75,8 @@ class Chart:
 
     def add_roi(self, timestamp, y, name):
         found = False
-        for i in range(len(self.fig.data)):
-            if self.fig.data[i].name == name:
+        for data in self.fig.data:
+            if data.name == name:
                 found = True
                 break
 
@@ -87,24 +87,17 @@ class Chart:
 
         dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
 
-        for i in range(len(self.fig.data)):
-            if self.fig.data[i].name == name:
-                if self.fig.data[i].y is None:
-                    self.fig.data[i].y = ()
-                    self.fig.data[i].x = ()
+        for data in self.fig.data:
+            if data.name == name:
+                if data.y is None:
+                    data.y = ()
+                    data.x = ()
 
-                self.fig.data[i].y = self.fig.data[i].y + (y,)
-                self.fig.data[i].x = self.fig.data[i].x + (dt,)
+                data.y = data.y + (y,)
+                data.x = data.x + (dt,)
 
-                # tprint("Added datapoint", name, dt, y, self.fig.data[i].y)
+                # tprint("Added datapoint", name, dt, y, data.y)
                 break
-
-        self.fig.write_image(self.image_file())
-
-        config = {'doubleClickDelay': 1000}
-
-        # self.fig.write_html("temp.html", include_plotlyjs='cdn', config=config)
-        self.fig.write_html(self.web_page(), config=config)
 
     def pixmap(self):
         return QPixmap(self.image_file())
@@ -114,4 +107,12 @@ class Chart:
 
     def web_page(self):
         return self.temp_html_file
+
+    def update_images(self):
+         self.fig.write_image(self.image_file())
+
+         config = {'doubleClickDelay': 1000}
+         self.fig.write_html(self.web_page(), config=config)  # TODO Only necessary on last iteration or stop to produce resulting html file
+
+         self.preview_label.setPixmap(self.pixmap())
 

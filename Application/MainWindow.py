@@ -82,6 +82,9 @@ from Chart import Chart
 from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
 
+if Config.profile_mode:
+    from pyinstrument import Profiler
+
 tprint("Loading MainWindow module", __name__)
 
 class AnalysisWorkerSignals(QObject):
@@ -488,12 +491,20 @@ class MainWindow(QMainWindow):
             # feedback_queue = Queue()
 
             try:
+                if Config.profile_mode:
+                    profiler = Profiler(interval=0.0001)
+                    profiler.start()
+
                 return_list = analysis_script.execute(script_name, settings, mask_file_name)
 
                 for command, value in return_list:
                     # self.analysis_worker.signals.status.emit(command, value)
                     tprint("---> handle_script_feedback", command, value)
                     self.handle_script_feedback(command, value)
+
+                if Config.profile_mode:
+                    profiler.stop() 
+                    profiler.print()
 
             except RuntimeError as err:
                 tprint("RuntimeError in script:", err)
@@ -1308,7 +1319,7 @@ class MainWindow(QMainWindow):
                 plant_key = f"plant_{plant_index}"
 
         for key, chart in self.charts.items():
-            chart.preview_label.setPixmap(chart.pixmap())
+            chart.update_images()
 
     def update_current_session_file(self):
         j = json.dumps(self.current_session, indent=4)
