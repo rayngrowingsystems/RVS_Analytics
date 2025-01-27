@@ -679,6 +679,8 @@ class MainWindow(QMainWindow):
         self.current_experiment_file = ""
         self.refresh_experiment()
 
+        self.remove_result_tabs()
+        
         self.ui.script_selection_combobox.setCurrentIndex(0)
         self.ui.mask_selection_combobox.setCurrentIndex(0)
 
@@ -713,6 +715,8 @@ class MainWindow(QMainWindow):
             self.current_experiment_file = file_name
             self.refresh_experiment()
 
+            self.remove_result_tabs()
+         
             self.refresh_play_button_status()
             self.refresh_ready_to_play()
 
@@ -756,6 +760,8 @@ class MainWindow(QMainWindow):
 
         self.experiment.clear_analysis()
 
+        self.remove_result_tabs()
+        
         self.ui.script_selection_combobox.setCurrentIndex(0)
         self.ui.mask_selection_combobox.setCurrentIndex(0)
 
@@ -787,6 +793,8 @@ class MainWindow(QMainWindow):
             self.current_analysis_file = file_name
             self.refresh_window_title()
 
+            self.remove_result_tabs()
+         
             # self.refreshAnalysis() # TODO?
             self.refresh_comboboxes()
 
@@ -1364,6 +1372,13 @@ class MainWindow(QMainWindow):
                 self.ui.play_status_label.setText("")
                 self.add_status_text.emit("Resuming previous session")
 
+    def remove_result_tabs(self):
+        # Remove old tabs except for the first one
+        while self.ui.tabWidget.count() > 1:
+            w = self.ui.tabWidget.widget(1)
+            self.ui.tabWidget.removeTab(1)
+            del w
+
     def start_analysis(self, resume, all_images, force):
         if self.analysis_running and not force:  # Check if analysis is already running
             return  # If analysis is running, do nothing
@@ -1461,19 +1476,7 @@ class MainWindow(QMainWindow):
             # analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
             # title, y_label = analytics_script.get_display_name_for_chart(settings) # TODO?
 
-            # Remove old tabs except for the first one
-            while self.ui.tabWidget.count() > 1:
-                w = self.ui.tabWidget.widget(1)
-                self.ui.tabWidget.removeTab(1)
-                del w
-
-            '''widgets = []
-            for key, chart in self.charts.items():
-                widgets.append(chart.widget)
-        
-            for w in widgets:
-                self.ui.tabWidget.removeTab(self.ui.tabWidget.indexOf(w))
-                del w'''
+            self.remove_result_tabs();
 
             self.charts = {}
 
