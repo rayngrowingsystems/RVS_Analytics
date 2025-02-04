@@ -733,7 +733,7 @@ class MainWindow(QMainWindow):
 
             shutil.copy2(self.experiment_file_name, self.current_experiment_file)
 
-        self.experiment_dirty = False
+            self.experiment_dirty = False
 
     def save_as_experiment(self):
         tprint("Save As experiment")
