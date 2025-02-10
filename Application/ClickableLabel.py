@@ -73,7 +73,7 @@ class ClickableLabel(QLabel):
                 # tprint("Convert to a visible file through tempfile:", tempFileName)
 
                 # Create preview image
-                spectral_array = rayn_utils.prepare_spectral_data(image_options, file_name, preview=True)
+                spectral_array, rvs_metadata = rayn_utils.prepare_spectral_data(image_options, file_name, preview=True)
                 pcv.print_image(spectral_array.pseudo_rgb, temp_file_name)
 
                 # tprint("Load resulting image to preview box")

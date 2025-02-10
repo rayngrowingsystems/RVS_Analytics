@@ -30,13 +30,15 @@ from PySide6 import QtCore
 import Helper
 from Helper import tprint
 
+from ImageRoiDialog import RoiGrid
+
 import CameraApp_rc
 
 from SelectImageDialog import SelectImageDialog
 
-from ui_ScriptOptionsDialog import Ui_ScriptOptionsDialog
+from ui_AnalysisPreviewDialog import Ui_AnalysisPreviewDialog
 
-class ScriptOptionsDialog(QDialog):
+class AnalysisPreviewDialog(QDialog):
     def __init__(self, main_window):
         self.main_window = main_window
 
@@ -44,7 +46,7 @@ class ScriptOptionsDialog(QDialog):
         self.option_sliders = []
         self.option_dropdowns = []
 
-        super(ScriptOptionsDialog, self).__init__()
+        super(AnalysisPreviewDialog, self).__init__()
         self.load_ui()
 
         # Connect signals of reference images to the slot for running preview script
@@ -54,6 +56,9 @@ class ScriptOptionsDialog(QDialog):
         # Initialize variables to hold original preview images
         self.original_preview_image1 = None
         self.original_preview_image2 = None
+
+        self.roi_grid1 = None
+        self.roi_grid2 = None
 
         # Connect image buttons to slot for selecting reference images
         image_button = QPushButton("Image...", self.ui.reference_image1)
@@ -69,9 +74,13 @@ class ScriptOptionsDialog(QDialog):
         image_button.clicked.connect(self.select_reference_image2)
 
         self.ui.preview_button.clicked.connect(self.run_preview_script)
-        
+
+        self.ui.show_rois_checkbox.toggled.connect(self.show_rois)
+
         self.script_description = ''
 
+        # TODO change Move to AnalysisOptionsDialog
+        '''
         if self.main_window.experiment.selected_script != "":
             # configFileName = path.join(self.mainWindow.scriptFolder, self.mainWindow.experiment.selectedScript.replace(".py", ".config"))
             config_file_name = self.main_window.script_paths[self.main_window.experiment.selected_script].replace(".py", ".config")
@@ -90,46 +99,17 @@ class ScriptOptionsDialog(QDialog):
                                                     slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
                                                     script_for_dropdown_values=self.main_window.current_analysis_script())
 
-                self.ui.script_options_box.setLayout(grid)
+                self.ui.analysis_preview_box.setLayout(grid)'''
 
-        self.ui.script_label.setText("Script: " + self.main_window.ui.script_selection_combobox.currentText())
-        self.ui.script_description.setText(self.script_description)
+        # self.ui.script_label.setText("Script: " + self.main_window.ui.script_selection_combobox.currentText())
+        # self.ui.script_description.setText(self.script_description)
 
         # For some reason, geometry won't work unless we move the update outside the constructor
         QTimer.singleShot(300, lambda: self.load_reference_images())
 
     def load_ui(self):
-        self.ui = Ui_ScriptOptionsDialog()
+        self.ui = Ui_AnalysisPreviewDialog()
         self.ui.setupUi(self)
-
-    def slider_value_changed(self, name, option_slider):
-        tprint("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max, option_slider.steps, option_slider.stepSize)
-        if option_slider.stepSize == 1.0:
-            option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(int(option_slider.value()))))
-        else:
-            option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(option_slider.value())))
-
-    def wavelength_changed(self, name, option_wavelength):
-        tprint("Wavelength changed", name, option_wavelength, option_wavelength.currentIndex())
-
-    def dropdown_changed(self, name, option_dropdown, initial_update):
-        tprint("Dropdown changed", name, option_dropdown, option_dropdown.currentIndex(), initial_update)
-
-    def refresh_values(self):
-        for name, checkbox in self.option_checkboxes:
-            self.main_window.experiment.script_options[name] = checkbox.isChecked()
-
-        for name, slider, min, step_size in self.option_sliders:
-            self.main_window.experiment.script_options[name] = slider.value()
-
-        for name, dropdown in self.option_dropdowns:
-            self.main_window.experiment.script_options[name] = dropdown.currentData()
-
-        tprint("Refresh", self.main_window.experiment.script_options)
-
-        self.main_window.update_experiment_file(True)
-
-        # self.run_preview_script()
 
     def refresh_preview_image1(self):
         if self.original_preview_image1 is not None:
@@ -139,6 +119,16 @@ class ScriptOptionsDialog(QDialog):
             if self.original_preview_image1:
                 # Scale pixmap to follow available space
                 self.ui.preview_image1.setPixmap(self.original_preview_image1.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+
+            scaling_factor = self.ui.preview_image1.pixmap().width() / self.original_preview_image1.width()
+
+            if not self.roi_grid1:
+                items = self.main_window.experiment.roi_info.roi_items(1.0)
+                self.roi_grid1 = RoiGrid(self.ui.preview_image1, self, items)
+                self.roi_grid1.setVisible(self.ui.show_rois_checkbox.isChecked())
+
+            self.roi_grid1.scaling_factor = scaling_factor
+            self.roi_grid1.setFixedSize(self.ui.preview_image1.pixmap().size())
             
     def refresh_preview_image2(self):
         if self.original_preview_image2 is not None:
@@ -148,6 +138,16 @@ class ScriptOptionsDialog(QDialog):
             if self.original_preview_image2:
                 # Scale pixmap to follow available space
                 self.ui.preview_image2.setPixmap(self.original_preview_image2.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+
+            scaling_factor = self.ui.preview_image2.pixmap().width() / self.original_preview_image2.width()
+
+            if not self.roi_grid2:
+                items = self.main_window.experiment.roi_info.roi_items(1.0)
+                self.roi_grid2 = RoiGrid(self.ui.preview_image2, self, items)
+                self.roi_grid2.setVisible(self.ui.show_rois_checkbox.isChecked())
+
+            self.roi_grid2.scaling_factor = scaling_factor
+            self.roi_grid2.setFixedSize(self.ui.preview_image2.pixmap().size())
 
     def refresh_reference_image1(self):
         if self.ui.reference_image1 is not None:
@@ -174,6 +174,12 @@ class ScriptOptionsDialog(QDialog):
 
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()
+
+    def show_rois(self, active):
+        if self.roi_grid1:
+            self.roi_grid1.setVisible(active)
+        if self.roi_grid2:
+            self.roi_grid2.setVisible(active)
 
     def select_reference_image1(self):
         select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
@@ -222,16 +228,12 @@ class ScriptOptionsDialog(QDialog):
 
             # Set up temporary file for preview
             with tempfile.TemporaryDirectory() as temp_path:
-                # temp_file_name = os.path.join(temp_path, "ProcessedImages", 'scriptPreview.png')
-
                 # Initialize settings dictionary for the script
                 settings = {}
                 settings["experimentSettings"] = self.main_window.experiment.to_dict()
 
                 settings["scriptName"] = self.main_window.experiment.selected_script
-                settings["outputFolder"] = temp_path
-                # settings["outputImage"] = temp_file_name
-                # TODO Why can't we use the outputImage in this case? Seems like it is hardcoded in the script to ProcessedImages and the input file name
+                settings["outputFolder"] = { "images": temp_path, "visuals": "", "data": "" , "appData": ""}    
 
                 # Populate script options from UI elements
                 # Note: If you change ui elements here, you are likely to have to update openImageMaskDialog when dialog is closed
@@ -241,8 +243,8 @@ class ScriptOptionsDialog(QDialog):
                 for name, slider, min, step_size in self.option_sliders:
                     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = int(slider.value())
 
-                for name, wavelength in self.option_wavelengths:
-                    settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = wavelength.currentText()
+                # for name, wavelength in self.option_wavelengths:
+                #     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = wavelength.currentText()
 
                 for name, dropdown in self.option_dropdowns:
                     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = dropdown.currentData()
@@ -259,7 +261,7 @@ class ScriptOptionsDialog(QDialog):
                 else:
                     mask_file_name = ''
 
-                analysis_script_queue = Queue()
+                # analysis_script_queue = Queue()
 
                 # Process preview image 1 if available
                 if self.ui.reference_image1.image_file_name != "":
@@ -268,10 +270,8 @@ class ScriptOptionsDialog(QDialog):
                     tprint("Script preview", settings)
 
                     try:
-                        analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name)
+                        temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
                         
-                        # TODO: We should clean this up and be able to specify an output file, like we can when processing the mask
-                        temp_file_name = os.path.join(temp_path, "ProcessedImages", os.path.splitext(os.path.basename(self.ui.reference_image1.image_file_name))[0]) + ".png"
                         self.original_preview_image1 = QPixmap(temp_file_name)
                         self.refresh_preview_image1()
 
@@ -288,9 +288,8 @@ class ScriptOptionsDialog(QDialog):
                     settings["inputImage"] = self.ui.reference_image2.image_file_name
 
                     try:
-                        analytics_script.execute(analysis_script_queue, analytics_script_name, settings, mask_file_name)
-                        # TODO: We should clean this up and be able to specify an output file, like we can when processing the mask
-                        temp_file_name = os.path.join(temp_path, "ProcessedImages", os.path.splitext(os.path.basename(self.ui.reference_image2.image_file_name))[0]) + ".png"
+                        temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
+
                         self.original_preview_image2 = QPixmap(temp_file_name)
                         self.refresh_preview_image2()
                     except BaseException as e:

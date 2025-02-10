@@ -39,7 +39,7 @@ class Mqtt(QObject):
         tprint("MQTT: Connecting to", broker, port)
         tprint("MQTT: Client name", client_name)
 
-        self.client = mqtt.Client(client_name)
+        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_name)
         self.client.on_connect = self.on_connect
         self.client.on_publish = self.on_publish
         self.client.on_message = self.on_message

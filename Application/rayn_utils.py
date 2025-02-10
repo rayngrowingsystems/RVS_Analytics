@@ -16,6 +16,7 @@ import warnings
 import cv2
 import numpy as np
 import os
+from os import path
 from plantcv.plantcv import spectral_index
 from plantcv.plantcv import readimage
 from plantcv.plantcv.transform import rotate
@@ -156,15 +157,19 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         warnings.warn("No header file provided. Processing not possible.")
         return
 
-    # begin masking workflow
+    # read image data
     spectral_data = readimage(filename=img_file, mode='envi')
+
+    # prepare image data
     spectral_data.array_data = spectral_data.array_data.astype("float32")  # required for further calculations
     if spectral_data.d_type == np.uint8:  # only convert if data seems to be uint8
         spectral_data.array_data = spectral_data.array_data / 255  # convert 0-255 (orig.) to 0-1 range
 
+    rvs_dict = parse_rvs_header(f"{img_file}.hdr")
+
     # Apply light correction
     if light_correction:
-        correction_matrix = get_correction_matrix_from_file("calibration_data/120_correction_matrix.npy")
+        correction_matrix = get_correction_matrix_from_file(path.join(path.dirname(__file__), "calibration_data/120_correction_matrix.npy"))
         spectral_data = light_intensity_correction(spectral_data, correction_matrix)
 
     # normalize the image cube
@@ -173,7 +178,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
 
     # undistort the image cube
     if lens_angle != 0:  # only undistort if angle is selected
-        cam_calibration_file = f"calibration_data/{lens_angle}_calibration_data.yml"  # select the data set
+        cam_calibration_file = path.join(path.dirname(__file__), f"calibration_data/{lens_angle}_calibration_data.yml")  # select the data set
         mtx, dist = load_coefficients(cam_calibration_file)  # depending on the lens angle
         spectral_data.array_data = undistort_data_cube(spectral_data.array_data, mtx, dist)
         spectral_data.pseudo_rgb = undistort_data_cube(spectral_data.pseudo_rgb, mtx, dist)
@@ -183,7 +188,13 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         spectral_data.array_data = rotate(spectral_data.array_data, rotation, crop)
         spectral_data.pseudo_rgb = rotate(spectral_data.pseudo_rgb, rotation, crop)
 
-    return spectral_data
+    # calculate pixel to mm conversion factor
+    rvs_dict["px to mm ratio"] = 0
+    if lens_angle == 60 and "exact distance (mm)" in rvs_dict:
+        pixel_per_mm = 1000/int(rvs_dict["exact distance (mm)"])  # with a 60° lens at 1000 mm the px to mm ratio is 1
+        rvs_dict["px to mm ratio"] = pixel_per_mm
+
+    return spectral_data, rvs_dict
 
 
 def get_index_functions():
@@ -194,7 +205,9 @@ def get_index_functions():
                 spectral_index.ari, -50, 50),
         "cri700": ("CRI700 - Carotenoid Reflectance Index (700)",
                    spectral_index.cri700, -10, 10),
-        "evi": ("EVI - Excess Green Index",
+        "egi": ("EGI - Excess Green Index",
+                spectral_index.egi, -1, 2),
+        "evi": ("EVI - Enhanced Vegetation Index",
                 spectral_index.evi, -1, 1),
         "gli": ("GLI - Green Leaf Index",
                 spectral_index.gli, -1, 1),
@@ -233,3 +246,60 @@ def get_index_functions():
     }
 
     return index_dict
+
+
+def parse_rvs_header(headername):
+
+    # Initialize dictionary
+    header_dict = {}
+    with open(headername, "r") as f:
+        # Replace characters for easier parsing
+        hdata = f.read()
+        hdata = hdata.replace(",\n", ",")
+        hdata = hdata.replace("\n,", ",")
+        hdata = hdata.replace("{\n", "{")
+        hdata = hdata.replace("\n}", "}")
+        hdata = hdata.replace(" \n ", "")
+        hdata = hdata.replace(" \n", "")
+        hdata = hdata.replace(";", "")
+    hdata = hdata.split("\n")
+
+    # Loop through and create a dictionary from the header file
+    # Try to reformat strings by replacing all " = " with '=' and " : "
+    for string in hdata:
+        # Remove white space for consistency across header file formats
+        if '=' in string:
+            header_data = string.split("=")
+            header_data[0] = header_data[0].lower()
+            header_dict.update({header_data[0].rstrip(): header_data[1].rstrip()})
+        elif ':' in string:
+            header_data = string.split(":")
+            header_data[0] = header_data[0].lower()
+            header_dict.update({header_data[0].rstrip(): header_data[1].rstrip()})
+
+    # Delete redundant entries
+    entries_to_remove = ["samples", "lines", "bands", "header offset", "file type", "data type", "interleave",
+                         "byte order", "wavelength"]
+    for key in entries_to_remove:
+        if key in header_dict:
+            del header_dict[key]
+
+    # Reformat header dict
+    if "description" in header_dict:
+        header_dict["description"] = header_dict["description"].replace("{", "")
+        header_dict["description"] = header_dict["description"].replace("}", "")
+
+    # remove initial white space
+    for key in header_dict.keys():
+        if header_dict[key][0] == " ":
+            header_dict[key] = header_dict[key][1:]
+
+    list_entries_to_reformat = ["brightness", "exposure", "sensitivity", "reflective factor", "image output"]
+    for key in list_entries_to_reformat:
+        if key in header_dict:
+            header_dict[key] = header_dict[key].replace(" ", "")
+            header_dict[key] = header_dict[key].replace("{", "")
+            header_dict[key] = header_dict[key].replace("}", "")
+            header_dict[key] = header_dict[key].split(",")
+
+    return header_dict

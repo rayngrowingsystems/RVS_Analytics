@@ -36,5 +36,11 @@ if settings.value("Verbose", False) == "True":
 else:
     verbose_mode = False
 
+if settings.value("Profile", False) == "True":
+    profile_mode = True
+else:
+    profile_mode = False
+
 tprint("Config: Verbose", verbose_mode, type(verbose_mode))
+tprint("Config: Profile", profile_mode, type(profile_mode))
 

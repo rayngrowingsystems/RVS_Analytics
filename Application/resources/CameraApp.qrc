@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>images/Syrcadia.ico</file>
+        <file>images/Syrcadia.icns</file>
         <file>images/Refresh.png</file>
         <file>images/Splash.png</file>
     </qresource>

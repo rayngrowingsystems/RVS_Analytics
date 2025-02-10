@@ -42,7 +42,7 @@ class HelpDialog(QDialog):
         self.help_view = QWebEngineView()
         layout.addWidget(self.help_view)
 
-        self.url = QUrl.fromLocalFile(path.join(QDir.currentPath(), 'Help/Default.htm'));
+        self.url = QUrl.fromLocalFile(path.join(path.dirname(__file__), 'Help', 'Default.htm'));
         self.help_view.load(self.url)
 
         self.ui.home_button.clicked.connect(self.home)
