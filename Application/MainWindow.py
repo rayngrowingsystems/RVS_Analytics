@@ -696,6 +696,25 @@ class MainWindow(QMainWindow):
 
         tprint("Selected first", self.experiment.selected_script)
 
+    def open_experiment_directly(self, file_name):
+        if path.exists(file_name):
+            if path.exists(self.experiment_file_name):
+                os.remove(self.experiment_file_name)
+
+            shutil.copy2(file_name, self.experiment_file_name)
+
+            self.current_experiment_file = file_name
+            self.refresh_experiment()
+
+            self.remove_result_tabs()
+            
+            self.refresh_play_button_status()
+            self.refresh_ready_to_play()
+
+            self.experiment_dirty = False
+        else:
+            tprint("File does not exist:", file_name)
+
     def open_experiment(self):
         tprint("Open experiment")
 
@@ -707,20 +726,7 @@ class MainWindow(QMainWindow):
         file_name, filter = QFileDialog.getOpenFileName(self, "Open experiment", self.experiment_folder, "Experiment Files (*.xp)")
 
         if file_name != "":
-            if path.exists(self.experiment_file_name):
-                os.remove(self.experiment_file_name)
-
-            shutil.copy2(file_name, self.experiment_file_name)
-
-            self.current_experiment_file = file_name
-            self.refresh_experiment()
-
-            self.remove_result_tabs()
-         
-            self.refresh_play_button_status()
-            self.refresh_ready_to_play()
-
-            self.experiment_dirty = False
+            self.open_experiment_directly(file_name)
 
     def save_experiment(self):
         tprint("Save experiment", self.current_experiment_file)
@@ -735,17 +741,20 @@ class MainWindow(QMainWindow):
 
             self.experiment_dirty = False
 
+    def save_as_experiment_directly(self, file_name):
+        shutil.copy2(self.experiment_file_name, file_name)
+
+        self.current_experiment_file = file_name
+        self.refresh_window_title()
+
+        self.experiment_dirty = False
+
     def save_as_experiment(self):
         tprint("Save As experiment")
         file_name, filter = QFileDialog.getSaveFileName(self, "Save experiment", self.experiment_folder, "Experiment Files (*.xp)")
 
         if file_name != "":
-            shutil.copy2(self.experiment_file_name, file_name)
-
-            self.current_experiment_file = file_name
-            self.refresh_window_title()
-
-            self.experiment_dirty = False
+            self.save_as_experiment_directly(file_name)
 
     def new_analysis(self):
         tprint("New analysis")
@@ -773,6 +782,26 @@ class MainWindow(QMainWindow):
 
         self.analysis_dirty = False
 
+    def open_analysis_directly(self, file_name):
+        with open(file_name, 'r') as f:
+            j = f.read()
+            d = json.loads(j)
+
+            self.experiment.from_dict(d)  # An analysis file is just the "analysis" section of the experiment file
+
+        self.current_analysis_file = file_name
+        self.refresh_window_title()
+
+        self.remove_result_tabs()
+        
+        # self.refreshAnalysis() # TODO?
+        self.refresh_comboboxes()
+
+        self.refresh_play_button_status()
+        self.refresh_ready_to_play()
+
+        self.analysis_dirty = False
+
     def open_analysis(self):
         tprint("Open analysis")
     
@@ -784,24 +813,7 @@ class MainWindow(QMainWindow):
         file_name, filter = QFileDialog.getOpenFileName(self, "Open analysis", self.experiment_folder, "Analysis Files (*.af)")
 
         if file_name != "":
-            with open(file_name, 'r') as f:
-                j = f.read()
-                d = json.loads(j)
-
-                self.experiment.from_dict(d)  # An analysis file is just the "analysis" section of the experiment file
-
-            self.current_analysis_file = file_name
-            self.refresh_window_title()
-
-            self.remove_result_tabs()
-         
-            # self.refreshAnalysis() # TODO?
-            self.refresh_comboboxes()
-
-            self.refresh_play_button_status()
-            self.refresh_ready_to_play()
-   
-            self.analysis_dirty = False
+            self.open_analysis_directly(file_name)
 
     def save_analysis(self):
         tprint("Save analysis")
@@ -821,23 +833,26 @@ class MainWindow(QMainWindow):
 
         self.analysis_dirty = False
 
+    def save_as_analysis_directly(self, file_name):
+        d = self.experiment.analysis_to_dict()
+
+        j = json.dumps(d, indent=4)
+
+        with open(file_name, 'w') as f:
+            f.write(j)
+
+        self.current_analysis_file = file_name
+        self.refresh_window_title()
+
+        self.analysis_dirty = False
+
     def save_as_analysis(self):
         tprint("Save As analysis")
 
         file_name, filter = QFileDialog.getSaveFileName(self, "Save analysis", self.experiment_folder, "Analysis Files (*.af)")
 
         if file_name != "":
-            d = self.experiment.analysis_to_dict()
-
-            j = json.dumps(d, indent=4)
-
-            with open(file_name, 'w') as f:
-                f.write(j)
-
-            self.current_analysis_file = file_name
-            self.refresh_window_title()
-
-            self.analysis_dirty = False
+            self.save_as_analysis_directly(file_name)
 
     def default_script_options(self):
         if self.experiment.selected_script != "":
