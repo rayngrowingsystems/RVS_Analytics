@@ -22,8 +22,6 @@ import CameraApp_rc
 
 from ui_ImageOptionDialog import Ui_ImageOptionDialog
 
-import Config
-
 class ImageOptionDialog(QDialog):
     def __init__(self, main_window):
         self.main_window = main_window
@@ -56,8 +54,8 @@ class ImageOptionDialog(QDialog):
 
         self.ui.done_button.clicked.connect(self.accept)
 
-        if Config.test_mode:
-            QTimer.singleShot(Config.test_timeout, lambda: self.accept())
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageOptionDialog()

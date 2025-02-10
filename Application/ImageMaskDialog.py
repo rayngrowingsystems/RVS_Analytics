@@ -146,8 +146,8 @@ class ImageMaskDialog(QDialog):
         # For some reason, geometry won't work unless we move the update outside the constructor
         QTimer.singleShot(300, lambda: self.load_reference_images())
 
-        if Config.test_mode:
-            QTimer.singleShot(Config.test_timeout, lambda: self.accept())
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageMaskDialog()

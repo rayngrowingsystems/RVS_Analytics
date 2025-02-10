@@ -161,7 +161,7 @@ class MainWindow(QMainWindow):
     analysis_done = QtCore.Signal()
     add_preview_tab = QtCore.Signal(str, str)
 
-    def __init__(self, script_folder, mask_folder):
+    def __init__(self, script_folder, mask_folder, test_mode=False, test_dialog_timeout=3000):
         super().__init__()
         # super(MainWindow, self).__init__()
 
@@ -170,6 +170,9 @@ class MainWindow(QMainWindow):
         tprint ("Qt version:", QtCore.__version_info__)
 
         tprint("Create MainWindow...")
+
+        self.test_mode = test_mode
+        self.test_dialog_timeout = test_dialog_timeout
 
         self.camera_configuration_view = None
         self.script_folder = script_folder

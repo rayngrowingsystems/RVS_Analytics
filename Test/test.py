@@ -15,7 +15,7 @@ cameraapp.start_logger(testing=True)
 script_folder = path.join("..", "Application", 'Scripts')
 mask_folder = path.join("..", "Application", 'Masks')
 
-main_window = MainWindow(script_folder, mask_folder)
+main_window = MainWindow(script_folder, mask_folder, test_mode=True, test_dialog_timeout=3000)
 
 main_window.resize(1200, 800)
 main_window.show()
