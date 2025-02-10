@@ -114,3 +114,5 @@ Application/generated/
 Application/runUiRcc.bat
 
 Application/Installer
+
+Test/test_results/

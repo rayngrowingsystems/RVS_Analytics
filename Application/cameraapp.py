@@ -125,7 +125,7 @@ def start_application(testing=False):
 
 
 def start_logger(testing=False):
-    run_date_time = datetime.now().strftime("%Y-%d-%m %H.%M.%S")
+    run_date_time = datetime.now().strftime("%Y-%d-%m_%H%M%S")
 
     if not testing:
         local_data_location_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
@@ -138,8 +138,12 @@ def start_logger(testing=False):
         error_file_name = os.path.normpath(os.path.join(local_data_location_path, "error.log"))
 
     else:
-        debug_file_name = f"{run_date_time}_debug.log"
-        error_file_name = f"{run_date_time}_error.log"
+        if not os.path.exists("log"):
+            print("Log folder does not exist. Creating new folder")
+            os.makedirs("log")
+
+        debug_file_name = f"log/{run_date_time}_debug.log"
+        error_file_name = f"log/{run_date_time}_error.log"
 
     tprint("Debug file name:", debug_file_name)
     tprint("Error file name:", error_file_name)
