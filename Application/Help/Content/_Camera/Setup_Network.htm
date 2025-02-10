@@ -113,17 +113,28 @@
                                 <div data-mc-content-body="True">
                                     <div role="main" id="mc-main-content">
                                         <h1>Setup &gt; Network</h1>
-                                        <p>This <b><a href="Setup.htm" class="MCXref xref">Setup</a></b> tab allows you to configure options to access your camera's  remotely via FTP and API.</p>
+                                        <p>This <b><a href="Setup.htm" class="MCXref xref">Setup</a></b> tab allows you to alter network settings for the connected RVS&#160;Camera. When configuring an RVS&#160;Camera for the first time, you will typically start here by rebooting into Wi-Fi mode.</p>
                                         <p>
                                             <img src="../Resources/Images/Camera/setup_network.png" style="max-width: 80%;height: auto;" />
                                         </p>
-                                        <p>The following options are available:</p>
+                                        <p>Changes to network settings are applied after power cycling the RVS&#160;Camera. This can be done by unplugging the power adapter or via the button under the <a href="Setup_Factory.htm" class="MCXref xref">Setup &gt;&#160;Factory</a> tab.</p>
+                                        <h2><a name="Wi-Fi"></a>Wi-Fi</h2>
+                                        <p>In this mode, the web interface for the camera can be accessed  via a web browser by navigating to either of the following:</p>
                                         <ul>
-                                            <li><b>FTP&#160;Server Password</b> - enter a custom password to access and download images from the camera's SD&#160;card via FTP. Clear the password to disable FTP functionality.</li>
-                                            <li><b>API&#160;Key</b> - enter a custom key to access and remotely control the camera via API. Clear the key to disable API functionality.</li>
+                                            <li>The camera's IP address. This option is not compatible with HTTPS.<ul><li>e.g. <b style="text-decoration: underline;">http://192.168.4.119/</b></li></ul></li>
+                                            <li>The camera's device name and unique hexadecimal ID. This option is not compatible with HTTPS, and may not be compatible with all routers or web browsers.<ul><li>&#160;e.g. <b style="text-decoration: underline;">http://RaynCamera-CD2AB8/</b></li></ul></li>
                                         </ul>
-                                        <p>To clear the password or key, enter any text in the respective field, delete it, and save.</p>
-                                        <p>Detailed API documentation is available at <a href="https://github.com/rayngrowingsystems/camera_api">github.com/rayngrowingsystems/camera_api</a>.</p>
+                                        <p>If the <b>Device Name</b> field is used to change the name of the camera, the named address used to access the camera will also change. The new address is previewed underneath the entered device name.</p>
+                                        <p>The RVS&#160;Camera must  connect to a local Wi-Fi network and reboot into Wi-Fi mode. Enter the credentials of the Wi-Fi network you wish to join using the <b>SSID</b> and <b>Password</b> fields.</p>
+                                        <p>In a networked system of multiple RVS&#160;Cameras, all cameras must be in Wi-Fi mode.</p>
+                                        <h2><a name="Access"></a>Access Point</h2>
+                                        <p>Access Point (AP) mode disconnects the RVS&#160;Camera from Wi-Fi and sets up a static network with the following credentials:</p>
+                                        <ul>
+                                            <li><b>Name</b> - RaynCamera-######, where the six characters are the camera's unique hexadecimal ID.</li>
+                                            <li><b>Password</b> - Password </li>
+                                        </ul>
+                                        <p>Once connected to the camera's network, the web interface for the camera can be accessed  via a web browser by navigating to <b style="text-decoration: underline;">http://10.1.2.1/</b>, the AP mode default IP address.</p>
+                                        <p>The RVS&#160;Camera will initialize in AP mode when powered up for the first time or if powered up without valid Wi-Fi credentials.</p>
                                     </div>
                                     <hr width="100%" size="0" align="center" />
                                     <table style="width: 100%;mc-table-style: url('../SourceProjectContent/Resources/TableStyles/NoLines.css');" class="TableStyle-NoLines" cellspacing="0">
@@ -135,7 +146,7 @@
                                                     <img src="../Resources/Images/rgs_logo_black.png" alt="" />
                                                 </td>
                                                 <td class="TableStyle-NoLines-BodyA-Column1-Body1_default" style="vertical-align: top;padding-top: 5pt;padding-bottom: 0px;">
-                                                    <p class="CopyrightFooter">© <span class="mc-variable Master.&lt;rel_year&gt; variable">2025</span> RAYN&#160;Growing Systems. Trademark and patent info: <a href="https://www.etcconnect.com/ip" target="_blank">etcconnect.com/ip</a>. Third-party license agreement info:&#160;<a href="https://www.etcconnect.com/licenses" target="_blank">etcconnect.com/licenses</a>.</p>
+                                                    <p class="CopyrightFooter">© <span class="mc-variable Master.&lt;rel_year&gt; variable">2024</span> RAYN&#160;Growing Systems. Trademark and patent info: <a href="https://www.etcconnect.com/ip" target="_blank">etcconnect.com/ip</a>. Third-party license agreement info:&#160;<a href="https://www.etcconnect.com/licenses" target="_blank">etcconnect.com/licenses</a>.</p>
                                                 </td>
                                             </tr>
                                         </tbody>

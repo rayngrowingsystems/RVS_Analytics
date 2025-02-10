@@ -1,1 +1,1 @@
-define({r:0.5,st:'Stem',n:1,t:[0,79],m:[],u:['../Content/ButtonDevicesAddDevice.html'],s:['+','effect','pot'],p:[['+',27],['an',73],['browse',6],['controllers',113],['enter',136],['id',136],['list',44],['on',49],['provides',27],['selected',37],['tab',126],['to',106],['will',108]]});
+define({r:0.5,st:'Stem',n:1,t:[0,79],m:[],u:['../Content/ButtonDevicesAddDevice.html'],s:['+','fi','render'],p:[['+',27],['and',37],['camera',24],['day',69],['firmware',80],['installation',3],['multi',123],['pas',78],['rj45',81],['stm300u',78],['this',133],['when',37]]});
