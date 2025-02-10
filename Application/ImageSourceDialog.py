@@ -16,6 +16,7 @@
 import os
 
 from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtCore import QTimer
 
 from PySide6 import QtCore
 
@@ -24,7 +25,7 @@ import CameraApp_rc
 from ui_ImageSourceDialog import Ui_ImageSourceDialog
 
 from Helper import tprint
-
+import Config
 class ImageSourceDialog(QDialog):
     def __init__(self, main_window):
         self.main_window = main_window
@@ -77,6 +78,9 @@ class ImageSourceDialog(QDialog):
             self.ui.folder_source_radiobutton.setChecked(True)
         else:
             self.ui.camera_source_radiobutton.setChecked(True)
+
+        if Config.test_mode:
+            QTimer.singleShot(Config.test_timeout, lambda: self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageSourceDialog()

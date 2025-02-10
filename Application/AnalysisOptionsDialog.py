@@ -21,9 +21,11 @@ import importlib
 
 from PySide6.QtWidgets import QDialog, QCheckBox, QSlider, QLabel, QVBoxLayout, QComboBox, QFrame
 from PySide6 import QtCore
+from PySide6.QtCore import QTimer
 
 import Helper
 from Helper import tprint
+import Config
 
 import CameraApp_rc
 
@@ -63,6 +65,9 @@ class AnalysisOptionsDialog(QDialog):
             for child_checkbox in chart_checkboxes:
                 if child_checkbox.objectName() in self.main_window.experiment.chart_options:
                     child_checkbox.setChecked(self.main_window.experiment.chart_options[child_checkbox.objectName()])
+
+        if Config.test_mode:
+            QTimer.singleShot(Config.test_timeout, lambda: self.accept())
 
     def load_ui(self):
         self.ui = Ui_AnalysisOptionsDialog()

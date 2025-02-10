@@ -16,11 +16,13 @@
 
 from PySide6.QtWidgets import QDialog
 from PySide6 import QtCore
+from PySide6.QtCore import QTimer
 
 import CameraApp_rc
 
 from ui_ImageOptionDialog import Ui_ImageOptionDialog
 
+import Config
 
 class ImageOptionDialog(QDialog):
     def __init__(self, main_window):
@@ -53,6 +55,9 @@ class ImageOptionDialog(QDialog):
         self.ui.crop_checkbox.toggled.connect(self.on_crop)
 
         self.ui.done_button.clicked.connect(self.accept)
+
+        if Config.test_mode:
+            QTimer.singleShot(Config.test_timeout, lambda: self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageOptionDialog()

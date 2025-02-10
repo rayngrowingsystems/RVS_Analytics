@@ -30,6 +30,8 @@ from SelectImageDialog import SelectImageDialog
 
 from Helper import tprint
 
+import Config
+
 # TODO Move to its own class when we have merged into main, to avoid confusion with new file
 class RoiGrid(QWidget):
 
@@ -345,6 +347,9 @@ class ImageRoiDialog(QDialog):
         self.rubberband_rect = self.main_window.experiment.roi_info.rect
 
         QTimer.singleShot(300, lambda: self.load_reference_images())
+
+        if Config.test_mode:
+            QTimer.singleShot(Config.test_timeout, lambda: self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageRoiDialog()

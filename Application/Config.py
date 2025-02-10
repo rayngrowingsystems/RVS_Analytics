@@ -41,6 +41,14 @@ if settings.value("Profile", False) == "True":
 else:
     profile_mode = False
 
-tprint("Config: Verbose", verbose_mode, type(verbose_mode))
-tprint("Config: Profile", profile_mode, type(profile_mode))
+if settings.value("Test", False) == "True":
+    test_mode = True
+else:
+    test_mode = False
+
+test_timeout = int(settings.value("TestTimeout", 3000))
+
+tprint("Config: Verbose", verbose_mode)
+tprint("Config: Profile", profile_mode)
+tprint("Config: Test", test_mode, test_timeout)
 
