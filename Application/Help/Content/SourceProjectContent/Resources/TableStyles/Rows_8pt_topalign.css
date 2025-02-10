@@ -23,7 +23,7 @@ mcTableStyle
 	cell-padding-top: 1px;
 	cell-padding-bottom: 1px;
 	max-id: 4;
-	margin-left: 0.150in;
+	margin-left: 48px;
 }
 
 mcTableColumnStyle
@@ -240,7 +240,7 @@ mcTableFootStyle
 	border-bottom-style: solid;
 	border-bottom-color: #a9a9a9;
 	border-bottom-width: 1px;
-	margin-left: 0.150in;
+	margin-left: 48px;
 	border-spacing: 0px 0px;
 }
 
