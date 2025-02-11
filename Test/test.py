@@ -43,8 +43,8 @@ if __name__ == "__main__":
     rvs_app.processEvents()
 
     main_window.start_analysis(False, True, False)
+    print("start_analysis returned")
 
-    time.sleep(10)
     print("stopping")
 
     main_window.close()

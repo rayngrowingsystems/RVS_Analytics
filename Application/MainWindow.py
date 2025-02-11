@@ -19,7 +19,7 @@ import shutil
 import tempfile
 
 import datetime
-import time
+import time as systime
 
 import traceback
 from multiprocessing import Queue
@@ -380,7 +380,7 @@ class MainWindow(QMainWindow):
         self.add_preview_tab.connect(self.on_add_preview_tab)
 
         # If ongoing analysis, continue
-        if path.exists(self.current_session_file_name):
+        if path.exists(self.current_session_file_name) and not self.test_mode:
             self.resume_analysis()
 
         self.ui.statusbar.hide()
@@ -1580,6 +1580,11 @@ class MainWindow(QMainWindow):
                 os.mkdir(settings["outputFolder"]["data"])
 
             self.ui.results_button.setEnabled(False)
+
+        if self.test_mode:
+            while self.analysis_running:
+                systime.sleep(1)
+                QApplication.instance().processEvents()
 
     def stop_analysis(self, terminate_process):
         tprint("Analysis: Stop: Done")
