@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
         self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
 
         # Need to configure NIC?
-        if self.experiment.camera_discovery_ip == "":
+        if self.experiment.camera_discovery_ip == "" and not self.test_mode:
             self.select_network()
 
         # Set up background processing of images
