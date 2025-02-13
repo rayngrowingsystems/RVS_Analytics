@@ -41,6 +41,7 @@ class Experiment:
         self.folder_file_path = ""
         self.camera_file_path = ""
         self.camera_cid = ""
+        self.camera_api_keys = {}
 
         self.output_file_path = os.path.join(os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)), QApplication.organizationName(), QApplication.applicationName(), 'Analysis')
         QDir().mkpath(self.output_file_path)
@@ -205,6 +206,7 @@ class Experiment:
           "cameraFilePath": self.camera_file_path,
           "outputFilePath": self.output_file_path,
           "cameraCid": self.camera_cid,
+          "cameraApiKeys": self.camera_api_keys,
           "roiInfo": {"rect": [self.roi_info.rect.left(), self.roi_info.rect.top(), self.roi_info.rect.width(), self.roi_info.rect.height()],
                       "columns": self.roi_info.columns,
                       "rows": self.roi_info.rows,
@@ -287,6 +289,9 @@ class Experiment:
 
         if "cameraCid" in d:
             self.camera_cid = d["cameraCid"]
+
+        if "cameraApiKeys" in d:
+            self.camera_api_keys = d["cameraApiKeys"]
 
         if "roiInfo" in d:
             self.roi_info.rect = QRect(d["roiInfo"]["rect"][0], d["roiInfo"]["rect"][1], d["roiInfo"]["rect"][2], d["roiInfo"]["rect"][3])

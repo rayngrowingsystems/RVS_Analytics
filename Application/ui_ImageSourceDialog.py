@@ -16,9 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QFrame,
-    QGridLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 import CameraApp_rc
 
 class Ui_ImageSourceDialog(object):
@@ -149,6 +149,17 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_4.addWidget(self.camera_refresh_button)
 
+        self.label_6 = QLabel(ImageSourceDialog)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_4.addWidget(self.label_6)
+
+        self.camera_api_key = QLineEdit(ImageSourceDialog)
+        self.camera_api_key.setObjectName(u"camera_api_key")
+        self.camera_api_key.setEnabled(False)
+
+        self.horizontalLayout_4.addWidget(self.camera_api_key)
+
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
@@ -169,8 +180,8 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_4.setStretch(0, 1)
         self.horizontalLayout_4.setStretch(1, 1)
-        self.horizontalLayout_4.setStretch(2, 1)
-        self.horizontalLayout_4.setStretch(5, 8)
+        self.horizontalLayout_4.setStretch(4, 1)
+        self.horizontalLayout_4.setStretch(7, 8)
 
         self.vertical_layout.addLayout(self.horizontalLayout_4)
 
@@ -292,6 +303,7 @@ class Ui_ImageSourceDialog(object):
         self.label_4.setText(QCoreApplication.translate("ImageSourceDialog", u"New images from the selected camera will be copied to a folder and analysed on-the-fly", None))
         self.camera_selection_combobox.setPlaceholderText(QCoreApplication.translate("ImageSourceDialog", u"No cameras found", None))
         self.camera_refresh_button.setText("")
+        self.label_6.setText(QCoreApplication.translate("ImageSourceDialog", u"Key:", None))
         self.camera_identify_button.setText(QCoreApplication.translate("ImageSourceDialog", u"Identify", None))
         self.camera_configure_button.setText(QCoreApplication.translate("ImageSourceDialog", u"Configure", None))
         self.label.setText(QCoreApplication.translate("ImageSourceDialog", u"Target folder", None))

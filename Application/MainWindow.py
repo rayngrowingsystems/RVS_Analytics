@@ -915,6 +915,9 @@ class MainWindow(QMainWindow):
                     self.camera = None
 
                 self.camera = Camera(self, camera_json["tags"]["disc"]["ipv4"])
+ 
+                if cid in self.experiment.camera_api_keys:
+                    self.camera.set_api_key(self.experiment.camera_api_keys[cid])
 
                 self.refresh_image_source_text()
 
@@ -925,6 +928,15 @@ class MainWindow(QMainWindow):
                 break
 
             item = item + 1
+
+    def camera_api_key_changed(self, text):
+        self.experiment.camera_api_key = text
+
+        self.camera.set_api_key(text)
+
+        self.experiment.camera_api_keys[self.experiment.camera_cid] = text
+
+        self.update_experiment_file(False)
 
     def configure_camera(self, index):
         tprint("ConfigureCamera:", index)

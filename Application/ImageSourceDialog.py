@@ -66,11 +66,15 @@ class ImageSourceDialog(QDialog):
         for cid, camera_json in self.main_window.cameras.items():
             if cid == self.main_window.experiment.camera_cid:
                 self.ui.camera_selection_combobox.setCurrentIndex(index)
+                if cid in self.main_window.experiment.camera_api_keys:
+                    self.ui.camera_api_key.setText(self.main_window.experiment.camera_api_keys[cid])
+                self.ui.camera_api_key.setEnabled(True)
                 break
 
             index = index + 1
 
         self.ui.camera_selection_combobox.currentIndexChanged.connect(self.camera_selection_changed)
+        self.ui.camera_api_key.editingFinished.connect(self.camera_api_key_changed)
 
         if self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Image:
             self.ui.image_source_radiobutton.setChecked(True)
@@ -178,3 +182,6 @@ class ImageSourceDialog(QDialog):
 
     def camera_selection_changed(self, index):
         self.main_window.camera_selection_changed(index)
+
+    def camera_api_key_changed(self):
+        self.main_window.camera_api_key_changed(self.ui.camera_api_key.text())

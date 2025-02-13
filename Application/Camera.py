@@ -125,12 +125,12 @@ def fetch_files_in_the_background(camera, feedback_queue):
 
 
 class Camera:
-    unique_key = "123456"  # TODO
-
     def __init__(self, main_window, ip_address):
         self.main_window = main_window
 
         self.base_url = "http://" + ip_address + "/api/v1"
+
+        self.api_key = ""
 
         now = datetime.datetime.now()
         yesterday = now - datetime.timedelta(days=1)
@@ -207,8 +207,11 @@ class Camera:
 
                     QApplication.instance().processEvents()
 
+    def set_api_key(self, api_key):
+        self.api_key = api_key
+
     def default_parameters(self):
-        return "?key=" + self.unique_key
+        return "?key=" + self.api_key
 
     def set_last_received_file(self, file_name):
         # Update the current start date/time
