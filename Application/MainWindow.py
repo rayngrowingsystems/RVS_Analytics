@@ -1348,10 +1348,11 @@ class MainWindow(QMainWindow):
             chart.update_images()
 
     def update_current_session_file(self):
-        j = json.dumps(self.current_session, indent=4)
+        if not self.test_mode:  # Don't generate a session file in test mode
+            j = json.dumps(self.current_session, indent=4)
 
-        with open(self.current_session_file_name, 'w') as f:
-            f.write(j)
+            with open(self.current_session_file_name, 'w') as f:
+                f.write(j)
 
     def resume_analysis(self):
         with open(self.current_session_file_name) as session_file:
