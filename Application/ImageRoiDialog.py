@@ -327,9 +327,9 @@ class ImageRoiDialog(QDialog):
         self.ui.width_spinbox.setValue(self.main_window.experiment.roi_info.width)
         self.ui.height_spinbox.setValue(self.main_window.experiment.roi_info.height)
 
-        self.ui.roi_placement_mode.setCurrentIndex(self.main_window.experiment.roi_info.placement_mode_number())
-        self.ui.roi_shape.setCurrentIndex(self.main_window.experiment.roi_info.shape_number())
-        self.ui.roi_detection_mode.setCurrentIndex(self.main_window.experiment.roi_info.detection_mode_number())
+        self.ui.roi_placement_mode.setCurrentIndex(self.main_window.experiment.roi_info.placement_mode.value)
+        self.ui.roi_shape.setCurrentIndex(self.main_window.experiment.roi_info.shape.value)
+        self.ui.roi_detection_mode.setCurrentIndex(self.main_window.experiment.roi_info.detection_mode.value)
 
         # Connect signals for ROI placement mode and shape changes
         self.ui.roi_placement_mode.currentIndexChanged.connect(self.on_placement_mode_change)

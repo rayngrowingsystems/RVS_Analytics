@@ -35,7 +35,7 @@ class Experiment:
 
         self.experiment_file_name = experiment_file_name
 
-        self.ImageSource = self.ImageSource.Folder
+        self.image_source = self.ImageSource.Folder
 
         self.image_file_path = ""
         self.folder_file_path = ""
@@ -151,46 +151,6 @@ class Experiment:
 
             return roi_items
 
-        def shape_number(self):
-            if self.shape == self.Shape.Circle:
-                return 0
-            elif self.shape == self.Shape.Rectangle:
-                return 1
-            elif self.shape == self.Shape.Ellipse:
-                return 2
-            elif self.shape == self.Shape.Polygon:
-                return 3
-            else:
-                return -1
-
-        def placement_mode_number(self):
-            if self.placement_mode == self.PlacementMode.Matrix:
-                return 0
-            elif self.placement_mode == self.PlacementMode.Manual:
-                return 1
-            else:
-                return -1
-
-        def detection_mode_number(self):
-            if self.detection_mode == self.DetectionMode.Partial:
-                return 0
-            elif self.detection_mode == self.DetectionMode.CutTo:
-                return 1
-            elif self.detection_mode == self.DetectionMode.Largest:
-                return 2
-            else:
-                return -1
-
-    def image_source_number(self):
-        if self.ImageSource == self.ImageSource.Image:
-            return 0
-        elif self.ImageSource == self.ImageSource.Folder:
-            return 1
-        elif self.ImageSource == self.ImageSource.Camera:
-            return 2
-        else:
-            return -1
-
     def safe_normpath(self, image):
         if image is not None:
             return os.path.normpath(image)
@@ -200,7 +160,7 @@ class Experiment:
     def to_dict(self):
         return {
           "name": self.name,
-          "imageSource": self.image_source_number(),
+          "imageSource": self.image_source.value,
           "imageFilePath": self.image_file_path,
           "folderFilePath": self.folder_file_path,
           "cameraFilePath": self.camera_file_path,
@@ -213,9 +173,9 @@ class Experiment:
                       "radius": self.roi_info.radius,
                       "width": self.roi_info.width,
                       "height": self.roi_info.height,
-                      "shape": self.roi_info.shape_number(),
-                      "placementMode": self.roi_info.placement_mode_number(),
-                      "detectionMode": self.roi_info.detection_mode_number(),
+                      "shape": self.roi_info.shape.value,
+                      "placementMode": self.roi_info.placement_mode.value,
+                      "detectionMode": self.roi_info.detection_mode.value,
                       "roiList": self.roi_info.roi_items(1.0)},
           # NOTE: When things are added to the "analysis" section, update analysisToDict below
           "analysis": {"maskOptions": self.mask,
@@ -272,11 +232,11 @@ class Experiment:
             image_source_number = d["imageSource"]
 
             if image_source_number == 0:
-                self.ImageSource = self.ImageSource.Image
+                self.image_source = self.ImageSource.Image
             elif image_source_number == 1:
-                self.ImageSource = self.ImageSource.Folder
+                self.image_source = self.ImageSource.Folder
             elif image_source_number == 2:
-                self.ImageSource = self.ImageSource.Camera
+                self.image_source = self.ImageSource.Camera
         if "imageFilePath" in d:
             self.image_file_path = os.path.normpath(d["imageFilePath"])
         if "folderFilePath" in d:
@@ -458,11 +418,11 @@ class Experiment:
             self.analysis["chartOptions"] = {}
 
     def current_folder(self):
-        if self.ImageSource is self.ImageSource.Image:
+        if self.image_source is self.ImageSource.Image:
             return self.image_file_path
-        elif self.ImageSource is self.ImageSource.Folder:
+        elif self.image_source is self.ImageSource.Folder:
             return self.folder_file_path
-        elif self.ImageSource is self.ImageSource.Camera:
+        elif self.image_source is self.ImageSource.Camera:
             return self.camera_file_path
         else:
             return ""
