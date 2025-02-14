@@ -38,6 +38,8 @@ class AnalysisOptionsDialog(QDialog):
         self.option_sliders = []
         self.option_dropdowns = []
 
+        self.default_values = {}
+
         super(AnalysisOptionsDialog, self).__init__()
         self.load_ui()
 
@@ -51,7 +53,7 @@ class AnalysisOptionsDialog(QDialog):
                 tprint(data)
 
                 # Script options
-                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges = \
+                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.default_values = \
                     Helper.get_ui_elements_from_config(options=data['script']['options'], settings=self.main_window.experiment.script_options, \
                                                     execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
                                                     slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
@@ -64,6 +66,8 @@ class AnalysisOptionsDialog(QDialog):
             for child_checkbox in chart_checkboxes:
                 if child_checkbox.objectName() in self.main_window.experiment.chart_options:
                     child_checkbox.setChecked(self.main_window.experiment.chart_options[child_checkbox.objectName()])
+
+        self.ui.default_button.clicked.connect(self.set_default_values)
 
         if self.main_window.test_mode:
             QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
@@ -101,3 +105,7 @@ class AnalysisOptionsDialog(QDialog):
 
         # self.run_preview_script()
 
+    def set_default_values(self):
+        self.blockSignals(True)
+        Helper.set_ui_elements_default_values(self.default_values)
+        self.blockSignals(False)

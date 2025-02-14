@@ -24,7 +24,7 @@ class Ui_AnalysisOptionsDialog(object):
         if not AnalysisOptionsDialog.objectName():
             AnalysisOptionsDialog.setObjectName(u"AnalysisOptionsDialog")
         AnalysisOptionsDialog.setWindowModality(Qt.NonModal)
-        AnalysisOptionsDialog.resize(948, 520)
+        AnalysisOptionsDialog.resize(948, 548)
         AnalysisOptionsDialog.setModal(True)
         self.gridLayout_3 = QGridLayout(AnalysisOptionsDialog)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
@@ -43,8 +43,15 @@ class Ui_AnalysisOptionsDialog(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.default_button = QPushButton(AnalysisOptionsDialog)
+        self.default_button.setObjectName(u"default_button")
+        self.default_button.setAutoDefault(False)
+
+        self.horizontalLayout.addWidget(self.default_button)
+
         self.done_button = QPushButton(AnalysisOptionsDialog)
         self.done_button.setObjectName(u"done_button")
+        self.done_button.setAutoDefault(True)
 
         self.horizontalLayout.addWidget(self.done_button)
 
@@ -155,6 +162,7 @@ class Ui_AnalysisOptionsDialog(object):
     def retranslateUi(self, AnalysisOptionsDialog):
         AnalysisOptionsDialog.setWindowTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Analytic options", None))
         self.script_options_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Select script options", None))
+        self.default_button.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Default", None))
         self.done_button.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Done", None))
         self.chart_options_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Select chart options", None))
         self.index_box.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Index", None))

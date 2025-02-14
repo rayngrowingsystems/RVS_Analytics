@@ -57,6 +57,8 @@ class ImageMaskDialog(QDialog):
 
         self.wavelength_value = {}
 
+        self.default_values = {}
+
         # Flag to track setup completion
         self.setup_completed = False
 
@@ -98,6 +100,8 @@ class ImageMaskDialog(QDialog):
 
         self.ui.show_rois_checkbox.toggled.connect(self.show_rois)
 
+        self.ui.default_button.clicked.connect(self.set_default_values)
+
         # Initialize script description
         self.script_description = ''
 
@@ -124,7 +128,7 @@ class ImageMaskDialog(QDialog):
             if "mask" in data:
                 self.mask_description = data['mask']['info']['description']
 
-            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges = \
+            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.default_values = \
                 Helper.get_ui_elements_from_config(options=data['mask']['options'], settings=self.main_window.experiment.mask, \
                                                    execute_on_change=self.run_mask_script, dropdown_changed=self.dropdown_changed, \
                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
@@ -400,3 +404,8 @@ class ImageMaskDialog(QDialog):
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()
 
+    def set_default_values(self):
+        self.blockSignals(True)
+        Helper.set_ui_elements_default_values(self.default_values)
+        self.blockSignals(False)
+            

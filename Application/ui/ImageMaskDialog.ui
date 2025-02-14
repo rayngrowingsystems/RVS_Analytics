@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>628</width>
-    <height>602</height>
+    <height>630</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -241,6 +241,16 @@ Click the Image button to pick</string>
           </spacer>
          </item>
          <item>
+          <widget class="QPushButton" name="default_button">
+           <property name="text">
+            <string>Default</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="cancel_button">
            <property name="text">
             <string>Cancel</string>
@@ -256,7 +266,7 @@ Click the Image button to pick</string>
             <string>Done</string>
            </property>
            <property name="autoDefault">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="default">
             <bool>false</bool>

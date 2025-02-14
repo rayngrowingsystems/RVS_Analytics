@@ -28,7 +28,7 @@ class Ui_ImageMaskDialog(object):
         if not ImageMaskDialog.objectName():
             ImageMaskDialog.setObjectName(u"ImageMaskDialog")
         ImageMaskDialog.setWindowModality(Qt.NonModal)
-        ImageMaskDialog.resize(628, 602)
+        ImageMaskDialog.resize(628, 630)
         ImageMaskDialog.setModal(True)
         self.gridLayout_2 = QGridLayout(ImageMaskDialog)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -154,6 +154,12 @@ class Ui_ImageMaskDialog(object):
 
         self.verticalLayout_3.addItem(self.verticalSpacer_2)
 
+        self.default_button = QPushButton(ImageMaskDialog)
+        self.default_button.setObjectName(u"default_button")
+        self.default_button.setAutoDefault(False)
+
+        self.verticalLayout_3.addWidget(self.default_button)
+
         self.cancel_button = QPushButton(ImageMaskDialog)
         self.cancel_button.setObjectName(u"cancel_button")
         self.cancel_button.setAutoDefault(False)
@@ -162,7 +168,7 @@ class Ui_ImageMaskDialog(object):
 
         self.done_button = QPushButton(ImageMaskDialog)
         self.done_button.setObjectName(u"done_button")
-        self.done_button.setAutoDefault(False)
+        self.done_button.setAutoDefault(True)
 
         self.verticalLayout_3.addWidget(self.done_button)
 
@@ -204,6 +210,7 @@ class Ui_ImageMaskDialog(object):
         self.preview_image2.setText(QCoreApplication.translate("ImageMaskDialog", u"Preview 2", None))
         self.mask_options_box.setTitle(QCoreApplication.translate("ImageMaskDialog", u"Adjust mask parameters", None))
         self.show_rois_checkbox.setText(QCoreApplication.translate("ImageMaskDialog", u"Show ROIs", None))
+        self.default_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Default", None))
         self.cancel_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Cancel", None))
         self.done_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Done", None))
     # retranslateUi

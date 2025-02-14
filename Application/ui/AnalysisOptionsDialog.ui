@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>948</width>
-    <height>520</height>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,9 +56,22 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="default_button">
+       <property name="text">
+        <string>Default</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="done_button">
        <property name="text">
         <string>Done</string>
+       </property>
+       <property name="autoDefault">
+        <bool>true</bool>
        </property>
        <property name="default">
         <bool>true</bool>

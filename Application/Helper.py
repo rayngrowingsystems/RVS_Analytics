@@ -16,7 +16,7 @@
 
 from datetime import datetime
 
-from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame, QStyledItemDelegate
+from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame, QStyledItemDelegate, QSlider
 from PySide6.QtCore import QTimer, QEvent
 from PySide6 import QtCore
 from PySide6.QtGui import QPalette, QFontMetrics, QStandardItem
@@ -297,6 +297,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
     wavelength_value = {}
 
+    default_values = {}  # Keep a list of default values for each element
+
     # Create a grid layout to hold mask options
     grid = QGridLayout()
 
@@ -324,6 +326,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 option_checkbox.setChecked(settings[option["name"]])
             else:
                 option_checkbox.setChecked(option["value"] == "true")
+
+            default_values[option_checkbox] = (option["value"] == "true")
 
             option_checkboxes.append((option["name"], option_checkbox,))
 
@@ -379,6 +383,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 start_value = settings[option["name"]]  # Use last value
             elif "value" in option:
                 start_value = default_value  # Use default value
+
+            default_values[option_slider] = default_value
 
             display_name = option["displayName"]
             name = option["name"]
@@ -438,6 +444,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
             else:
                 wavelength_value[name] = option["value"]
 
+            default_values[option_wavelength] = option["value"]
+
             # Connect wavelength change to script execution
             option_wavelength.currentIndexChanged.connect(
             lambda a, name=name, option_wavelength=option_wavelength: wavelength_changed(name, option_wavelength))
@@ -495,6 +503,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
             else:
                 option_dropdown.currentIndexChanged.emit(0)
 
+            default_values[option_dropdown] = option["value"]
+
             name = option["name"]
             display_name = option["displayName"]
             option_dropdowns.append((name, option_dropdown,))
@@ -521,7 +531,16 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
     grid.setRowStretch(grid.rowCount(), 1)
 
-    return grid, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges
+    return grid, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges, default_values
+
+def set_ui_elements_default_values(values):
+    for option, value in values.items():
+        if isinstance(option, QSlider):
+            option.setValue(value)
+        elif isinstance(option, QCheckBox):
+            option.setChecked(bool(value))
+        elif isinstance(option, QComboBox):
+            option.setCurrentIndex(int(value))
 
 # Get a settings dict for the UI elements of the dialog
 def get_settings_for_ui_elements(dialog):
