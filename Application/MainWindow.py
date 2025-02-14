@@ -1643,6 +1643,8 @@ class MainWindow(QMainWindow):
         
         process_results(output_folder, combined_json)
         
+        self.save_as_experiment_directly(os.path.join(self.current_session["outputFolder"]["appData"], "experiment.xp"))
+        
         json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
     def play(self):
