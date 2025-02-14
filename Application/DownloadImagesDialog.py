@@ -63,9 +63,9 @@ class DownloadImagesDialog(QDialog):
         self.ui.selected_images_label.setText("Selected images: " + str(count))
 
     def set_target_path(self):
-        if self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Image:
+        if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Image:
             start_folder = self.main_window.experiment.image_file_path
-        elif self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Folder:
+        elif self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Folder:
             start_folder = self.main_window.experiment.folder_file_path
         else:
             start_folder = self.main_window.experiment.camera_file_path

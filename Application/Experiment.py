@@ -160,7 +160,7 @@ class Experiment:
     def to_dict(self):
         return {
           "name": self.name,
-          "imageSource": self.image_source.value,
+          "imageSource": self.image_source.value - 1,
           "imageFilePath": self.image_file_path,
           "folderFilePath": self.folder_file_path,
           "cameraFilePath": self.camera_file_path,
@@ -173,9 +173,9 @@ class Experiment:
                       "radius": self.roi_info.radius,
                       "width": self.roi_info.width,
                       "height": self.roi_info.height,
-                      "shape": self.roi_info.shape.value,
-                      "placementMode": self.roi_info.placement_mode.value,
-                      "detectionMode": self.roi_info.detection_mode.value,
+                      "shape": self.roi_info.shape.value - 1,
+                      "placementMode": self.roi_info.placement_mode.value - 1,
+                      "detectionMode": self.roi_info.detection_mode.value - 1,
                       "roiList": self.roi_info.roi_items(1.0)},
           # NOTE: When things are added to the "analysis" section, update analysisToDict below
           "analysis": {"maskOptions": self.mask,
@@ -231,16 +231,14 @@ class Experiment:
         if "imageSource" in d:
             image_source_number = d["imageSource"]
 
-            if image_source_number == 0:
-                self.image_source = self.ImageSource.Image
-            elif image_source_number == 1:
-                self.image_source = self.ImageSource.Folder
-            elif image_source_number == 2:
-                self.image_source = self.ImageSource.Camera
+            self.image_source = self.ImageSource(image_source_number + 1)
+
         if "imageFilePath" in d:
             self.image_file_path = os.path.normpath(d["imageFilePath"])
+
         if "folderFilePath" in d:
             self.folder_file_path = os.path.normpath(d["folderFilePath"])
+
         if "cameraFilePath" in d:
             self.camera_file_path = os.path.normpath(d["cameraFilePath"])
 
@@ -268,32 +266,17 @@ class Experiment:
             if "shape" in d["roiInfo"]:
                 shape_number = d["roiInfo"]["shape"]
 
-                if shape_number == 0:
-                    self.roi_info.shape = self.roi_info.Shape.Circle
-                elif shape_number == 1:
-                    self.roi_info.shape = self.roi_info.Shape.Rectangle
-                elif shape_number == 2:
-                    self.roi_info.shape = self.roi_info.Shape.Ellipse
-                elif shape_number == 3:
-                    self.roi_info.shape = self.roi_info.Shape.Polygon
+                self.roi_info.shape = self.roi_info.Shape(shape_number + 1)
 
             if "placementMode" in d["roiInfo"]:
                 placement_mode_number = d["roiInfo"]["placementMode"]
 
-                if placement_mode_number == 0:
-                    self.roi_info.placement_mode = self.roi_info.PlacementMode.Matrix
-                elif placement_mode_number == 1:
-                    self.roi_info.placement_mode = self.roi_info.PlacementMode.Manual
+                self.roi_info.placement_mode = self.roi_info.PlacementMode(placement_mode_number + 1)
 
             if "detectionMode" in d["roiInfo"]:
                 detection_mode_number = d["roiInfo"]["detectionMode"]
 
-                if detection_mode_number == 0:
-                    self.roi_info.detection_mode = self.roi_info.DetectionMode.Partial
-                elif detection_mode_number == 1:
-                    self.roi_info.detection_mode = self.roi_info.DetectionMode.CutTo
-                elif detection_mode_number == 2:
-                    self.roi_info.detection_mode = self.roi_info.DetectionMode.Largest
+                self.roi_info.detection_mode = self.roi_info.DetectionMode(detection_mode_number + 1)
 
             if "roiList" in d["roiInfo"]:
                 self.roi_info.manual_roi_items = []

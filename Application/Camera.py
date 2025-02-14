@@ -170,7 +170,7 @@ class Camera:
                 tprint("Camera tick:", self.main_window.analysis_running, len(self.files_to_fetch), self.wait_for_files_arrived, self.images_need_analysis)
 
             if self.main_window is not None:
-                if self.main_window.analysis_running and self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Camera and self.main_window.experiment.camera_file_path != "":
+                if self.main_window.analysis_running and self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Camera and self.main_window.experiment.camera_file_path != "":
                     if len(self.files_to_fetch) == 0 and not self.wait_for_files_arrived:
                         if self.get_first_in_range() == False:  # Nothing more to fetch right now -> process accumulated ones
                             if self.images_need_analysis == True:

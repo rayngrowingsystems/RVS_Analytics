@@ -76,9 +76,9 @@ class ImageSourceDialog(QDialog):
         self.ui.camera_selection_combobox.currentIndexChanged.connect(self.camera_selection_changed)
         self.ui.camera_api_key.editingFinished.connect(self.camera_api_key_changed)
 
-        if self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Image:
+        if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Image:
             self.ui.image_source_radiobutton.setChecked(True)
-        elif self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Folder:
+        elif self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Folder:
             self.ui.folder_source_radiobutton.setChecked(True)
         else:
             self.ui.camera_source_radiobutton.setChecked(True)

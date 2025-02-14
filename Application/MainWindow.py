@@ -395,9 +395,9 @@ class MainWindow(QMainWindow):
 
         self.file_system_observer = None
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.watch_folder(self.experiment.folder_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.watch_folder(self.experiment.camera_file_path)
 
         self.images_added = False
@@ -1005,9 +1005,9 @@ class MainWindow(QMainWindow):
             tprint("onFileDeleted:", file_name)
 
     def refresh_image_source_text(self):
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             self.ui.image_source.setText("<b>Image source:</b> Image: " + self.experiment.image_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.ui.image_source.setText("<b>Image source:</b> Folder: " + self.experiment.folder_file_path)
         else:
             if self.experiment.camera_cid in self.cameras:
@@ -1018,11 +1018,11 @@ class MainWindow(QMainWindow):
                 self.ui.image_source.setText("<b>Image source:</b> No source specified")
 
     def set_image_source(self, image_source):
-        self.experiment.ImageSource = image_source
+        self.experiment.image_source = image_source
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.watch_folder(self.experiment.folder_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.watch_folder(self.experiment.camera_file_path)
 
         self.update_experiment_file(False)
@@ -1043,7 +1043,7 @@ class MainWindow(QMainWindow):
         self.experiment.folder_file_path = location
         self.update_experiment_file(False)
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.watch_folder(location)
 
         self.refresh_image_source_text()
@@ -1054,7 +1054,7 @@ class MainWindow(QMainWindow):
         self.experiment.camera_file_path = location
         self.update_experiment_file(False)
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        if self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.watch_folder(location)
 
         self.refresh_image_source_text()
@@ -1124,15 +1124,15 @@ class MainWindow(QMainWindow):
     def on_analysis_done(self):
         tprint("Analysis: Done")
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             self.add_status_text.emit("Image processed")
 
             self.stop_analysis(False)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.add_status_text.emit("All images processed")
 
             self.stop_analysis(False)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.add_status_text.emit("Waiting for new images...")
 
             self.ui.image_preview_progressbar.setValue(self.ui.image_preview_progressbar.maximum())
@@ -1144,7 +1144,7 @@ class MainWindow(QMainWindow):
             self.camera.tick()
 
         # Poll camera status
-        if self.camera is not None and self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        if self.camera is not None and self.experiment.image_source is self.experiment.ImageSource.Camera:
             if self.camera_status_divider == 0:
                 status = self.camera.get_status()
 
@@ -1327,7 +1327,7 @@ class MainWindow(QMainWindow):
                 print("Roi:", roi)
                 
                 # MQTT
-                if self.mqtt and self.experiment.ImageSource is self.experiment.ImageSource.Camera:  # Only send in camera mode
+                if self.mqtt and self.experiment.image_source is self.experiment.ImageSource.Camera:  # Only send in camera mode
                     self.mqtt.publish_roi(camera_name, plant_index, payload)
 
                 # Chart
@@ -1420,11 +1420,11 @@ class MainWindow(QMainWindow):
 
         # Initialize folder to watch
         folder_to_watch = ""
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             folder_to_watch = os.path.dirname(self.experiment.image_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             folder_to_watch = self.experiment.folder_file_path
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             folder_to_watch = self.experiment.camera_file_path
 
         if folder_to_watch == "" or folder_to_watch == ".":
@@ -1440,7 +1440,7 @@ class MainWindow(QMainWindow):
             # Set-up list of image header files
             image_header_list = []
 
-            if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+            if self.experiment.image_source is self.experiment.ImageSource.Image:
                 image_header_list = [self.experiment.image_file_path]
             else:
                 image_header_list = sorted(glob.glob(folder_to_watch + '/*.hdr'))
@@ -1466,7 +1466,7 @@ class MainWindow(QMainWindow):
 
             # TODO How does the remove-already-processed-images logic above work? Conflict?
             # Check if existing image timestamps are earlier than self.camera.startDateTime
-            if self.experiment.ImageSource is self.experiment.ImageSource.Camera and self.camera is not None:
+            if self.experiment.image_source is self.experiment.ImageSource.Camera and self.camera is not None:
                 for i in image_header_list[:]:
                     date, time, camera, wavelength = Helper.info_from_header_file(i)
                     if datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(seconds=1) < self.camera.start_date_time:
@@ -1650,9 +1650,9 @@ class MainWindow(QMainWindow):
         if ready:
             self.chart = None
 
-            if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+            if self.experiment.image_source is self.experiment.ImageSource.Image:
                 self.start_analysis(False, True, False)
-            elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+            elif self.experiment.image_source is self.experiment.ImageSource.Folder:
                 if self.images_added:
                     accepted, all_images = self.open_folder_start_dialog()
                     if accepted is True:  # Dialog wasn't cancelled
@@ -1661,7 +1661,7 @@ class MainWindow(QMainWindow):
                     self.images_added = False
                 else:
                     self.start_analysis(False, True, False)  # Process all images if nothing changed
-            elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+            elif self.experiment.image_source is self.experiment.ImageSource.Camera:
                 if self.open_camera_start_dialog() is True:  # Dialog wasn't cancelled
                     self.start_analysis(False, False, False)
 
@@ -1683,15 +1683,15 @@ class MainWindow(QMainWindow):
     def ready_to_run(self):
         ready = True
         reason = ""
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             if self.experiment.image_file_path == "":
                 ready = False
                 reason = "No valid image source"
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             if self.experiment.folder_file_path == "":
                 ready = False
                 reason = "No valid image source"
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             if self.experiment.camera_file_path == "":
                 ready = False
                 reason = "No target folder defined"
