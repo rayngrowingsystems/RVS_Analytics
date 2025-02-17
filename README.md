@@ -37,28 +37,23 @@ RAYN provides an executable to install RVS-A on Windows. You can download it thr
 
 It is recommended to run the application in a virtual environment.
 Required libraries and versions:
-- python (3.10.14)
-- plantCV (4.3.1)
-- jupyterlab (4.2.4)
-- ipympl (0.9.4)
-- nodejs (22.5.1)
-- stackprinter (0.2.5)
-- paho-mqtt (1.6.1)
-- plotly (5.9.0)
-- watchdog (2.1.6)
-- kaleido (0.1.0.post1, other versions do not work)
-- pyside6 (6.6.0)
-- scikit-image (0.22.0)
-- scikit-learn (1.3.2)
+- python (3.11)
+- plantCV 
+- stackprinter
+- paho-mqtt
+- plotly
+- watchdog
+- kaleido (0.1.0.post1 for Windows/Linux, other versions do not work)
+- pyside6
+- requests
 
 Here are the steps to set up everything to run the application using conda.
 
 ```bash
-conda create -n rvs python=3.10 # create virtual environment named "rvs" with python v3.10
+conda create -n rvs python=3.11 # create virtual environment named "rvs" with python v3.11
 conda activate rvs # activate virtual environment
-conda install --channel=conda-forge plantcv plotly jupyterlab ipympl nodejs stackprinter paho-mqtt watchdog
-pip install kaleido==0.1.0
-pip install pyside6
+pip install plantcv plotly stackprinter paho-mqtt watchdog pyside6 requests
+pip install kaleido==0.1.0.post1
 ```
 You can run the application from the repository with the following command:
 ```bash
