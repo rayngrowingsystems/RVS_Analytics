@@ -56,12 +56,6 @@ class ClickableLabel(QLabel):
     def set_image_file_name(self, file_name, image_options):
         # tprint("Set preview file:", fileName)
 
-        lens_angle = image_options["lensAngle"]
-        normalize = image_options["normalize"]
-        light_correction = image_options["lightCorrection"]
-        rotation = image_options["rotation"]
-        crop = image_options["crop"]
-
         if file_name != "" and file_name != ".":
             self.image_file_name = file_name
 

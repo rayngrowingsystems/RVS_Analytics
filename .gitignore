@@ -116,3 +116,5 @@ Application/runUiRcc.bat
 Application/Installer
 
 Test/test_results/
+
+Test/log/
