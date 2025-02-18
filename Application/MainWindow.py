@@ -1903,7 +1903,6 @@ class MainWindow(QMainWindow):
             self.experiment.script_options = settings 
 
             # Capture the chart parameters
-            self.experiment.script_options = {}  # TODO? Should we clear all? Before it was chart_options only
             self.experiment.chart_option_types = {}
             child_checkboxes = analysis_options_dialog.ui.main_groupbox.findChildren(QCheckBox)
             for child_checkbox in child_checkboxes:
