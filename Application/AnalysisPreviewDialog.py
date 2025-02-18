@@ -61,17 +61,8 @@ class AnalysisPreviewDialog(QDialog):
         self.roi_grid2 = None
 
         # Connect image buttons to slot for selecting reference images
-        image_button = QPushButton("Image...", self.ui.reference_image1)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image1)
-
-        image_button = QPushButton("Image...", self.ui.reference_image2)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image2)
+        self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
+        self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
 
         self.ui.preview_button.clicked.connect(self.run_preview_script)
 

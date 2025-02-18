@@ -99,3 +99,4 @@ class AnalysisOptionsDialog(QDialog):
         self.blockSignals(True)
         Helper.set_ui_elements_default_values(self.default_values)
         self.blockSignals(False)
+ 

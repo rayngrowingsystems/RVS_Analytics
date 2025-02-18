@@ -262,19 +262,18 @@ class ImageRoiDialog(QDialog):
         # Create and configure ROI grids for reference images
         self.roi_grid1 = RoiGrid(self.ui.reference_image1, self, [])
         self.ui.reference_image1.set_roi_grid(self.roi_grid1)
-        image_button = QPushButton("Image...", self.roi_grid1)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image1)
 
         self.roi_grid2 = RoiGrid(self.ui.reference_image2, self, [])
         self.ui.reference_image2.set_roi_grid(self.roi_grid2)
-        image_button = QPushButton("Image...", self.roi_grid2)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image2)
+
+        self.ui.reference_image1.select_image_button.setParent(self.roi_grid1)
+        self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
+
+        self.ui.reference_image2.select_image_button.setParent(self.roi_grid2)
+        self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
+
+        self.ui.reference_image1.zoom_panel.setParent(self.roi_grid1)
+        self.ui.reference_image2.zoom_panel.setParent(self.roi_grid2)
 
         # Set geometries and show ROI grids
         self.roi_grid1.setGeometry(self.ui.reference_image1.geometry())
