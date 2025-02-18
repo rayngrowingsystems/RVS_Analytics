@@ -508,6 +508,8 @@ class ImageRoiDialog(QDialog):
             self.update_item_radius(self.focused_roi_item, self.ui.width_spinbox.value() / 2)
         elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
             self.update_item_type(self.focused_roi_item, "Rectangle")
+            self.update_item_width(self.focused_roi_item, self.ui.width_spinbox.value())
+            self.update_item_height(self.focused_roi_item, self.ui.height_spinbox.value())
         elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
             self.update_item_type(self.focused_roi_item, "Ellipse")
             self.update_item_radius(self.focused_roi_item, self.ui.width_spinbox.value())
