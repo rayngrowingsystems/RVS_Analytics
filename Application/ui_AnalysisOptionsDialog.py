@@ -54,6 +54,12 @@ class Ui_AnalysisOptionsDialog(object):
 
         self.horizontalLayout.addWidget(self.default_button)
 
+        self.cancel_button = QPushButton(AnalysisOptionsDialog)
+        self.cancel_button.setObjectName(u"cancel_button")
+        self.cancel_button.setAutoDefault(False)
+
+        self.horizontalLayout.addWidget(self.cancel_button)
+
         self.done_button = QPushButton(AnalysisOptionsDialog)
         self.done_button.setObjectName(u"done_button")
         self.done_button.setAutoDefault(True)
@@ -77,6 +83,7 @@ class Ui_AnalysisOptionsDialog(object):
         AnalysisOptionsDialog.setWindowTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Analytic options", None))
         self.main_groupbox.setTitle(QCoreApplication.translate("AnalysisOptionsDialog", u"Select script and chart options", None))
         self.default_button.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Default", None))
+        self.cancel_button.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Cancel", None))
         self.done_button.setText(QCoreApplication.translate("AnalysisOptionsDialog", u"Done", None))
     # retranslateUi
 

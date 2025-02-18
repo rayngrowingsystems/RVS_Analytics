@@ -69,6 +69,9 @@ class AnalysisOptionsDialog(QDialog):
 
         self.ui.default_button.clicked.connect(self.set_default_values)
 
+        # Connect cancel button to close the dialog
+        self.ui.cancel_button.clicked.connect(self.reject)
+
         if self.main_window.test_mode:
             QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
@@ -90,20 +93,7 @@ class AnalysisOptionsDialog(QDialog):
         tprint("Dropdown changed", name, option_dropdown, option_dropdown.currentIndex(), initial_update)
 
     def refresh_values(self):
-        for name, checkbox in self.option_checkboxes:
-            self.main_window.experiment.script_options[name] = checkbox.isChecked()
-
-        for name, slider, min, step_size in self.option_sliders:
-            self.main_window.experiment.script_options[name] = slider.value()
-
-        for name, dropdown in self.option_dropdowns:
-            self.main_window.experiment.script_options[name] = dropdown.currentData()
-
-        tprint("Refresh", self.main_window.experiment.script_options)
-
-        self.main_window.update_experiment_file(True)
-
-        # self.run_preview_script()
+        pass
 
     def set_default_values(self):
         self.blockSignals(True)
