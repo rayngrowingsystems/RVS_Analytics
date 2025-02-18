@@ -541,7 +541,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 else:
                     option_dropdown.currentIndexChanged.emit(0)
 
-                default_values[option_dropdown] = option["value"]
+                if "value" in option:
+                    default_values[option_dropdown] = option["value"]
 
                 name = option["name"]
                 display_name = option["displayName"]
