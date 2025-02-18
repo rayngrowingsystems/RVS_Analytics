@@ -132,10 +132,10 @@ class ImageMaskDialog(QDialog):
                 Helper.get_ui_elements_from_config(options=data['mask']['options'], settings=self.main_window.experiment.mask, \
                                                    execute_on_change=self.run_mask_script, dropdown_changed=self.dropdown_changed, \
                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                   script_for_dropdown_values=self.main_window.current_mask_script())
+                                                   script_for_dropdown_values=self.main_window.current_mask_script(), preset_folder=self.main_window.preset_folder)
             
             # Set the layout for mask options
-            self.ui.mask_options_box.setLayout(grid)
+            self.ui.main_box.setLayout(grid)
 
             tprint(self.option_wavelengths, self.option_dropdowns)
 

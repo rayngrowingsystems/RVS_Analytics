@@ -16,9 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
-    QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QGridLayout, QHBoxLayout, QLabel, QPushButton,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 from ClickableLabel import ClickableLabel
 from Label import Label
@@ -28,7 +27,7 @@ class Ui_ImageMaskDialog(object):
         if not ImageMaskDialog.objectName():
             ImageMaskDialog.setObjectName(u"ImageMaskDialog")
         ImageMaskDialog.setWindowModality(Qt.NonModal)
-        ImageMaskDialog.resize(628, 630)
+        ImageMaskDialog.resize(628, 660)
         ImageMaskDialog.setModal(True)
         self.gridLayout_2 = QGridLayout(ImageMaskDialog)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -124,15 +123,10 @@ class Ui_ImageMaskDialog(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.mask_options_box = QGroupBox(ImageMaskDialog)
-        self.mask_options_box.setObjectName(u"mask_options_box")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.mask_options_box.sizePolicy().hasHeightForWidth())
-        self.mask_options_box.setSizePolicy(sizePolicy1)
+        self.main_box = QWidget(ImageMaskDialog)
+        self.main_box.setObjectName(u"main_box")
 
-        self.horizontalLayout_4.addWidget(self.mask_options_box)
+        self.horizontalLayout_4.addWidget(self.main_box)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -208,7 +202,6 @@ class Ui_ImageMaskDialog(object):
         self.label_4.setText(QCoreApplication.translate("ImageMaskDialog", u"Preview", None))
         self.preview_image1.setText(QCoreApplication.translate("ImageMaskDialog", u"Preview 1", None))
         self.preview_image2.setText(QCoreApplication.translate("ImageMaskDialog", u"Preview 2", None))
-        self.mask_options_box.setTitle(QCoreApplication.translate("ImageMaskDialog", u"Adjust mask parameters", None))
         self.show_rois_checkbox.setText(QCoreApplication.translate("ImageMaskDialog", u"Show ROIs", None))
         self.default_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Default", None))
         self.cancel_button.setText(QCoreApplication.translate("ImageMaskDialog", u"Cancel", None))

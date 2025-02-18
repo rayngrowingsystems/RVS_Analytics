@@ -57,15 +57,15 @@ class AnalysisOptionsDialog(QDialog):
                     Helper.get_ui_elements_from_config(options=data['script']['options'], settings=self.main_window.experiment.script_options, \
                                                     execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
                                                     slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                    script_for_dropdown_values=self.main_window.current_analysis_script())
+                                                    script_for_dropdown_values=self.main_window.current_analysis_script(), preset_folder=self.main_window.preset_folder)
                 
-            self.ui.script_options_box.setLayout(grid)   
+            self.ui.main_groupbox.setLayout(grid)   
             
             # Set active checkboxes
-            chart_checkboxes = self.ui.chart_options_box.findChildren(QCheckBox)
+            chart_checkboxes = self.ui.main_groupbox.findChildren(QCheckBox)
             for child_checkbox in chart_checkboxes:
-                if child_checkbox.objectName() in self.main_window.experiment.chart_options:
-                    child_checkbox.setChecked(self.main_window.experiment.chart_options[child_checkbox.objectName()])
+                if child_checkbox.objectName() in self.main_window.experiment.script_options:
+                    child_checkbox.setChecked(self.main_window.experiment.script_options[child_checkbox.objectName()])
 
         self.ui.default_button.clicked.connect(self.set_default_values)
 

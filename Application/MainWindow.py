@@ -161,7 +161,7 @@ class MainWindow(QMainWindow):
     analysis_done = QtCore.Signal()
     add_preview_tab = QtCore.Signal(str, str)
 
-    def __init__(self, script_folder, mask_folder, test_mode=False, test_dialog_timeout=3000):
+    def __init__(self, script_folder, mask_folder, preset_folder, test_mode=False, test_dialog_timeout=3000):
         super().__init__()
         # super(MainWindow, self).__init__()
 
@@ -177,6 +177,7 @@ class MainWindow(QMainWindow):
         self.camera_configuration_view = None
         self.script_folder = script_folder
         self.mask_folder = mask_folder
+        self.preset_folder = preset_folder
 
         # Set up the experiment folder path and create it if it doesn't exist
         documents_path = os.path.join(os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)), QApplication.organizationName(), QApplication.applicationName())
@@ -1512,7 +1513,7 @@ class MainWindow(QMainWindow):
             self.charts = {}
 
             # Create the Chart(s)
-            for key, value in self.experiment.chart_options.items():
+            for key, value in self.experiment.script_options.items():
 
                 if key == "mean_index":
                     y_label = f"{self.experiment.script_options['index_selection'].upper()} Value"  # TODO Alex
@@ -1700,10 +1701,6 @@ class MainWindow(QMainWindow):
             elif self.experiment.camera_cid == "":
                 ready = False
                 reason = "No camera defined"
-
-        if len(self.experiment.chart_options) == 0:
-            ready = False
-            reason = "No chart options defined"
 
         if len(self.experiment.script_options) == 0:
             ready = False
@@ -1906,15 +1903,15 @@ class MainWindow(QMainWindow):
             self.experiment.script_options = settings 
 
             # Capture the chart parameters
-            self.experiment.chart_options = {}
+            self.experiment.script_options = {}  # TODO? Should we clear all? Before it was chart_options only
             self.experiment.chart_option_types = {}
-            child_checkboxes = analysis_options_dialog.ui.chart_options_box.findChildren(QCheckBox)
+            child_checkboxes = analysis_options_dialog.ui.main_groupbox.findChildren(QCheckBox)
             for child_checkbox in child_checkboxes:
-                self.experiment.chart_options[child_checkbox.objectName()] = child_checkbox.isChecked()
+                self.experiment.script_options[child_checkbox.objectName()] = child_checkbox.isChecked()
 
-                self.experiment.chart_option_types[child_checkbox.objectName()] = child_checkbox.property("optionType")
+                self.experiment.chart_option_types[child_checkbox.objectName()] = child_checkbox.property("chartOptionType")
 
-                tprint("Chart option:", child_checkbox.objectName(), child_checkbox.property("optionType"), child_checkbox.isChecked())
+                tprint("Chart option:", child_checkbox.objectName(), child_checkbox.property("chartOptionType"), child_checkbox.isChecked())
 
             self.update_experiment_file(False)
 

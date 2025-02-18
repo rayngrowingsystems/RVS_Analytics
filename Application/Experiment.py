@@ -60,7 +60,6 @@ class Experiment:
         self.crop = False
 
         self.script_options = {}
-        self.chart_options = {}
         self.chart_option_types = {}
 
         self.roi_info = self.RoiInfo()
@@ -180,7 +179,6 @@ class Experiment:
           # NOTE: When things are added to the "analysis" section, update analysisToDict below
           "analysis": {"maskOptions": self.mask,
                        "scriptOptions": {"general": self.script_options},
-                       "chartOptions": self.chart_options,
                        "chartOptionTypes": self.chart_option_types,
                        "selectedScript": self.selected_script,
                        "selectedMask": self.selected_mask},
@@ -204,7 +202,6 @@ class Experiment:
         return {
           "analysis": {"maskOptions": self.mask,
                        "scriptOptions": {"general": self.script_options},
-                       "chartOptions": self.chart_options,
                        "chartOptionTypes": self.chart_option_types,
                        "selectedScript": self.selected_script,
                        "selectedMask": self.selected_mask}
@@ -345,10 +342,6 @@ class Experiment:
 
             self.mask = d["analysis"]["maskOptions"]
             tprint("Loaded maskOptions", self.mask)
-
-            if "chartOptions" in d["analysis"]:
-                self.chart_options = d["analysis"]["chartOptions"]
-                tprint("Loaded chartOptions", self.chart_options)
 
             if "chartOptionTypes" in d["analysis"]:
                 self.chart_option_types = d["analysis"]["chartOptionTypes"]
