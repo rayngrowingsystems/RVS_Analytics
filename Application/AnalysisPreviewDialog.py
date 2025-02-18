@@ -79,31 +79,6 @@ class AnalysisPreviewDialog(QDialog):
 
         self.script_description = ''
 
-        # TODO change Move to AnalysisOptionsDialog
-        '''
-        if self.main_window.experiment.selected_script != "":
-            # configFileName = path.join(self.mainWindow.scriptFolder, self.mainWindow.experiment.selectedScript.replace(".py", ".config"))
-            config_file_name = self.main_window.script_paths[self.main_window.experiment.selected_script].replace(".py", ".config")
-
-            tprint("Script options config:", config_file_name)
-
-            with open(config_file_name) as config_file:
-                data = json.load(config_file)
-                tprint(data)
-
-                self.script_description = data['script']['info']['description']
-
-                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges = \
-                    Helper.get_ui_elements_from_config(options=data['script']['options'], settings=self.main_window.experiment.script_options, \
-                                                    execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
-                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                    script_for_dropdown_values=self.main_window.current_analysis_script())
-
-                self.ui.analysis_preview_box.setLayout(grid)'''
-
-        # self.ui.script_label.setText("Script: " + self.main_window.ui.script_selection_combobox.currentText())
-        # self.ui.script_description.setText(self.script_description)
-
         # For some reason, geometry won't work unless we move the update outside the constructor
         QTimer.singleShot(300, lambda: self.load_reference_images())
 
