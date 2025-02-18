@@ -300,10 +300,6 @@ class ImageMaskDialog(QDialog):
 
             # Populate image options
             settings["experimentSettings"]["imageOptions"] = self.main_window.experiment.image_options_to_dict()
-            # settings["experimentSettings"]["imageOptions"]["lensAngle"] = self.main_window.experiment.lens_angle
-            # settings["experimentSettings"]["imageOptions"]["normalize"] = self.main_window.experiment.normalize
-            # settings["experimentSettings"]["imageOptions"]["lightCorrection"] = self.main_window.experiment.light_correction
-            # settings["experimentSettings"]["imageOptions"]["rotation"] = self.main_window.experiment.rotation
 
             # Get the current mask script
             mask_script = self.main_window.current_mask_script()

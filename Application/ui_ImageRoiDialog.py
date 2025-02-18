@@ -233,7 +233,7 @@ class Ui_ImageRoiDialog(object):
 
         self.done_button = QPushButton(ImageRoiDialog)
         self.done_button.setObjectName(u"done_button")
-        self.done_button.setAutoDefault(False)
+        self.done_button.setAutoDefault(True)
 
         self.horizontalLayout_4.addWidget(self.done_button)
 

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>582</width>
-    <height>249</height>
+    <height>245</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout" columnstretch="1,0">
+    <layout class="QGridLayout" name="gridLayout" columnstretch="0">
      <item row="5" column="0">
       <widget class="QCheckBox" name="normalize_checkbox">
        <property name="text">
@@ -29,48 +29,10 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QCheckBox" name="light_correction_checkbox">
-       <property name="text">
-        <string>Apply Light Intensity Correction for RAYN Vision Systems with 120° lens</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>[Experimental] Correct image for light intensity</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Use the dark reference to normalize the multispectral image</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>The RAYN Vision System Camera optical system is calibrated and it is possible to compensate images taken by this camera for for lens distortion</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <string>Rotate the image</string>
        </property>
       </widget>
      </item>
@@ -123,7 +85,41 @@
        </item>
       </layout>
      </item>
-     <item row="12" column="0">
+     <item row="3" column="0">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Use the dark reference to normalize the multispectral image</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>The RAYN Vision System Camera optical system is calibrated and it is possible to compensate images taken by this camera for for lens distortion</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLabel" name="label_5">
@@ -156,20 +152,6 @@
         </spacer>
        </item>
       </layout>
-     </item>
-     <item row="9" column="0">
-      <widget class="Line" name="line_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Rotate the image</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

@@ -55,7 +55,6 @@ class Experiment:
 
         self.lens_angle = 60
         self.normalize = False
-        self.light_correction = False
         self.rotation = 0
         self.crop = False
 
@@ -187,7 +186,6 @@ class Experiment:
           "maskReferenceImage2": self.safe_normpath(self.mask_reference_image2),
           "imageOptions": {"lensAngle": self.lens_angle,
                            "normalize": self.normalize,
-                           "lightCorrection": self.light_correction,
                            "rotation": self.rotation,
                            "crop": self.crop},
           "roiReferenceImage1": self.safe_normpath(self.roi_reference_image1),
@@ -210,7 +208,6 @@ class Experiment:
     def image_options_to_dict(self):
         return {"lensAngle": self.lens_angle,
                 "normalize": self.normalize,
-                "lightCorrection": self.light_correction,
                 "rotation": self.rotation,
                 "crop": self.crop}
 
@@ -326,9 +323,6 @@ class Experiment:
                 self.lens_angle = 60
 
             self.normalize = d["imageOptions"]["normalize"]
-
-            if "lightCorrection" in d["imageOptions"]:
-                self.light_correction = d["imageOptions"]["lightCorrection"]
 
             if "rotation" in d["imageOptions"]:
                 self.rotation = d["imageOptions"]["rotation"]

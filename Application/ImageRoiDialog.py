@@ -888,3 +888,4 @@ class ImageRoiDialog(QDialog):
 
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()
+            

@@ -145,7 +145,6 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
 
     lens_angle = image_options["lensAngle"]
     dark_normalize = image_options["normalize"]
-    light_correction = image_options["lightCorrection"]
     rotation = image_options["rotation"]
     crop = image_options["crop"]
 
@@ -166,11 +165,6 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         spectral_data.array_data = spectral_data.array_data / 255  # convert 0-255 (orig.) to 0-1 range
 
     rvs_dict = parse_rvs_header(f"{img_file}.hdr")
-
-    # Apply light correction
-    if light_correction:
-        correction_matrix = get_correction_matrix_from_file(path.join(path.dirname(__file__), "calibration_data/120_correction_matrix.npy"))
-        spectral_data = light_intensity_correction(spectral_data, correction_matrix)
 
     # normalize the image cube
     if dark_normalize:
