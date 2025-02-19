@@ -47,17 +47,14 @@ Required libraries and versions:
 - pyside6
 - requests
 
-Here are the steps to set up everything to run the application using conda.
+Here are the steps to set up everything to run the application. Note: You have to have python already installed!
 
 ```bash
-conda create -n rvs python=3.11 # create virtual environment named "rvs" with python v3.11
-conda activate rvs # activate virtual environment
 pip install plantcv plotly stackprinter paho-mqtt watchdog pyside6 requests
 pip install kaleido==0.1.0.post1
 ```
 You can run the application from the repository with the following command:
 ```bash
-conda activate rvs # activate environment
 cd PATH/TO/REPOSITORY # navigate to the repository
 cd Application # enter Application folder - important for relative paths
 python cameraapp.py
