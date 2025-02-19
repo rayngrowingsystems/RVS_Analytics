@@ -1227,12 +1227,14 @@ class MainWindow(QMainWindow):
             self.add_preview_tab.emit("Spectral Histogram", value)
             handled = True
         
-        if command == "index_hist":
-            self.add_preview_tab.emit("Index Histogram", value)
+        if command.startswith("index_hist"):
+            index = command.replace("index_hist_", "").replace("_", " ").upper()
+            self.add_preview_tab.emit(f"{index} Histogram", value)
             handled = True
 
-        if command == "index_false_color":
-            self.add_preview_tab.emit("Index False Color", value)
+        if command.startswith("index_false_color"):
+            index = command.replace("index_false_color_", "").replace("_", " ").upper()
+            self.add_preview_tab.emit(f"{index} False Color", value)
             handled = True
 
         if command == "results":  # When processing is done: File name for results
@@ -1278,7 +1280,7 @@ class MainWindow(QMainWindow):
             j = f.read()
             d = json.loads(j)
 
-            observations = d["observations"];
+            observations = d["observations"]
             plant_index = 1
             plant_key = f"plant_{plant_index}"
 
@@ -1295,11 +1297,12 @@ class MainWindow(QMainWindow):
                 convex_hull_area = plant["convex_hull_area"]["value"]
                 longest_path = plant["longest_path"]["value"]
 
-                # Mean index is special as it contains the index name. So we need to browse the keys and match the start of the name to find the value
-                mean_index = 0
+                # Mean index is special as it contains the index name.
+                # So we need to browse the keys and match the start of the name to find the value
+                mean_index_values = {}
                 for key in plant.keys():
                     if key.startswith("mean_index_"):
-                        mean_index = plant[key]["value"]
+                        mean_index_values[key] = plant[key]["value"]
 
                 if Config.verbose_mode:
                     tprint(plant_index, width, height, area, perimeter)
@@ -1320,7 +1323,7 @@ class MainWindow(QMainWindow):
                 roi["perimeter"] = perimeter
                 roi["convexHullArea"] = convex_hull_area
                 roi["longestPath"] = longest_path
-                roi["meanIndex"] = mean_index
+                roi["meanIndex"] = mean_index_values
 
                 payload = {}
                 payload["results"] = roi
@@ -1347,8 +1350,8 @@ class MainWindow(QMainWindow):
                         value = roi["convexHullArea"]
                     elif key == "longest_path":
                         value = roi["longestPath"]
-                    elif key == "mean_index":
-                        value = roi["meanIndex"]
+                    elif key.startswith("mean_index_"):
+                        value = roi["meanIndex"][key]
                     else:
                         tprint("Unknown chart parameter key", key)
 
@@ -1508,25 +1511,26 @@ class MainWindow(QMainWindow):
             # analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
             # title, y_label = analytics_script.get_display_name_for_chart(settings) # TODO?
 
-            self.remove_result_tabs();
+            self.remove_result_tabs()
 
             self.charts = {}
 
             # Create the Chart(s)
             for key, value in self.experiment.script_options.items():
-
-                if key == "mean_index":
-                    y_label = f"{self.experiment.script_options['index_selection'].upper()} Value"  # TODO Alex
-                    title = (f"{self.experiment.script_options['index_selection'].upper()} "
-                             f"{key.replace('_', ' ').title()}")  # TODO Alex
+                if key == "mean_index" and value:
+                    selected_indices = self.experiment.script_options["index_selection"]
+                    for index in selected_indices:
+                        y_label = f"{index.replace('_', ' ').upper()} Value"  # TODO Alex
+                        title = f"{index.replace('_', ' ').upper()} Mean"  # TODO Alex
+                        self.charts[f"mean_index_{index}"] = Chart(self, title, y_label)
                 else:
                     y_label = key.replace("_", " ").title()  # TODO Alex
                     title = key.replace("_", " ").title()  # TODO Alex
+                    if value is True and key in self.experiment.chart_option_types and \
+                            self.experiment.chart_option_types[key] == "plot":
+                        self.charts[key] = Chart(self, title, y_label)
 
-                tprint("Chart:", title, y_label, value)
-
-                if value is True and key in self.experiment.chart_option_types and self.experiment.chart_option_types[key] == "plot":
-                    self.charts[key] = Chart(self, title, y_label)
+                    tprint("Chart:", title, y_label, value)
 
             for key, chart in self.charts.items():
                 if path.exists(chart.web_page()):
@@ -1745,7 +1749,8 @@ class MainWindow(QMainWindow):
         about_dialog.exec()
 
     def open_help_dialog(self):
-        # Since HelpDialog is a non-modal dialog (to be able to have it open while using the application), we need to keep the instance around
+        # Since HelpDialog is a non-modal dialog (to be able to have it open while using the application),
+        # we need to keep the instance around
         # by assigning it to a class variable
         self.help_dialog = HelpDialog()
         self.help_dialog.show()
