@@ -259,6 +259,9 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image1.rubberband_changed.connect(self.on_rubberband_changed)
         self.ui.reference_image2.rubberband_changed.connect(self.on_rubberband_changed)
 
+        self.ui.reference_image1.zoom_changed.connect(self.on_zoom_changed)
+        self.ui.reference_image2.zoom_changed.connect(self.on_zoom_changed)
+
         # Create and configure ROI grids for reference images
         self.roi_grid1 = RoiGrid(self.ui.reference_image1, self, [])
         self.ui.reference_image1.set_roi_grid(self.roi_grid1)
@@ -744,6 +747,16 @@ class ImageRoiDialog(QDialog):
                                          
             self.refresh_roi_grid()
 
+    def on_zoom_changed(self, rect):
+        if self.ui.reference_image1 is not None:
+            self.ui.reference_image1.zoom_edit_rect = rect
+            self.ui.reference_image1.zoom_mode = True
+            self.ui.reference_image1.update()
+        if self.ui.reference_image2 is not None:
+            self.ui.reference_image2.zoom_edit_rect = rect
+            self.ui.reference_image2.zoom_mode = True
+            self.ui.reference_image2.update()
+
     def contains_item(self, existing_item, new_item):
         item_type = existing_item["type"]
         item_type2 = new_item["type"]
@@ -856,8 +869,10 @@ class ImageRoiDialog(QDialog):
             height = self.ui.reference_image1.height()
 
             if self.ui.reference_image1.original_image:
+                self.ui.reference_image1.refresh_image_size()
+                
                 # Scale pixmap to follow available space
-                self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+                # self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
                 self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() / self.ui.reference_image1.original_image.width()
             else:
@@ -874,8 +889,10 @@ class ImageRoiDialog(QDialog):
             height = self.ui.reference_image2.height()
 
             if self.ui.reference_image2.original_image:
+                self.ui.reference_image2.refresh_image_size()
+                
                 # Scale pixmap to follow available space
-                self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+                # self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
                 self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() / self.ui.reference_image2.original_image.width()
             else:
@@ -887,10 +904,8 @@ class ImageRoiDialog(QDialog):
             self.roi_grid2.update()
 
     def refresh_image_sizes(self):
-        if self.ui.reference_image1 is not None:
-            self.ui.reference_image1.refresh_image_size()
-        if self.ui.reference_image2 is not None:
-            self.ui.reference_image2.refresh_image_size()
+        self.refresh_reference_image1()
+        self.refresh_reference_image2()
 
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()

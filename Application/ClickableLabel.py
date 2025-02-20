@@ -36,6 +36,7 @@ class ClickableLabel(QLabel):
     moved = QtCore.Signal(QPoint)
     double_clicked = QtCore.Signal(QPoint)
     rubberband_changed = QtCore.Signal(QRect)
+    zoom_changed = QtCore.Signal(QRect)
     image_file_name_changed = QtCore.Signal()
 
     def __init__(self, parent):
@@ -185,6 +186,8 @@ class ClickableLabel(QLabel):
         if not self.zoom_rect.isEmpty():
             self.zoom_pixmap = self.zoomed_image()
 
+            self.refresh_zoom_buttons(self.width())
+
     def zoomed_image(self):
         return self.original_image.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio).copy(self.zoom_rect)
     
@@ -231,6 +234,8 @@ class ClickableLabel(QLabel):
                 self.zoom_origin = event.pos()
 
                 self.zoom_edit_rect = QRect(self.zoom_origin, QSize())
+
+                self.zoom_changed.emit(self.zoom_edit_rect)
             else:
                 self.rubberband_origin = event.pos()
 
@@ -248,6 +253,8 @@ class ClickableLabel(QLabel):
         if self.mouse_pressed:
             if self.zoom_mode:
                 self.zoom_edit_rect = QRect(self.zoom_origin, event.pos()).normalized()
+
+                self.zoom_changed.emit(self.zoom_edit_rect)
 
                 self.update()
             else:
