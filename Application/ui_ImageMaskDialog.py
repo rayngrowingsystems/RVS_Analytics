@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ImageMaskDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -49,8 +49,8 @@ class Ui_ImageMaskDialog(object):
 
         self.line = QFrame(ImageMaskDialog)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.verticalLayout.addWidget(self.line)
 
@@ -63,7 +63,7 @@ class Ui_ImageMaskDialog(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.reference_image1 = ClickableLabel(ImageMaskDialog)
         self.reference_image1.setObjectName(u"reference_image1")
-        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.reference_image1.sizePolicy().hasHeightForWidth())
@@ -128,7 +128,7 @@ class Ui_ImageMaskDialog(object):
 
         self.horizontalLayout_4.addWidget(self.main_box)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
@@ -144,7 +144,7 @@ class Ui_ImageMaskDialog(object):
 
         self.verticalLayout_3.addWidget(self.show_rois_checkbox)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_3.addItem(self.verticalSpacer_2)
 
