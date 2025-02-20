@@ -396,6 +396,9 @@ class ImageRoiDialog(QDialog):
         else:
             self.roi_grid2.show_rois = False
 
+        self.ui.reference_image1.set_zoom_rect(self.main_window.experiment.zoom_rect)
+        self.ui.reference_image2.set_zoom_rect(self.main_window.experiment.zoom_rect)
+
         self.refresh_roi_grid()
         self.refresh_image_sizes()
 
@@ -884,8 +887,10 @@ class ImageRoiDialog(QDialog):
             self.roi_grid2.update()
 
     def refresh_image_sizes(self):
-        self.refresh_reference_image1()
-        self.refresh_reference_image2()
+        if self.ui.reference_image1 is not None:
+            self.ui.reference_image1.refresh_image_size()
+        if self.ui.reference_image2 is not None:
+            self.ui.reference_image2.refresh_image_size()
 
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()

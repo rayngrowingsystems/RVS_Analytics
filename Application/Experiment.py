@@ -78,6 +78,8 @@ class Experiment:
 
         self.mqtt_broker = ""
 
+        self.zoom_rect = QRect()
+
     class RoiInfo:
         PlacementMode = Enum('PlacementMode', ['Matrix', 'Manual'])
         Shape = Enum('Shape', ['Circle', 'Rectangle', 'Ellipse', 'Polygon'])
@@ -193,7 +195,8 @@ class Experiment:
           "scriptReferenceImage1": self.safe_normpath(self.script_reference_image1),
           "scriptReferenceImage2": self.safe_normpath(self.script_reference_image2),
           "cameraDiscoveryIp": self.camera_discovery_ip,
-          "mqttBroker": self.mqtt_broker
+          "mqttBroker": self.mqtt_broker,
+          "zoomRect": [self.zoom_rect.left(), self.zoom_rect.top(), self.zoom_rect.width(), self.zoom_rect.height()],
         }
 
     def analysis_to_dict(self):
@@ -362,6 +365,9 @@ class Experiment:
 
         if "mqttBroker" in d:
             self.mqtt_broker = d["mqttBroker"]
+
+        if "zoomRect" in d:
+            self.zoom_rect = QRect(d["zoomRect"][0], d["zoomRect"][1], d["zoomRect"][2], d["zoomRect"][3])
 
     def from_json(self):
         if path.exists(self.experiment_file_name):

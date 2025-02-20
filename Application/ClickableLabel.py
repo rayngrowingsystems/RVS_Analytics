@@ -55,7 +55,9 @@ class ClickableLabel(QLabel):
 
         self.zoom_mode = False
         self.zoom_origin = QPoint()
+        self.zoom_edit_rect = QRect()
         self.zoom_rect = QRect()
+        self.zoom_pixmap = QPixmap()
 
         self.select_image_button = QPushButton("Image...", self)
         self.select_image_button.setMaximumWidth(55)
@@ -94,7 +96,7 @@ class ClickableLabel(QLabel):
     def paintEvent(self, e):  # Qt override, keep casing
         super().paintEvent(e)
 
-        if not self.zoom_mode and self.zoom_rect.isEmpty():
+        if not self.zoom_mode and self.zoom_edit_rect.isEmpty():
             return
         
         painter = QPainter(self)
@@ -103,8 +105,8 @@ class ClickableLabel(QLabel):
         pen.setWidth(3)
         painter.setPen(pen)
 
-        if not self.zoom_rect.isEmpty():
-             painter.drawRect(self.zoom_rect)
+        if not self.zoom_edit_rect.isEmpty():
+            painter.drawRect(self.zoom_edit_rect)
 
     def refresh(self):
         self.refresh_zoom_buttons(self.width())
@@ -114,37 +116,84 @@ class ClickableLabel(QLabel):
         self.zoom_accept_button.setParent(parent)
         self.zoom_cancel_button.setParent(parent)
         self.zoom_reset_button.setParent(parent)
-        
+
     def on_zoom(self):
+        self.on_zoom_reset()
+        
         self.zoom_mode = True
+        self.zoom_edit_rect = QRect()
         self.zoom_rect = QRect()
 
         self.refresh_zoom_buttons(self.width())
-    
+
     def on_zoom_accept(self):
         if self.zoom_mode:
+            self.set_zoom_rect(self.zoom_edit_rect)
+
+            self.refresh_image_size()
+
             self.zoom_mode = False
-            self.update()
+            self.zoom_edit_rect = QRect()
 
             self.refresh_zoom_buttons(self.width())
 
     def on_zoom_cancel(self):
         if self.zoom_mode:
             self.zoom_mode = False
-            self.zoom_rect = QRect()
-            self.update()
+            self.zoom_edit_rect = QRect()
 
             self.refresh_zoom_buttons(self.width())
 
     def on_zoom_reset(self):
         if not self.zoom_rect.isEmpty():
+            self.zoom_edit_rect = QRect()
             self.zoom_rect = QRect()
-            self.update()
+
+            self.refresh_image_size()
 
             self.zoom_reset_button.hide()
             self.zoom_button.show()
 
             self.refresh_zoom_buttons(self.width())
+
+    def refresh_zoom_buttons(self, width):
+        self.zoom_button.setVisible(not self.zoom_mode)
+        self.zoom_accept_button.setVisible(self.zoom_mode)
+        self.zoom_cancel_button.setVisible(self.zoom_mode)
+        self.zoom_reset_button.setVisible(not self.zoom_rect.isEmpty() and not self.zoom_mode)
+
+        x = 0
+        offset = self.zoom_button.height() + 4
+
+        if self.zoom_button.isVisible():
+            self.zoom_button.move(width - self.zoom_button.width(), x)
+            x += offset
+        if self.zoom_accept_button.isVisible():
+            self.zoom_accept_button.move(width - self.zoom_accept_button.width(), x)
+            x += offset
+        if self.zoom_cancel_button.isVisible():
+            self.zoom_cancel_button.move(width - self.zoom_cancel_button.width(), x)
+            x += offset
+        if self.zoom_reset_button.isVisible():
+            self.zoom_reset_button.move(width - self.zoom_reset_button.width(), x)
+            x += offset
+
+        self.update()
+
+    def set_zoom_rect(self, rect):
+        self.zoom_rect = rect
+        if not self.zoom_rect.isEmpty():
+            self.zoom_pixmap = self.zoomed_image()
+
+    def zoomed_image(self):
+        return self.original_image.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio).copy(self.zoom_rect)
+    
+    def refresh_image_size(self):
+        # Scale pixmap to follow available space
+        if not self.zoom_rect.isEmpty():
+            self.setPixmap(self.zoom_pixmap.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio))
+        else:
+            self.setPixmap(self.original_image.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio))
 
     def set_image_file_name(self, file_name, image_options):
         # tprint("Set preview file:", fileName)
@@ -181,7 +230,7 @@ class ClickableLabel(QLabel):
             if self.zoom_mode:
                 self.zoom_origin = event.pos()
 
-                self.zoom_rect = QRect(self.zoom_origin, QSize())
+                self.zoom_edit_rect = QRect(self.zoom_origin, QSize())
             else:
                 self.rubberband_origin = event.pos()
 
@@ -198,7 +247,7 @@ class ClickableLabel(QLabel):
     def mouseMoveEvent(self, event):  # Note: Qt override
         if self.mouse_pressed:
             if self.zoom_mode:
-                self.zoom_rect = QRect(self.zoom_origin, event.pos()).normalized()
+                self.zoom_edit_rect = QRect(self.zoom_origin, event.pos()).normalized()
 
                 self.update()
             else:
@@ -225,28 +274,6 @@ class ClickableLabel(QLabel):
     def mouseDoubleClickEvent(self, event):  # Note: Qt override
         if not self.zoom_mode:
             self.double_clicked.emit(event.pos())
-
-    def refresh_zoom_buttons(self, width):
-        self.zoom_button.setVisible(not self.zoom_mode)
-        self.zoom_accept_button.setVisible(self.zoom_mode)
-        self.zoom_cancel_button.setVisible(self.zoom_mode)
-        self.zoom_reset_button.setVisible(not self.zoom_mode and not self.zoom_rect.isEmpty())
-
-        x = 0
-        offset = self.zoom_button.height() + 4
-
-        if self.zoom_button.isVisible():
-            self.zoom_button.move(width - self.zoom_button.width(), x)
-            x += offset
-        if self.zoom_accept_button.isVisible():
-            self.zoom_accept_button.move(width - self.zoom_accept_button.width(), x)
-            x += offset
-        if self.zoom_cancel_button.isVisible():
-            self.zoom_cancel_button.move(width - self.zoom_cancel_button.width(), x)
-            x += offset
-        if self.zoom_reset_button.isVisible():
-            self.zoom_reset_button.move(width - self.zoom_reset_button.width(), x)
-            x += offset
 
     def resizeEvent(self, event):  # Note: Qt override
         if not self.roi_grid is None:

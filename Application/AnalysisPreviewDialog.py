@@ -118,25 +118,11 @@ class AnalysisPreviewDialog(QDialog):
             self.roi_grid2.scaling_factor = scaling_factor
             self.roi_grid2.setFixedSize(self.ui.preview_image2.pixmap().size())
 
-    def refresh_reference_image1(self):
-        if self.ui.reference_image1 is not None:
-            width = self.ui.reference_image1.width()
-            height = self.ui.reference_image1.height()
-
-            # Scale pixmap to follow available space
-            self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
-
-    def refresh_reference_image2(self):
-        if self.ui.reference_image2 is not None:
-            width = self.ui.reference_image2.width()
-            height = self.ui.reference_image2.height()
-
-            # Scale pixmap to follow available space
-            self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
-
     def refresh_image_sizes(self):
-        self.refresh_reference_image1()
-        self.refresh_reference_image2()
+        if self.ui.reference_image1 is not None:
+            self.ui.reference_image1.refresh_image_size()
+        if self.ui.reference_image2 is not None:
+            self.ui.reference_image2.refresh_image_size()
 
         self.refresh_preview_image1()
         self.refresh_preview_image2()
@@ -180,6 +166,9 @@ class AnalysisPreviewDialog(QDialog):
             self.ui.preview_image1.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
         if self.ui.reference_image2.image_file_name != "":
             self.ui.preview_image2.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
+
+        self.ui.reference_image1.set_zoom_rect(self.main_window.experiment.zoom_rect)
+        self.ui.reference_image2.set_zoom_rect(self.main_window.experiment.zoom_rect)
 
         self.refresh_image_sizes()
 

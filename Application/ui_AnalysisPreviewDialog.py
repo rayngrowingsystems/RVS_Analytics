@@ -32,27 +32,6 @@ class Ui_AnalysisPreviewDialog(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.script_label = QLabel(AnalysisPreviewDialog)
-        self.script_label.setObjectName(u"script_label")
-        font = QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.script_label.setFont(font)
-
-        self.verticalLayout.addWidget(self.script_label)
-
-        self.script_description = QLabel(AnalysisPreviewDialog)
-        self.script_description.setObjectName(u"script_description")
-
-        self.verticalLayout.addWidget(self.script_description)
-
-        self.line = QFrame(AnalysisPreviewDialog)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.HLine)
-        self.line.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout.addWidget(self.line)
-
         self.label = QLabel(AnalysisPreviewDialog)
         self.label.setObjectName(u"label")
 
@@ -141,7 +120,7 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.verticalLayout.setStretch(8, 1)
+        self.verticalLayout.setStretch(5, 1)
 
         self.gridLayout_3.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
@@ -157,8 +136,6 @@ class Ui_AnalysisPreviewDialog(object):
 
     def retranslateUi(self, AnalysisPreviewDialog):
         AnalysisPreviewDialog.setWindowTitle(QCoreApplication.translate("AnalysisPreviewDialog", u"Analytic preview", None))
-        self.script_label.setText("")
-        self.script_description.setText("")
         self.label.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"Pick one or two reference images", None))
         self.reference_image1.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"\n"
 "\n"
