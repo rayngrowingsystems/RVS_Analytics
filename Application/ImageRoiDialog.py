@@ -272,8 +272,8 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image2.select_image_button.setParent(self.roi_grid2)
         self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
 
-        self.ui.reference_image1.zoom_panel.setParent(self.roi_grid1)
-        self.ui.reference_image2.zoom_panel.setParent(self.roi_grid2)
+        self.ui.reference_image1.set_zoom_parent(self.roi_grid1)
+        self.ui.reference_image2.set_zoom_parent(self.roi_grid2)
 
         # Set geometries and show ROI grids
         self.roi_grid1.setGeometry(self.ui.reference_image1.geometry())

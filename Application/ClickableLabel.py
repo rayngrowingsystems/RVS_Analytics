@@ -109,6 +109,12 @@ class ClickableLabel(QLabel):
     def refresh(self):
         self.refresh_zoom_buttons(self.width())
 
+    def set_zoom_parent(self, parent):
+        self.zoom_button.setParent(parent)
+        self.zoom_accept_button.setParent(parent)
+        self.zoom_cancel_button.setParent(parent)
+        self.zoom_reset_button.setParent(parent)
+        
     def on_zoom(self):
         self.zoom_mode = True
         self.zoom_rect = QRect()
