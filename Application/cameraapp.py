@@ -191,7 +191,13 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     # In frozen mode (PyInstaller), __file__ contains the path to the execution folder
     script_folder = os.path.join(os.path.dirname(__file__), 'Scripts')
     mask_folder = os.path.join(os.path.dirname(__file__), 'Masks')
-    preset_folder = os.path.join(script_folder, 'presets')
+
+    preset_folder = None
+    for root, dirs, files in os.walk(script_folder):  # Locate the presets folder in the Scripts tree
+        for d in dirs:
+            if d == "presets":
+                preset_folder = os.path.join(root, 'presets')
+                break
 
     # Open main window
     widget = MainWindow(script_folder, mask_folder, preset_folder)
