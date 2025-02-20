@@ -111,8 +111,6 @@ Application/resources/rc_CameraApp.py
 
 Application/generated/
 
-Application/runUiRcc.bat
-
 Application/Installer
 
 Test/test_results/
