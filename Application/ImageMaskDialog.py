@@ -75,6 +75,9 @@ class ImageMaskDialog(QDialog):
         self.ui.reference_image1.image_file_name_changed.connect(self.run_mask_script)
         self.ui.reference_image2.image_file_name_changed.connect(self.run_mask_script)
 
+        self.ui.reference_image1.image_file_name_changed.connect(self.refresh_image_sizes)
+        self.ui.reference_image2.image_file_name_changed.connect(self.refresh_image_sizes)
+
         # Initialize variables to hold original preview images
         self.original_preview_image1 = None
         self.original_preview_image2 = None
@@ -379,6 +382,9 @@ class ImageMaskDialog(QDialog):
             self.ui.reference_image1.refresh_image_size()
         if self.ui.reference_image2 is not None:
             self.ui.reference_image2.refresh_image_size()
+
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.refresh_preview_image1()
         self.refresh_preview_image2()

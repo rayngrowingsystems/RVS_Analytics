@@ -53,9 +53,8 @@ class AnalysisPreviewDialog(QDialog):
 
         self.load_ui()
 
-        # Connect signals of reference images to the slot for running preview script
-        # self.ui.reference_image1.image_file_name_changed.connect(self.run_preview_script)
-        # self.ui.reference_image2.image_file_name_changed.connect(self.run_preview_script)
+        self.ui.reference_image1.image_file_name_changed.connect(self.refresh_image_sizes)
+        self.ui.reference_image2.image_file_name_changed.connect(self.refresh_image_sizes)
 
         # Initialize variables to hold original preview images
         self.original_preview_image1 = None
@@ -128,6 +127,9 @@ class AnalysisPreviewDialog(QDialog):
         if self.ui.reference_image2 is not None:
             self.ui.reference_image2.refresh_image_size()
 
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
+
         self.refresh_preview_image1()
         self.refresh_preview_image2()
 
@@ -144,9 +146,7 @@ class AnalysisPreviewDialog(QDialog):
         select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
 
         select_image_dialog.exec()
-
-        # self.populate_wavelengths()
-
+        
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
             select_image_dialog = SelectImageDialog(self, self.ui.reference_image2)

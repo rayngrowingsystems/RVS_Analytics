@@ -946,6 +946,9 @@ class ImageRoiDialog(QDialog):
             self.roi_grid2.update()
 
     def refresh_image_sizes(self):
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
+
         self.refresh_reference_image1()
         self.refresh_reference_image2()
 
