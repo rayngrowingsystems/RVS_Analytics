@@ -66,7 +66,7 @@ class ImageMaskDialog(QDialog):
         super(ImageMaskDialog, self).__init__()
 
         # Set window flags to customize window behavior
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)  # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
 
         # Load the UI from the ui file
         self.load_ui()

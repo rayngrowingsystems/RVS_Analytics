@@ -227,7 +227,7 @@ class ImageRoiDialog(QDialog):
         DEFAULT_RADIUS = 20
 
         # Set window flags to remove 'What's this' icon from the title bar
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)
 
         # Load the UI elements for the dialog
         self.load_ui()

@@ -26,7 +26,7 @@ class Ui_AnalysisPreviewDialog(object):
         if not AnalysisPreviewDialog.objectName():
             AnalysisPreviewDialog.setObjectName(u"AnalysisPreviewDialog")
         AnalysisPreviewDialog.setWindowModality(Qt.NonModal)
-        AnalysisPreviewDialog.resize(628, 605)
+        AnalysisPreviewDialog.resize(881, 697)
         AnalysisPreviewDialog.setModal(True)
         self.gridLayout_3 = QGridLayout(AnalysisPreviewDialog)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
@@ -124,7 +124,8 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.verticalLayout.setStretch(5, 1)
+        self.verticalLayout.setStretch(1, 1)
+        self.verticalLayout.setStretch(3, 1)
 
         self.gridLayout_3.addLayout(self.verticalLayout, 0, 0, 1, 1)
 

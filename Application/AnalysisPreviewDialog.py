@@ -47,6 +47,10 @@ class AnalysisPreviewDialog(QDialog):
         self.option_dropdowns = []
 
         super(AnalysisPreviewDialog, self).__init__()
+
+        # Set window flags to customize window behavior
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
+
         self.load_ui()
 
         # Connect signals of reference images to the slot for running preview script
