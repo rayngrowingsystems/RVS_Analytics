@@ -21,6 +21,7 @@ from plantcv.plantcv import spectral_index
 from plantcv.plantcv import readimage
 from plantcv.plantcv.transform import rotate
 from plantcv.plantcv import print_image
+from plantcv.plantcv import crop
 
 
 def load_coefficients(path):
@@ -144,11 +145,6 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         img_file = settings["inputImage"]
         image_options = settings["experimentSettings"]["imageOptions"]
 
-    lens_angle = image_options["lensAngle"]
-    dark_normalize = image_options["normalize"]
-    rotation = image_options["rotation"]
-    crop = image_options["crop"]
-
     # check if a .hdr file name was provided and set img_file to the binary location
     if os.path.splitext(img_file)[1] == ".hdr":
         img_file = os.path.splitext(img_file)[0]
@@ -168,26 +164,40 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
     rvs_dict = parse_rvs_header(f"{img_file}.hdr")
 
     # normalize the image cube
-    if dark_normalize:
+    if image_options["normalize"]:
         spectral_data.array_data = dark_normalize_array_data(spectral_data)
 
     # undistort the image cube
-    if lens_angle != 0:  # only undistort if angle is selected
-        cam_calibration_file = path.join(path.dirname(__file__), f"calibration_data/{lens_angle}_calibration_data.yml")  # select the data set
+    if image_options["lensAngle"] != 0:  # only undistort if angle is selected
+        cam_calibration_file = path.join(path.dirname(__file__),
+                                         f"calibration_data/{image_options['lensAngle']}_calibration_data.yml")  # select the data set
         mtx, dist = load_coefficients(cam_calibration_file)  # depending on the lens angle
         spectral_data.array_data = undistort_data_cube(spectral_data.array_data, mtx, dist)
         spectral_data.pseudo_rgb = undistort_data_cube(spectral_data.pseudo_rgb, mtx, dist)
 
     # apply rotation
-    if rotation != 0:
-        spectral_data.array_data = rotate(spectral_data.array_data, rotation, crop)
-        spectral_data.pseudo_rgb = rotate(spectral_data.pseudo_rgb, rotation, crop)
+    if image_options["rotation"] != 0:
+        spectral_data.array_data = rotate(spectral_data.array_data, image_options["rotation"], crop=False)
+        spectral_data.pseudo_rgb = rotate(spectral_data.pseudo_rgb, image_options["rotation"], crop=False)
 
     # calculate pixel to mm conversion factor
     rvs_dict["px to mm ratio"] = 0
-    if lens_angle == 60 and "exact distance (mm)" in rvs_dict:
+    if image_options["lensAngle"] == 60 and "exact distance (mm)" in rvs_dict:
         pixel_per_mm = 1000/int(rvs_dict["exact distance (mm)"])  # with a 60° lens at 1000 mm the px to mm ratio is 1
         rvs_dict["px to mm ratio"] = pixel_per_mm
+
+    # crop the image
+    if preview:
+        crop_rectangle = [0, 0, 0, 0]
+    else:
+        crop_rectangle = settings["experimentSettings"]["cropRect"]
+
+    if crop_rectangle != [0, 0, 0, 0]:
+        spectral_data = crop(spectral_data,
+                             x=crop_rectangle[0],
+                             y=crop_rectangle[1],
+                             h=crop_rectangle[2],
+                             w=crop_rectangle[3])
 
     return spectral_data, rvs_dict
 
@@ -300,14 +310,16 @@ def parse_rvs_header(headername):
     return header_dict
 
 
-def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True, overlay=False):
+def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
+    mask_options = settings["experimentSettings"]["analysis"]["maskOptions"]
+
     if create_preview:
         out_image = settings["outputImage"]
         image_file_name = os.path.normpath(out_image)
         print("Writing image to " + image_file_name)
 
-        if overlay:
-            _alpha_base_level = 80
+        if mask_options["overlay_mask"]:
+            _alpha_base_level = 60
             alpha = np.ones(pseudo_rgb.shape[:2], dtype=np.uint8)*_alpha_base_level
             alpha = np.where(mask > 0, 255, alpha)
             bgra = np.dstack((pseudo_rgb, alpha))
