@@ -56,7 +56,6 @@ class Experiment:
         self.lens_angle = 60
         self.normalize = False
         self.rotation = 0
-        self.crop = False
 
         self.script_options = {}
         self.chart_option_types = {}
@@ -188,8 +187,7 @@ class Experiment:
           "maskReferenceImage2": self.safe_normpath(self.mask_reference_image2),
           "imageOptions": {"lensAngle": self.lens_angle,
                            "normalize": self.normalize,
-                           "rotation": self.rotation,
-                           "crop": self.crop},
+                           "rotation": self.rotation},
           "roiReferenceImage1": self.safe_normpath(self.roi_reference_image1),
           "roiReferenceImage2": self.safe_normpath(self.roi_reference_image2),
           "scriptReferenceImage1": self.safe_normpath(self.script_reference_image1),
@@ -211,8 +209,7 @@ class Experiment:
     def image_options_to_dict(self):
         return {"lensAngle": self.lens_angle,
                 "normalize": self.normalize,
-                "rotation": self.rotation,
-                "crop": self.crop}
+                "rotation": self.rotation}
 
     def update_experiment_file(self):
         d = self.to_dict()
@@ -329,9 +326,6 @@ class Experiment:
 
             if "rotation" in d["imageOptions"]:
                 self.rotation = d["imageOptions"]["rotation"]
-
-            if "crop" in d["imageOptions"]:
-                self.crop = d["imageOptions"]["crop"]
 
         if "analysis" in d:
             self.script_options = d["analysis"]["scriptOptions"]["general"]

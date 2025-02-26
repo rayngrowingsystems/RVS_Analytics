@@ -116,11 +116,6 @@ class Ui_ImageOptionDialog(object):
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.crop_checkbox = QCheckBox(ImageOptionDialog)
-        self.crop_checkbox.setObjectName(u"crop_checkbox")
-
-        self.horizontalLayout_3.addWidget(self.crop_checkbox)
-
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
@@ -154,7 +149,6 @@ class Ui_ImageOptionDialog(object):
         self.label_2.setText(QCoreApplication.translate("ImageOptionDialog", u"Use the dark reference to normalize the multispectral image", None))
         self.label.setText(QCoreApplication.translate("ImageOptionDialog", u"The RAYN Vision System Camera optical system is calibrated and it is possible to compensate images taken by this camera for for lens distortion", None))
         self.label_5.setText(QCoreApplication.translate("ImageOptionDialog", u"Rotation Angle (counter clockwise)", None))
-        self.crop_checkbox.setText(QCoreApplication.translate("ImageOptionDialog", u"Crop rotated image to original image dimension", None))
         self.done_button.setText(QCoreApplication.translate("ImageOptionDialog", u"Done", None))
     # retranslateUi
 
