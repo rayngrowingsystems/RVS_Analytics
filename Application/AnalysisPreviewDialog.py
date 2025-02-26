@@ -234,10 +234,7 @@ class AnalysisPreviewDialog(QDialog):
                     try:
                         temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
                         
-                        if not self.main_window.experiment.crop_rect.isEmpty():
-                            self.original_preview_image1 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
-                        else:    
-                            self.original_preview_image1 = QPixmap(temp_file_name)
+                        self.original_preview_image1 = QPixmap(temp_file_name)
                         self.refresh_preview_image1()
 
                         tprint("Reading preview from", temp_file_name)
@@ -255,10 +252,7 @@ class AnalysisPreviewDialog(QDialog):
                     try:
                         temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
 
-                        if not self.main_window.experiment.crop_rect.isEmpty():
-                            self.original_preview_image2 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
-                        else:    
-                            self.original_preview_image2 = QPixmap(temp_file_name)
+                        self.original_preview_image2 = QPixmap(temp_file_name)
                         self.refresh_preview_image2()
                     except BaseException as e:
                         tprint("Preview 2 failed: Unknown exception", e)
