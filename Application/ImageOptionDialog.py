@@ -46,9 +46,6 @@ class ImageOptionDialog(QDialog):
         self.ui.rotation_spinbox.setValue(self.main_window.experiment.rotation)
         self.ui.rotation_spinbox.valueChanged.connect(self.on_rotation)
 
-        self.ui.crop_checkbox.setChecked(self.main_window.experiment.crop)
-        self.ui.crop_checkbox.toggled.connect(self.on_crop)
-
         self.ui.done_button.clicked.connect(self.accept)
 
         if self.main_window.test_mode:
@@ -75,8 +72,3 @@ class ImageOptionDialog(QDialog):
     def on_rotation(self):
         self.main_window.experiment.rotation = self.ui.rotation_spinbox.value()
         self.main_window.update_experiment_file(False)
-
-    def on_crop(self):
-        self.main_window.experiment.crop = self.ui.crop_checkbox.isChecked()
-        self.main_window.update_experiment_file(False)
-
