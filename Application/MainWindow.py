@@ -1856,7 +1856,7 @@ class MainWindow(QMainWindow):
             self.experiment.mask_reference_image1 = image_mask_dialog.ui.reference_image1.image_file_name
             self.experiment.mask_reference_image2 = image_mask_dialog.ui.reference_image2.image_file_name
 
-            self.experiment.zoom_rect = image_mask_dialog.ui.reference_image1.zoom_rect  # Both images share the same zoom rect
+            # self.experiment.crop_rect = image_mask_dialog.ui.reference_image1.crop_rect  # Both images share the same crop rect
 
             self.update_experiment_file(True)
 
@@ -1884,7 +1884,7 @@ class MainWindow(QMainWindow):
             self.experiment.roi_reference_image1 = image_roi_dialog.ui.reference_image1.image_file_name
             self.experiment.roi_reference_image2 = image_roi_dialog.ui.reference_image2.image_file_name
 
-            self.experiment.zoom_rect = image_roi_dialog.ui.reference_image1.zoom_rect  # Both images share the same zoom rect
+            self.experiment.crop_rect = image_roi_dialog.ui.reference_image1.crop_rect  # Both images share the same crop rect
 
             self.update_experiment_file(False)
 
@@ -1898,7 +1898,7 @@ class MainWindow(QMainWindow):
             self.experiment.script_reference_image1 = analysis_preview_dialog.ui.reference_image1.image_file_name
             self.experiment.script_reference_image2 = analysis_preview_dialog.ui.reference_image2.image_file_name
 
-            self.experiment.zoom_rect = analysis_preview_dialog.ui.reference_image1.zoom_rect  # Both images share the same zoom rect
+            # self.experiment.crop_rect = analysis_preview_dialog.ui.reference_image1.crop_rect  # Both images share the same crop rect
 
             self.update_experiment_file(False)
 

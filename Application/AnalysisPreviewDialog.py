@@ -167,8 +167,8 @@ class AnalysisPreviewDialog(QDialog):
         if self.ui.reference_image2.image_file_name != "":
             self.ui.preview_image2.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
 
-        self.ui.reference_image1.set_zoom_rect(self.main_window.experiment.zoom_rect)
-        self.ui.reference_image2.set_zoom_rect(self.main_window.experiment.zoom_rect)
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.refresh_image_sizes()
 
@@ -230,7 +230,10 @@ class AnalysisPreviewDialog(QDialog):
                     try:
                         temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
                         
-                        self.original_preview_image1 = QPixmap(temp_file_name)
+                        if not self.main_window.experiment.crop_rect.isEmpty():
+                            self.original_preview_image1 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
+                        else:    
+                            self.original_preview_image1 = QPixmap(temp_file_name)
                         self.refresh_preview_image1()
 
                         tprint("Reading preview from", temp_file_name)
@@ -248,7 +251,10 @@ class AnalysisPreviewDialog(QDialog):
                     try:
                         temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
 
-                        self.original_preview_image2 = QPixmap(temp_file_name)
+                        if not self.main_window.experiment.crop_rect.isEmpty():
+                            self.original_preview_image2 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
+                        else:    
+                            self.original_preview_image2 = QPixmap(temp_file_name)
                         self.refresh_preview_image2()
                     except BaseException as e:
                         tprint("Preview 2 failed: Unknown exception", e)

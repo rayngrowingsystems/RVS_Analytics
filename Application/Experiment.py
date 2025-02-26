@@ -18,7 +18,7 @@ import json
 import os
 from os import path
 
-from PySide6.QtCore import QRect, QSize, QStandardPaths, QDir
+from PySide6.QtCore import QRect, QSize, QStandardPaths, QDir, QPoint
 from PySide6.QtWidgets import QApplication
 
 from enum import Enum
@@ -78,7 +78,7 @@ class Experiment:
 
         self.mqtt_broker = ""
 
-        self.zoom_rect = QRect()
+        self.crop_rect = QRect()
 
     class RoiInfo:
         PlacementMode = Enum('PlacementMode', ['Matrix', 'Manual'])
@@ -196,7 +196,7 @@ class Experiment:
           "scriptReferenceImage2": self.safe_normpath(self.script_reference_image2),
           "cameraDiscoveryIp": self.camera_discovery_ip,
           "mqttBroker": self.mqtt_broker,
-          "zoomRect": [self.zoom_rect.left(), self.zoom_rect.top(), self.zoom_rect.width(), self.zoom_rect.height()],
+          "cropRect": [self.crop_rect.left(), self.crop_rect.top(), self.crop_rect.width(), self.crop_rect.height()],
         }
 
     def analysis_to_dict(self):
@@ -366,8 +366,8 @@ class Experiment:
         if "mqttBroker" in d:
             self.mqtt_broker = d["mqttBroker"]
 
-        if "zoomRect" in d:
-            self.zoom_rect = QRect(d["zoomRect"][0], d["zoomRect"][1], d["zoomRect"][2], d["zoomRect"][3])
+        if "cropRect" in d:
+            self.crop_rect = QRect(d["cropRect"][0], d["cropRect"][1], d["cropRect"][2], d["cropRect"][3])
 
     def from_json(self):
         if path.exists(self.experiment_file_name):
@@ -402,3 +402,34 @@ class Experiment:
             return self.camera_file_path
         else:
             return ""
+        
+    # Conversion routines between original image coordinates and UI coordinates via an optional crop rectangle
+
+    def image_to_point_coordinates(self, point, scaling_factor):
+        if not self.crop_rect.isEmpty():
+            p = point - self.crop_rect.topLeft()  # Change from original image to crop_rect coordinates
+            p = QPoint(p.x() * scaling_factor, p.y() * scaling_factor)  # Change from crop_rect to UI coordinates     
+
+            return p
+        else:
+            return QPoint(point.x() * scaling_factor, point.y() * scaling_factor)
+    
+    def point_to_image_coordinates(self, point, scaling_factor):
+        if not self.crop_rect.isEmpty():
+            p = QPoint(point.x() / scaling_factor, point.y() / scaling_factor)  # Change from UI to crop_rect coordinates
+            p = p + self.crop_rect.topLeft()  # Change from crop_rect to original image coordinates
+
+            return p
+        else:
+            return QPoint(point.x() / scaling_factor, point.y() / scaling_factor)
+
+    def image_to_rect_coordinates(self, rect, scaling_factor):
+        return QRect(self.image_to_point_coordinates(rect.topLeft(), scaling_factor), \
+                     QSize(rect.width() * scaling_factor, rect.height() * scaling_factor))
+
+    def rect_to_image_coordinates(self, rect, scaling_factor):
+        return QRect(self.point_to_image_coordinates(rect.topLeft(), scaling_factor), \
+                     QSize(rect.width() / scaling_factor, rect.height() / scaling_factor))
+   
+
+

@@ -43,6 +43,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.reference_image1.setObjectName(u"reference_image1")
         self.reference_image1.setMinimumSize(QSize(300, 200))
         self.reference_image1.setFrameShape(QFrame.Box)
+        self.reference_image1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout.addWidget(self.reference_image1)
 
@@ -50,6 +51,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.reference_image2.setObjectName(u"reference_image2")
         self.reference_image2.setMinimumSize(QSize(300, 200))
         self.reference_image2.setFrameShape(QFrame.Box)
+        self.reference_image2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout.addWidget(self.reference_image2)
 
@@ -67,6 +69,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.preview_image1.setObjectName(u"preview_image1")
         self.preview_image1.setMinimumSize(QSize(300, 200))
         self.preview_image1.setFrameShape(QFrame.Box)
+        self.preview_image1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_2.addWidget(self.preview_image1)
 
@@ -74,6 +77,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.preview_image2.setObjectName(u"preview_image2")
         self.preview_image2.setMinimumSize(QSize(300, 200))
         self.preview_image2.setFrameShape(QFrame.Box)
+        self.preview_image2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_2.addWidget(self.preview_image2)
 

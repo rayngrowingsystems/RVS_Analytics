@@ -246,8 +246,8 @@ class ImageMaskDialog(QDialog):
             self.ui.reference_image2.set_image_file_name(self.main_window.experiment.mask_reference_image2, self.main_window.experiment.image_options_to_dict())
             tprint("Mask: Load right preview image:", self.main_window.experiment.mask_reference_image2)
 
-        self.ui.reference_image1.set_zoom_rect(self.main_window.experiment.zoom_rect)
-        self.ui.reference_image2.set_zoom_rect(self.main_window.experiment.zoom_rect)
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.populate_wavelengths()
 
@@ -308,7 +308,10 @@ class ImageMaskDialog(QDialog):
                 mask_script.create_mask(settings)
 
                 # Load the generated mask preview image
-                self.original_preview_image1 = QPixmap(temp_file_name)
+                if not self.main_window.experiment.crop_rect.isEmpty():
+                    self.original_preview_image1 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
+                else:    
+                    self.original_preview_image1 = QPixmap(temp_file_name)
 
                 # Refresh the preview image on the UI
                 self.refresh_preview_image1()
@@ -321,7 +324,10 @@ class ImageMaskDialog(QDialog):
                 mask_script.create_mask(settings)
 
                 # Load the generated mask preview image
-                self.original_preview_image2 = QPixmap(temp_file_name)
+                if not self.main_window.experiment.crop_rect.isEmpty():
+                    self.original_preview_image2 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
+                else:    
+                    self.original_preview_image2 = QPixmap(temp_file_name)
 
                 # Refresh the preview image on the UI
                 self.refresh_preview_image2()

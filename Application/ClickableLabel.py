@@ -36,7 +36,10 @@ class ClickableLabel(QLabel):
     moved = QtCore.Signal(QPoint)
     double_clicked = QtCore.Signal(QPoint)
     rubberband_changed = QtCore.Signal(QRect)
-    zoom_changed = QtCore.Signal(QRect)
+    crop_rect_changed = QtCore.Signal(QRect)
+    crop_state_changed = QtCore.Signal()
+    crop_accepted = QtCore.Signal()
+    crop_reset = QtCore.Signal()
     image_file_name_changed = QtCore.Signal()
 
     def __init__(self, parent):
@@ -54,50 +57,53 @@ class ClickableLabel(QLabel):
 
         self.roi_grid = None
 
-        self.zoom_mode = False
-        self.zoom_origin = QPoint()
-        self.zoom_edit_rect = QRect()
-        self.zoom_rect = QRect()
-        self.zoom_pixmap = QPixmap()
+        self.crop_mode = False
+        self.crop_origin = QPoint()
+        self.crop_edit_rect = QRect()
+        self.crop_rect = QRect()
+        self.crop_pixmap = QPixmap()
+
+        self.show_crop_buttons = False
 
         self.select_image_button = QPushButton("Image...", self)
         self.select_image_button.setMaximumWidth(55)
         self.select_image_button.setDefault(False)
         self.select_image_button.setAutoDefault(False)
 
-        self.zoom_button = QPushButton("Zoom", self)
-        self.zoom_button.setFixedWidth(55)
-        self.zoom_button.setDefault(False)
-        self.zoom_button.setAutoDefault(False)
-        self.zoom_button.clicked.connect(self.on_zoom)
+        self.crop_button = QPushButton("Crop", self)
+        self.crop_button.setFixedWidth(55)
+        self.crop_button.setDefault(False)
+        self.crop_button.setAutoDefault(False)
+        self.crop_button.clicked.connect(self.on_crop)
+        self.crop_button.hide()
      
-        self.zoom_accept_button = QPushButton("Accept", self)
-        self.zoom_accept_button.setFixedWidth(55)
-        self.zoom_accept_button.setDefault(False)
-        self.zoom_accept_button.setAutoDefault(False)
-        self.zoom_accept_button.clicked.connect(self.on_zoom_accept)
-        self.zoom_accept_button.hide()
+        self.crop_accept_button = QPushButton("Accept", self)
+        self.crop_accept_button.setFixedWidth(55)
+        self.crop_accept_button.setDefault(False)
+        self.crop_accept_button.setAutoDefault(False)
+        self.crop_accept_button.clicked.connect(self.on_crop_accept)
+        self.crop_accept_button.hide()
 
-        self.zoom_cancel_button = QPushButton("Cancel", self)
-        self.zoom_cancel_button.setFixedWidth(55)
-        self.zoom_cancel_button.setDefault(False)
-        self.zoom_cancel_button.setAutoDefault(False)
-        self.zoom_cancel_button.clicked.connect(self.on_zoom_cancel)
-        self.zoom_cancel_button.hide()
+        self.crop_cancel_button = QPushButton("Cancel", self)
+        self.crop_cancel_button.setFixedWidth(55)
+        self.crop_cancel_button.setDefault(False)
+        self.crop_cancel_button.setAutoDefault(False)
+        self.crop_cancel_button.clicked.connect(self.on_crop_cancel)
+        self.crop_cancel_button.hide()
 
-        self.zoom_reset_button = QPushButton("Reset", self)
-        self.zoom_reset_button.setFixedWidth(55)
-        self.zoom_reset_button.setDefault(False)
-        self.zoom_reset_button.setAutoDefault(False)
-        self.zoom_reset_button.clicked.connect(self.on_zoom_reset)
-        self.zoom_reset_button.hide()
+        self.crop_reset_button = QPushButton("Reset", self)
+        self.crop_reset_button.setFixedWidth(55)
+        self.crop_reset_button.setDefault(False)
+        self.crop_reset_button.setAutoDefault(False)
+        self.crop_reset_button.clicked.connect(self.on_crop_reset)
+        self.crop_reset_button.hide()
 
         QTimer.singleShot(300, lambda: self.refresh())  # Delayed initial refresh to make sure sizes are established
 
     def paintEvent(self, e):  # Qt override, keep casing
         super().paintEvent(e)
 
-        if not self.zoom_mode and self.zoom_edit_rect.isEmpty():
+        if not self.crop_mode and self.crop_edit_rect.isEmpty():
             return
         
         painter = QPainter(self)
@@ -106,97 +112,113 @@ class ClickableLabel(QLabel):
         pen.setWidth(3)
         painter.setPen(pen)
 
-        if not self.zoom_edit_rect.isEmpty():
-            painter.drawRect(self.zoom_edit_rect)
+        if not self.crop_edit_rect.isEmpty():
+            painter.drawRect(self.crop_edit_rect)
 
     def refresh(self):
-        self.refresh_zoom_buttons(self.width())
+        self.refresh_crop_buttons(self.width())
 
-    def set_zoom_parent(self, parent):
-        self.zoom_button.setParent(parent)
-        self.zoom_accept_button.setParent(parent)
-        self.zoom_cancel_button.setParent(parent)
-        self.zoom_reset_button.setParent(parent)
+    def set_crop_parent(self, parent):
+        self.crop_button.setParent(parent)
+        self.crop_accept_button.setParent(parent)
+        self.crop_cancel_button.setParent(parent)
+        self.crop_reset_button.setParent(parent)
 
-    def on_zoom(self):
-        self.on_zoom_reset()
+    def on_crop(self):
+        self.on_crop_reset()
         
-        self.zoom_mode = True
-        self.zoom_edit_rect = QRect()
-        self.zoom_rect = QRect()
+        self.crop_mode = True
+        self.crop_edit_rect = QRect()
+        self.crop_rect = QRect()
 
-        self.refresh_zoom_buttons(self.width())
+        self.refresh_crop_buttons(self.width())
 
-    def on_zoom_accept(self):
-        if self.zoom_mode:
-            self.set_zoom_rect(self.zoom_edit_rect)
+        self.crop_state_changed.emit()
 
-            self.refresh_image_size()
+    def on_crop_accept(self):
+        if self.crop_mode:
+            # Translate to original image coordinates by scaling through non-crop image / original_image ratio
+            w = self.pixmap().width() / self.original_image.width()
+            h = self.pixmap().height() / self.original_image.height()
+            rect = QRect(self.crop_edit_rect.left() / w, self.crop_edit_rect.top() / h, self.crop_edit_rect.width() / w, self.crop_edit_rect.height() / h)
 
-            self.zoom_mode = False
-            self.zoom_edit_rect = QRect()
-
-            self.refresh_zoom_buttons(self.width())
-
-    def on_zoom_cancel(self):
-        if self.zoom_mode:
-            self.zoom_mode = False
-            self.zoom_edit_rect = QRect()
-
-            self.refresh_zoom_buttons(self.width())
-
-    def on_zoom_reset(self):
-        if not self.zoom_rect.isEmpty():
-            self.zoom_edit_rect = QRect()
-            self.zoom_rect = QRect()
+            self.set_crop_rect(rect)
 
             self.refresh_image_size()
 
-            self.zoom_reset_button.hide()
-            self.zoom_button.show()
+            self.crop_mode = False
+            self.crop_edit_rect = QRect()
 
-            self.refresh_zoom_buttons(self.width())
+            self.refresh_crop_buttons(self.width())
 
-    def refresh_zoom_buttons(self, width):
-        self.zoom_button.setVisible(not self.zoom_mode)
-        self.zoom_accept_button.setVisible(self.zoom_mode)
-        self.zoom_cancel_button.setVisible(self.zoom_mode)
-        self.zoom_reset_button.setVisible(not self.zoom_rect.isEmpty() and not self.zoom_mode)
+            self.crop_state_changed.emit()
+            self.crop_accepted.emit()
 
-        x = 0
-        offset = self.zoom_button.height() + 4
+    def on_crop_cancel(self):
+        if self.crop_mode:
+            self.crop_mode = False
+            self.crop_edit_rect = QRect()
 
-        if self.zoom_button.isVisible():
-            self.zoom_button.move(width - self.zoom_button.width(), x)
-            x += offset
-        if self.zoom_accept_button.isVisible():
-            self.zoom_accept_button.move(width - self.zoom_accept_button.width(), x)
-            x += offset
-        if self.zoom_cancel_button.isVisible():
-            self.zoom_cancel_button.move(width - self.zoom_cancel_button.width(), x)
-            x += offset
-        if self.zoom_reset_button.isVisible():
-            self.zoom_reset_button.move(width - self.zoom_reset_button.width(), x)
-            x += offset
+            self.refresh_crop_buttons(self.width())
 
-        self.update()
+            self.crop_state_changed.emit()
 
-    def set_zoom_rect(self, rect):
-        self.zoom_rect = rect
-        if not self.zoom_rect.isEmpty():
-            self.zoom_pixmap = self.zoomed_image()
+    def on_crop_reset(self):
+        if not self.crop_rect.isEmpty():
+            self.crop_edit_rect = QRect()
+            self.crop_rect = QRect()
 
-            self.refresh_zoom_buttons(self.width())
+            self.refresh_image_size()
 
-    def zoomed_image(self):
-        return self.original_image.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio).copy(self.zoom_rect)
+            self.crop_reset_button.hide()
+            self.crop_button.show()
+
+            self.refresh_crop_buttons(self.width())
+
+            self.crop_state_changed.emit()
+            self.crop_reset.emit()
+
+    def refresh_crop_buttons(self, width):
+        if self.show_crop_buttons:
+            self.crop_button.setVisible(not self.crop_mode)
+            self.crop_accept_button.setVisible(self.crop_mode)
+            self.crop_cancel_button.setVisible(self.crop_mode)
+            self.crop_reset_button.setVisible(not self.crop_rect.isEmpty() and not self.crop_mode)
+
+            x = 0
+            offset = self.crop_button.height() + 4
+
+            if self.crop_button.isVisible():
+                self.crop_button.move(width - self.crop_button.width(), x)
+                x += offset
+            if self.crop_accept_button.isVisible():
+                self.crop_accept_button.move(width - self.crop_accept_button.width(), x)
+                x += offset
+            if self.crop_cancel_button.isVisible():
+                self.crop_cancel_button.move(width - self.crop_cancel_button.width(), x)
+                x += offset
+            if self.crop_reset_button.isVisible():
+                self.crop_reset_button.move(width - self.crop_reset_button.width(), x)
+                x += offset
+
+            self.update()
+
+    def set_crop_rect(self, rect):
+        self.crop_rect = rect
+        if not self.crop_rect.isEmpty():
+            self.crop_pixmap = self.cropped_image()
+
+            self.refresh_crop_buttons(self.width())
+
+    def cropped_image(self):
+        return self.original_image.copy(self.crop_rect).scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
     
     def refresh_image_size(self):
         # Scale pixmap to follow available space
-        if not self.zoom_rect.isEmpty():
-            self.setPixmap(self.zoom_pixmap.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio))
+        if not self.crop_rect.isEmpty():
+            self.setPixmap(self.crop_pixmap.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
         else:
-            self.setPixmap(self.original_image.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio))
+            self.setPixmap(self.original_image.scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
 
     def set_image_file_name(self, file_name, image_options):
         # tprint("Set preview file:", fileName)
@@ -230,12 +252,12 @@ class ClickableLabel(QLabel):
 
     def mousePressEvent(self, event):  # Note: Qt override
         if event.button() == QtCore.Qt.LeftButton:
-            if self.zoom_mode:
-                self.zoom_origin = event.pos()
+            if self.crop_mode:
+                self.crop_origin = event.pos()
 
-                self.zoom_edit_rect = QRect(self.zoom_origin, QSize())
+                self.crop_edit_rect = QRect(self.crop_origin, QSize())
 
-                self.zoom_changed.emit(self.zoom_edit_rect)
+                self.crop_rect_changed.emit(self.crop_edit_rect)
             else:
                 self.rubberband_origin = event.pos()
 
@@ -251,10 +273,10 @@ class ClickableLabel(QLabel):
 
     def mouseMoveEvent(self, event):  # Note: Qt override
         if self.mouse_pressed:
-            if self.zoom_mode:
-                self.zoom_edit_rect = QRect(self.zoom_origin, event.pos()).normalized()
+            if self.crop_mode:
+                self.crop_edit_rect = QRect(self.crop_origin, event.pos()).normalized()
 
-                self.zoom_changed.emit(self.zoom_edit_rect)
+                self.crop_rect_changed.emit(self.crop_edit_rect)
 
                 self.update()
             else:
@@ -269,7 +291,7 @@ class ClickableLabel(QLabel):
                     self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):  # Note: Qt override
-        if not self.zoom_mode:
+        if not self.crop_mode:
             if not self.mouse_moved:
                 if event.button() == QtCore.Qt.LeftButton:
                     self.clicked.emit(event.pos())
@@ -279,12 +301,12 @@ class ClickableLabel(QLabel):
         self.mouse_pressed = False
 
     def mouseDoubleClickEvent(self, event):  # Note: Qt override
-        if not self.zoom_mode:
+        if not self.crop_mode:
             self.double_clicked.emit(event.pos())
 
     def resizeEvent(self, event):  # Note: Qt override
         if not self.roi_grid is None:
             self.roi_grid.setGeometry(0, 0, event.size().width(), event.size().height())
  
-        self.refresh_zoom_buttons(event.size().width())
+        self.refresh_crop_buttons(event.size().width())
 

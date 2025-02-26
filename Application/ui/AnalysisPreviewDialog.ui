@@ -47,6 +47,9 @@
 
 Click the Image button to pick</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
         </widget>
        </item>
        <item>
@@ -64,6 +67,9 @@ Click the Image button to pick</string>
           <string>
 
 Click the Image button to pick</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
         </widget>
        </item>
@@ -92,6 +98,9 @@ Click the Image button to pick</string>
          <property name="text">
           <string/>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
         </widget>
        </item>
        <item>
@@ -107,6 +116,9 @@ Click the Image button to pick</string>
          </property>
          <property name="text">
           <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
         </widget>
        </item>
