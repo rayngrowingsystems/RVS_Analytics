@@ -20,6 +20,7 @@ from os import path
 from plantcv.plantcv import spectral_index
 from plantcv.plantcv import readimage
 from plantcv.plantcv.transform import rotate
+from plantcv.plantcv import print_image
 
 
 def load_coefficients(path):
@@ -297,3 +298,20 @@ def parse_rvs_header(headername):
             header_dict[key] = header_dict[key].split(",")
 
     return header_dict
+
+
+def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True, overlay=False):
+    if create_preview:
+        out_image = settings["outputImage"]
+        image_file_name = os.path.normpath(out_image)
+        print("Writing image to " + image_file_name)
+
+        if overlay:
+            _alpha_base_level = 80
+            alpha = np.ones(pseudo_rgb.shape[:2], dtype=np.uint8)*_alpha_base_level
+            alpha = np.where(mask > 0, 255, alpha)
+            bgra = np.dstack((pseudo_rgb, alpha))
+            print_image(img=bgra, filename=image_file_name)
+
+        else:
+            print_image(img=mask, filename=image_file_name)
