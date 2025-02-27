@@ -39,8 +39,9 @@ from logging.handlers import RotatingFileHandler
 
 from PySide6.QtWidgets import QApplication, QLabel
 from PySide6.QtGui import QPixmap
-from PySide6.QtCore import QCoreApplication, QStandardPaths
+from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
 from PySide6 import QtCore
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
 import CameraApp_rc
 from MainWindow import MainWindow
@@ -201,8 +202,16 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
 
     # Open main window
     widget = MainWindow(script_folder, mask_folder, preset_folder)
+
+    # Stunt to prevent application from moving around then OpenGL is switched on the first opened QWebEngineView. RAYNCAMANA-387
+    dummy_view = QWebEngineView(widget)
+    dummy_view.resize(1, 1)
+    dummy_view.load(QUrl.fromLocalFile("dummy.html"))
+
     widget.resize(1200, 800)
     widget.show()
+    
+    dummy_view.hide()
 
     if splash:
         splash.close()
