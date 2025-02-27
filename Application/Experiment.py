@@ -399,30 +399,30 @@ class Experiment:
         
     # Conversion routines between original image coordinates and UI coordinates via an optional crop rectangle
 
-    def image_to_point_coordinates(self, point, scaling_factor):
-        if not self.crop_rect.isEmpty():
-            p = point - self.crop_rect.topLeft()  # Change from original image to crop_rect coordinates
+    def image_to_point_coordinates(self, point, crop_rect, scaling_factor):
+        if not crop_rect.isEmpty():
+            p = point - crop_rect.topLeft()  # Change from original image to crop_rect coordinates
             p = QPoint(p.x() * scaling_factor, p.y() * scaling_factor)  # Change from crop_rect to UI coordinates     
 
             return p
         else:
             return QPoint(point.x() * scaling_factor, point.y() * scaling_factor)
     
-    def point_to_image_coordinates(self, point, scaling_factor):
-        if not self.crop_rect.isEmpty():
+    def point_to_image_coordinates(self, point, crop_rect, scaling_factor):
+        if not crop_rect.isEmpty():
             p = QPoint(point.x() / scaling_factor, point.y() / scaling_factor)  # Change from UI to crop_rect coordinates
-            p = p + self.crop_rect.topLeft()  # Change from crop_rect to original image coordinates
+            p = p + crop_rect.topLeft()  # Change from crop_rect to original image coordinates
 
             return p
         else:
             return QPoint(point.x() / scaling_factor, point.y() / scaling_factor)
 
-    def image_to_rect_coordinates(self, rect, scaling_factor):
-        return QRect(self.image_to_point_coordinates(rect.topLeft(), scaling_factor), \
+    def image_to_rect_coordinates(self, rect, crop_rect, scaling_factor):
+        return QRect(self.image_to_point_coordinates(rect.topLeft(), crop_rect, scaling_factor), \
                      QSize(rect.width() * scaling_factor, rect.height() * scaling_factor))
 
-    def rect_to_image_coordinates(self, rect, scaling_factor):
-        return QRect(self.point_to_image_coordinates(rect.topLeft(), scaling_factor), \
+    def rect_to_image_coordinates(self, rect, crop_rect, scaling_factor):
+        return QRect(self.point_to_image_coordinates(rect.topLeft(), crop_rect, scaling_factor), \
                      QSize(rect.width() / scaling_factor, rect.height() / scaling_factor))
    
 
