@@ -1930,9 +1930,12 @@ class MainWindow(QMainWindow):
             self.refresh_ready_to_play()
 
     def open_download_images_dialog(self):
-        download_images_dialog = DownloadImagesDialog(self)
+        if self.camera:
+            download_images_dialog = DownloadImagesDialog(self)
 
-        download_images_dialog.exec()
+            download_images_dialog.exec()
+        else:
+            QMessageBox.warning(self, "No camera connected", "Please connect a camera to download images")
 
     def show_results(self):
         # os.startfile(self.currentSession["outputFolder"])
