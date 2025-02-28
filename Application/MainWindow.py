@@ -59,6 +59,7 @@ from HelpDialog import HelpDialog
 from EulaDialog import EulaDialog
 from CameraStartDialog import CameraStartDialog
 from FolderStartDialog import FolderStartDialog
+from SelectImageDialog import SelectImageDialog
 
 import Config
 import Helper
@@ -1973,3 +1974,12 @@ class MainWindow(QMainWindow):
         analytics_script_name = self.experiment.selected_script
         sys.path.append(os.path.dirname(self.script_paths[analytics_script_name]))
         return importlib.import_module(analytics_script_name.replace(".py", ""))
+
+    def select_image_dialog(self, main_window, dialog, reference_image):
+        select_image_dialog = SelectImageDialog(main_window, dialog, reference_image)
+
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:  # In folder mode, pick file directly from selected folder
+           select_image_dialog.pick_image()
+        else:
+           # For other modes, present selection dialog to pick image source
+           select_image_dialog.exec()

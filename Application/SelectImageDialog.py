@@ -28,9 +28,9 @@ from ui_SelectImageDialog import Ui_SelectImageDialog
 from Helper import tprint
 
 class SelectImageDialog(QDialog):
-    def __init__(self, parent, corresponding_label):
-        self.main_window = parent.main_window
-        self.dialog = parent
+    def __init__(self, main_window, dialog, corresponding_label):
+        self.main_window = main_window
+        self.dialog = dialog
 
         self.corresponding_label = corresponding_label
 

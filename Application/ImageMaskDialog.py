@@ -228,15 +228,11 @@ class ImageMaskDialog(QDialog):
             self.roi_grid2.setVisible(active)
 
     def select_reference_image1(self):
-        select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
-
-        select_image_dialog.exec()
+        self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
 
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
-            select_image_dialog = SelectImageDialog(self, self.ui.reference_image2)
-
-            select_image_dialog.exec()
+            self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
         else:
             QMessageBox.warning(self, "Image selection", "You must select the left image first")
 
