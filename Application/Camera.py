@@ -288,11 +288,25 @@ class Camera:
         template = '{ "source" : "" }'
         parameters = json.loads(template)
         parameters['source'] = folder
+        parameters['limit'] = 10
+
+        more_files = True
+        index = 0
+        files = []
 
         try:
-            r = requests.get(url, timeout=5, json=parameters)
-            # tprint("getFolder:", r.status_code, r.json())
-            return r.json()["files"]
+            while more_files:
+                parameters['index'] = index
+
+                r = requests.get(url, timeout=5, json=parameters)
+
+                j = r.json()
+                files += j['files']
+
+                index = j['next']
+                more_files = (index !=0)
+
+            return files
         except:
             tprint("No camera found")
             return []
