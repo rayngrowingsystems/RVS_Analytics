@@ -288,7 +288,7 @@ class Camera:
         template = '{ "source" : "" }'
         parameters = json.loads(template)
         parameters['source'] = folder
-        parameters['limit'] = 10
+        # parameters['limit'] = 10
 
         more_files = True
         index = 0
