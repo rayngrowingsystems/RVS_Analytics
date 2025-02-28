@@ -7,6 +7,7 @@ pyside6-uic ui\AnalysisOptionsDialog.ui > ui_AnalysisOptionsDialog.py
 pyside6-uic ui\AnalysisPreviewDialog.ui > ui_AnalysisPreviewDialog.py
 pyside6-uic ui\CameraStartDialog.ui     > ui_CameraStartDialog.py
 pyside6-uic ui\DownloadImagesDialog.ui  > ui_DownloadImagesDialog.py
+pyside6-uic ui\DeleteImagesDialog.ui    > ui_DeleteImagesDialog.py
 pyside6-uic ui\EulaDialog.ui            > ui_EulaDialog.py
 pyside6-uic ui\FolderStartDialog.ui     > ui_FolderStartDialog.py
 pyside6-uic ui\HelpDialog.ui            > ui_HelpDialog.py

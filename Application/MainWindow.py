@@ -54,6 +54,7 @@ from ImageRoiDialog import ImageRoiDialog
 from AnalysisPreviewDialog import AnalysisPreviewDialog
 from AnalysisOptionsDialog import AnalysisOptionsDialog
 from DownloadImagesDialog import DownloadImagesDialog
+from DeleteImagesDialog import DeleteImagesDialog
 from AboutDialog import AboutDialog
 from HelpDialog import HelpDialog
 from EulaDialog import EulaDialog
@@ -298,6 +299,7 @@ class MainWindow(QMainWindow):
         self.ui.action_mqtt_broker.triggered.connect(self.select_mqtt_broker)
 
         self.ui.action_download_images.triggered.connect(self.open_download_images_dialog)
+        self.ui.action_delete_images.triggered.connect(self.open_delete_images_dialog)
 
         self.ui.action_about.triggered.connect(self.open_about_dialog)
         self.ui.action_help.triggered.connect(self.open_help_dialog)
@@ -1934,6 +1936,14 @@ class MainWindow(QMainWindow):
             download_images_dialog = DownloadImagesDialog(self)
 
             download_images_dialog.exec()
+        else:
+            QMessageBox.warning(self, "No camera connected", "Please connect a camera to download images")
+
+    def open_delete_images_dialog(self):
+        if self.camera:
+            delete_images_dialog = DeleteImagesDialog(self)
+
+            delete_images_dialog.exec()
         else:
             QMessageBox.warning(self, "No camera connected", "Please connect a camera to download images")
 
