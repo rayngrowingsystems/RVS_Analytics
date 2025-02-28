@@ -131,6 +131,8 @@ class ImageSourceDialog(QDialog):
 
             self.ui.folder_file_path.setText(folder)
 
+            self.main_window.experiment.clear_all_preview_images()
+
     def set_camera_file_path(self):
         folder = QFileDialog.getExistingDirectory(self, "Select a folder", self.main_window.experiment.current_folder())
 

@@ -381,6 +381,14 @@ class Experiment:
                self.roi_reference_image1 in [None, '.'] and self.roi_reference_image2 in [None, '.'] and \
                self.script_reference_image1 in [None, '.'] and self.script_reference_image2 in [None, '.']
     
+    def clear_all_preview_images(self):
+        self.mask_reference_image1 = None
+        self.mask_reference_image2 = None
+        self.roi_reference_image1 = None
+        self.roi_reference_image2 = None
+        self.script_reference_image1 = None
+        self.script_reference_image2 = None
+        
     def clear_analysis(self):
         if self.analysis is not None:
             self.analysis["maskOptions"] = {}
