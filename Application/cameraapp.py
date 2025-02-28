@@ -37,7 +37,7 @@ from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
-from PySide6.QtWidgets import QApplication, QLabel
+from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
 from PySide6 import QtCore
@@ -175,6 +175,13 @@ def remove_camera_files():
         except:
             tprint("Error while deleting file : ", file_path)
 
+def validate_folder(folder):
+    for root, dirs, files in os.walk(folder):  # Collect all .py files in the folder tree
+        for f in files:
+            if f.endswith(".py"):
+                return True  # At least one file found
+            
+    return False
 
 if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp_main__) so let's make sure nothing is executed if in that case
 
@@ -192,6 +199,10 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     # In frozen mode (PyInstaller), __file__ contains the path to the execution folder
     script_folder = os.path.join(os.path.dirname(__file__), 'Scripts')
     mask_folder = os.path.join(os.path.dirname(__file__), 'Masks')
+
+    if not validate_folder(script_folder) or not validate_folder(mask_folder):
+        QMessageBox.warning(None, "No Scripts or Masks found", "Please make sure you have Scripts and Masks folders")
+        sys.exit(0)
 
     preset_folder = None
     for root, dirs, files in os.walk(script_folder):  # Locate the presets folder in the Scripts tree
