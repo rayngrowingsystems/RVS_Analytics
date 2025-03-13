@@ -190,6 +190,15 @@ class ImageSourceDialog(QDialog):
 
     def camera_selection_changed(self, index):
         self.main_window.camera_selection_changed(index)
+
+        # Refresh the UI
+        cid = self.main_window.experiment.camera_cid
+
+        if cid in self.main_window.experiment.camera_api_keys:
+            self.ui.camera_api_key.setText(self.main_window.experiment.camera_api_keys[cid])
+        else:
+            self.ui.camera_api_key.setText("")
+        
         self.ui.camera_api_key.setEnabled(True)
 
     def camera_api_key_changed(self):
