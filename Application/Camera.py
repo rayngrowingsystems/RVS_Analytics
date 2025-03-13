@@ -245,8 +245,13 @@ class Camera:
         url = self.base_url + "/status" + self.default_parameters()
         try:
             r = requests.get(url, timeout=5)
-            # tprint(r.status_code, r.json())
-            return r.json()
+            if r.status_code == 401:
+                tprint("Camera: Unauthorized")
+                self.main_window.add_status_text.emit("Unauthorized camera. Needs API key?")
+                return None
+            else:
+                # tprint(r.status_code, r.json())
+                return r.json()
         except BaseException as e:
             tprint("GetStatus: Exception", e)
             return None
@@ -300,11 +305,16 @@ class Camera:
 
                 r = requests.get(url, timeout=5, json=parameters)
 
-                j = r.json()
-                files += j['files']
+                if r.status_code == 401:
+                    tprint("Camera: Unauthorized")
+                    self.main_window.add_status_text.emit("Unauthorized camera. Needs API key?")
+                    return []
+                else:
+                    j = r.json()
+                    files += j['files']
 
-                index = j['next']
-                more_files = (index !=0)
+                    index = j['next']
+                    more_files = (index !=0)
 
             return files
         except:
