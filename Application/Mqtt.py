@@ -45,6 +45,8 @@ class Mqtt(QObject):
         self.client.on_message = self.on_message
         self.client.on_disconnect = self.on_disconnect
 
+        # RAYNCAMANA-360: Authentication: self.client.username_pw_set(username="name",password="password")
+
         self.connected = False
 
         self.broker = broker
