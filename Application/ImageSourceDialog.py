@@ -165,8 +165,14 @@ class ImageSourceDialog(QDialog):
             self.ui.camera_selection_combobox.removeItem(0)
 
         # Add back the current list
+        count = 0
         for camera in self.main_window.camera_display_names():
             self.ui.camera_selection_combobox.addItem(camera)
+            count += 1
+
+        if count > 0:
+            self.ui.camera_api_key.setEnabled(True)
+            self.ui.camera_selection_combobox.setCurrentIndex(0)
 
         self.ui.camera_selection_combobox.blockSignals(False)
 
@@ -184,6 +190,7 @@ class ImageSourceDialog(QDialog):
 
     def camera_selection_changed(self, index):
         self.main_window.camera_selection_changed(index)
+        self.ui.camera_api_key.setEnabled(True)
 
     def camera_api_key_changed(self):
         self.main_window.camera_api_key_changed(self.ui.camera_api_key.text())
