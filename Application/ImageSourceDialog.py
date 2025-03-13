@@ -15,7 +15,7 @@
 # This Python file uses the following encoding: utf-8
 import os
 
-from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 from PySide6.QtCore import QTimer
 
 from PySide6 import QtCore
@@ -89,6 +89,15 @@ class ImageSourceDialog(QDialog):
     def load_ui(self):
         self.ui = Ui_ImageSourceDialog()
         self.ui.setupUi(self)
+
+    def accept(self):
+        if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Camera and \
+            self.main_window.experiment.camera_file_path in [None, "", "."]:
+            QMessageBox.warning(self, "Incomplete Camera setup", "You need to choose a Target folder")
+        elif self.main_window.experiment.output_file_path in [None, "", "."]:
+            QMessageBox.warning(self, "Incomplete Output setup", "You need to choose an Output folder")
+        else:
+            super(ImageSourceDialog, self).accept()
 
     def set_image_mode(self):
         self.main_window.set_image_source(self.main_window.experiment.ImageSource.Image)
