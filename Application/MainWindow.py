@@ -1162,7 +1162,7 @@ class MainWindow(QMainWindow):
                     else:
                         self.ui.camera_status.setText("Camera Status: Free space: " + str(free_space) + "%")
 
-                    self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
+                self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
             else:
                 self.camera_status_divider = self.camera_status_divider - 1
 
