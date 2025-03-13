@@ -521,20 +521,23 @@ class ImageRoiDialog(QDialog):
 
         if self.shape == Experiment.RoiInfo.Shape.Circle:
             self.update_item_type(self.focused_roi_item, "Circle")
-            self.update_item_radius(self.focused_roi_item, self.ui.width_spinbox.value() / 2)
         elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
             self.update_item_type(self.focused_roi_item, "Rectangle")
-            self.update_item_width(self.focused_roi_item, self.ui.width_spinbox.value())
-            self.update_item_height(self.focused_roi_item, self.ui.height_spinbox.value())
         elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
             self.update_item_type(self.focused_roi_item, "Ellipse")
-            self.update_item_radius(self.focused_roi_item, self.ui.width_spinbox.value())
         elif self.shape == Experiment.RoiInfo.Shape.Polygon:
             self.remove_item(self.focused_roi_item)
             self.focused_roi_item = None
 
             self.polygon = QPolygon()
             self.polygon_closed = True
+
+        if self.shape == Experiment.RoiInfo.Shape.Circle:
+            self.focused_roi_item["width"] = self.focused_roi_item["height"]  # MAke sure width equals height for a circle
+
+        self.ui.width_spinbox.setValue(self.focused_roi_item["width"])
+        self.ui.height_spinbox.setValue(self.focused_roi_item["height"])
+        self.ui.radius_spinbox.setValue(self.focused_roi_item["width"] / 2)
 
         self.refresh_info_label()
         self.refresh_roi_grid()
