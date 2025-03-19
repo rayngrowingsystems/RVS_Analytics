@@ -313,7 +313,7 @@ def parse_rvs_header(headername):
 def create_mask_preview(mask, pseudo_rgb, preview_settings, create_preview=True):
 
     if create_preview:
-        out_image = settings["outputImage"]
+        out_image = preview_settings["output_image"]
         image_file_name = os.path.normpath(out_image)
         print("Writing image to " + image_file_name)
 
