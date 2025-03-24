@@ -89,6 +89,10 @@ class ImageMaskDialog(QDialog):
         self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
         self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
 
+        # Connect magnify state between reference and preview images
+        self.ui.reference_image1.magnify_state_changed.connect(self.on_magnify_state_changed1)
+        self.ui.reference_image2.magnify_state_changed.connect(self.on_magnify_state_changed2)
+
         # Connect cancel button to close the dialog
         self.ui.cancel_button.clicked.connect(self.reject)
 
@@ -393,3 +397,9 @@ class ImageMaskDialog(QDialog):
         Helper.set_ui_elements_default_values(self.default_values)
         self.blockSignals(False)
             
+    def on_magnify_state_changed1(self, mode, pos, zoom_factor):
+        self.ui.preview_image1.set_magnifier_mode(mode, pos, zoom_factor)
+    
+    def on_magnify_state_changed2(self, mode, pos, zoom_factor):
+        self.ui.preview_image2.set_magnifier_mode(mode, pos, zoom_factor)
+    
