@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 from ClickableLabel import ClickableLabel
+from Label import Label
 
 class Ui_AnalysisPreviewDialog(object):
     def setupUi(self, AnalysisPreviewDialog):
@@ -65,7 +66,7 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.preview_image1 = QLabel(AnalysisPreviewDialog)
+        self.preview_image1 = Label(AnalysisPreviewDialog)
         self.preview_image1.setObjectName(u"preview_image1")
         self.preview_image1.setMinimumSize(QSize(300, 200))
         self.preview_image1.setFrameShape(QFrame.Box)
@@ -73,7 +74,7 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.horizontalLayout_2.addWidget(self.preview_image1)
 
-        self.preview_image2 = QLabel(AnalysisPreviewDialog)
+        self.preview_image2 = Label(AnalysisPreviewDialog)
         self.preview_image2.setObjectName(u"preview_image2")
         self.preview_image2.setMinimumSize(QSize(300, 200))
         self.preview_image2.setFrameShape(QFrame.Box)

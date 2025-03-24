@@ -85,7 +85,7 @@ Click the Image button to pick</string>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="preview_image1">
+        <widget class="Label" name="preview_image1">
          <property name="minimumSize">
           <size>
            <width>300</width>
@@ -104,7 +104,7 @@ Click the Image button to pick</string>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="preview_image2">
+        <widget class="Label" name="preview_image2">
          <property name="minimumSize">
           <size>
            <width>300</width>
@@ -198,6 +198,11 @@ Click the Image button to pick</string>
    <class>ClickableLabel</class>
    <extends>QLabel</extends>
    <header>ClickableLabel</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>Label</header>
   </customwidget>
  </customwidgets>
  <resources/>

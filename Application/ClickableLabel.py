@@ -21,7 +21,7 @@ from plantcv import plantcv as pcv
 
 from PySide6.QtWidgets import QLabel, QPushButton, QWidget, QHBoxLayout
 from PySide6.QtCore import QRect, QPoint, QSize, QTimer
-from PySide6.QtGui import QPixmap, QTransform, QPainter, QPen, QColor
+from PySide6.QtGui import QPixmap, QTransform, QPainter, QPen, QColor, QIcon
 
 from PySide6 import QtCore
 
@@ -41,6 +41,7 @@ class ClickableLabel(QLabel):
     crop_accepted = QtCore.Signal()
     crop_reset = QtCore.Signal()
     image_file_name_changed = QtCore.Signal()
+    magnify_state_changed = QtCore.Signal(bool, QPoint, float)
 
     def __init__(self, parent):
         QLabel.__init__(self, parent)
@@ -64,6 +65,11 @@ class ClickableLabel(QLabel):
         self.crop_pixmap = QPixmap()
 
         self.show_crop_buttons = False
+
+        self.magnifier_mode = False
+        self.magnifier_size = 100
+        self.setMouseTracking(True)
+        self.mouse_pos = QPoint()
 
         self.select_image_button = QPushButton("Image...", self)
         self.select_image_button.setMaximumWidth(55)
@@ -98,15 +104,36 @@ class ClickableLabel(QLabel):
         self.crop_reset_button.clicked.connect(self.on_crop_reset)
         self.crop_reset_button.hide()
 
+        self.magnify_button = QPushButton(QIcon(":/images/Magnify.png"), "", self)
+        self.magnify_button.setFixedWidth(40)
+        self.magnify_button.setDefault(False)
+        self.magnify_button.setAutoDefault(False)
+        self.magnify_button.clicked.connect(self.on_magnify)
+        self.magnify_button.hide()
+     
         QTimer.singleShot(300, lambda: self.refresh())  # Delayed initial refresh to make sure sizes are established
 
     def paintEvent(self, e):  # Qt override, keep casing
         super().paintEvent(e)
 
+        painter = QPainter(self)
+
+        if self.magnifier_mode:
+            if self.mouse_pressed and not self.original_image.isNull():
+                scaling_factor = self.pixmap().width() / self.original_image.width()
+                half_size = self.magnifier_size / 2
+                image_pos = QPoint(self.mouse_pos.x() / scaling_factor, self.mouse_pos.y() / scaling_factor)
+                source_rect = self.original_image.copy(image_pos.x() - half_size, image_pos.y() - half_size, self.magnifier_size, self.magnifier_size)
+                magnified_pixmap = source_rect.scaled(self.magnifier_size, self.magnifier_size, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+
+                rect = QRect(self.mouse_pos.x() - half_size, self.mouse_pos.y() - half_size, magnified_pixmap.width(), magnified_pixmap.height())
+
+                painter.drawPixmap(rect, magnified_pixmap)
+                painter.drawRect(rect)
+
         if not self.crop_mode and self.crop_edit_rect.isEmpty():
             return
         
-        painter = QPainter(self)
         pen = QPen()
         pen.setColor(QColor('#888'))
         pen.setWidth(3)
@@ -117,6 +144,9 @@ class ClickableLabel(QLabel):
 
     def refresh(self):
         self.refresh_crop_buttons(self.width())
+
+        self.magnify_button.show()
+        self.magnify_button.move(self.width() - self.magnify_button.width(), self.height() - self.magnify_button.height())
 
     def set_crop_parent(self, parent):
         self.crop_button.setParent(parent)
@@ -213,6 +243,14 @@ class ClickableLabel(QLabel):
     def cropped_image(self):
         return self.original_image.copy(self.crop_rect).scaled(self.width(), self.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
     
+    def on_magnify(self):
+        self.magnifier_mode = not self.magnifier_mode
+
+        if self.magnifier_mode:
+            self.magnify_button.setStyleSheet("background-color: #A62; color: black;")
+        else:
+            self.magnify_button.setStyleSheet("background-color: #444; color: white;")
+
     def refresh_image_size(self):
         # Scale pixmap to follow available space
         if not self.crop_rect.isEmpty():
@@ -258,6 +296,14 @@ class ClickableLabel(QLabel):
                 self.crop_edit_rect = QRect(self.crop_origin, QSize())
 
                 self.crop_rect_changed.emit(self.crop_edit_rect)
+            elif self.magnifier_mode:
+                self.mouse_pressed = True
+                self.update()
+            
+                if self.mouse_pressed:
+                    # Update preview image
+                    scaling_factor = self.pixmap().width() / self.original_image.width()
+                    self.magnify_state_changed.emit(True, self.mouse_pos, scaling_factor)
             else:
                 self.rubberband_origin = event.pos()
 
@@ -272,7 +318,16 @@ class ClickableLabel(QLabel):
         self.mouse_moved = False
 
     def mouseMoveEvent(self, event):  # Note: Qt override
-        if self.mouse_pressed:
+        if self.magnifier_mode:
+            self.mouse_pos = event.pos()
+            self.update()
+            
+            if self.mouse_pressed:
+                # Update preview image
+                scaling_factor = self.pixmap().width() / self.original_image.width()
+                self.magnify_state_changed.emit(True, self.mouse_pos, scaling_factor)
+
+        elif self.mouse_pressed:
             if self.crop_mode:
                 self.crop_edit_rect = QRect(self.crop_origin, event.pos()).normalized()
 
@@ -291,7 +346,11 @@ class ClickableLabel(QLabel):
                     self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):  # Note: Qt override
-        if not self.crop_mode:
+        if self.magnifier_mode:
+            self.update()
+            self.magnify_state_changed.emit(False, self.mouse_pos, 1.0)
+
+        elif not self.crop_mode:
             if not self.mouse_moved:
                 if event.button() == QtCore.Qt.LeftButton:
                     self.clicked.emit(event.pos())
@@ -308,5 +367,5 @@ class ClickableLabel(QLabel):
         if not self.roi_grid is None:
             self.roi_grid.setGeometry(0, 0, event.size().width(), event.size().height())
  
-        self.refresh_crop_buttons(event.size().width())
+        self.refresh()
 
