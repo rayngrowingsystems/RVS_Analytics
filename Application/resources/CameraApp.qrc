@@ -4,5 +4,6 @@
         <file>images/Syrcadia.icns</file>
         <file>images/Refresh.png</file>
         <file>images/Splash.png</file>
+        <file>images/Magnify.png</file>
     </qresource>
 </RCC>
