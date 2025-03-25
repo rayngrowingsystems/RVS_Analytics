@@ -46,6 +46,7 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 import CameraApp_rc
 from MainWindow import MainWindow
 
+import qdarktheme
 
 class StreamToLogger(object):
     """
@@ -65,45 +66,11 @@ class StreamToLogger(object):
     def flush(self):
         pass
 
-
-def check_system_theme():
-
-    tprint("Platform:", sys.platform)
-    theme_dark_mode = False
-
-    # Windows: Check for dark mode
-    if sys.platform == "win32":
-        try:
-            import winreg
-            registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
-            reg_keypath = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize'
-
-            try:
-                reg_key = winreg.OpenKey(registry, reg_keypath)
-                for i in range(1024):
-                    try:
-                        value_name, value, _ = winreg.EnumValue(reg_key, i)
-                        if value_name == 'AppsUseLightTheme':
-                            theme_dark_mode = True
-                    except OSError:
-                        theme_dark_mode = False
-                        break
-
-            except FileNotFoundError:
-                tprint("Key not found")
-                theme_dark_mode = False
-
-        except ImportError:
-            tprint("winreg missing")
-            theme_dark_mode = False
-
-    return theme_dark_mode
-
-
 def start_application(testing=False):
     QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication([])
     app.setStyle('Fusion')
+    qdarktheme.setup_theme("auto")
 
     if not testing:
         # Splash screen - need to happen after QApplication is created and before MainWindow is loaded
@@ -185,7 +152,6 @@ def validate_folder(folder):
 
 if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp_main__) so let's make sure nothing is executed if in that case
 
-    dark_mode = check_system_theme()
     stackprinter.set_excepthook()
     rvs_app, splash = start_application()
     start_logger()
