@@ -46,8 +46,6 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 import CameraApp_rc
 from MainWindow import MainWindow
 
-import qdarktheme
-
 class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
@@ -70,7 +68,6 @@ def start_application(testing=False):
     QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication([])
     app.setStyle('Fusion')
-    qdarktheme.setup_theme("auto")
 
     if not testing:
         # Splash screen - need to happen after QApplication is created and before MainWindow is loaded

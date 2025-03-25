@@ -76,6 +76,11 @@ class Experiment:
         self.analysis = None
 
         self.mqtt_broker = ""
+        self.mqtt_port = "1883"
+        self.mqtt_username = "" 
+        self.mqtt_password = ""
+
+        self.theme = "auto"
 
         self.crop_rect = QRect()
 
@@ -194,6 +199,10 @@ class Experiment:
           "scriptReferenceImage2": self.safe_normpath(self.script_reference_image2),
           "cameraDiscoveryIp": self.camera_discovery_ip,
           "mqttBroker": self.mqtt_broker,
+          "mqttPort": self.mqtt_port,
+          "mqttUserName": self.mqtt_username,
+          "mqttPassword": self.mqtt_password,
+          "theme": self.theme,
           "cropRect": [self.crop_rect.left(), self.crop_rect.top(), self.crop_rect.width(), self.crop_rect.height()],
         }
 
@@ -360,6 +369,20 @@ class Experiment:
         if "mqttBroker" in d:
             self.mqtt_broker = d["mqttBroker"]
 
+        if "mqttPort" in d:
+            self.mqtt_port = d["mqttPort"]
+
+        if "mqttUserName" in d:
+            self.mqtt_username = d["mqttUserName"]
+            
+        if "mqttPassword" in d:
+            self.mqtt_password = d["mqttPassword"]
+           
+        if "theme" in d:
+            self.theme = d["theme"]
+        else:
+            self.theme = "auto"
+           
         if "cropRect" in d:
             self.crop_rect = QRect(d["cropRect"][0], d["cropRect"][1], d["cropRect"][2], d["cropRect"][3])
 

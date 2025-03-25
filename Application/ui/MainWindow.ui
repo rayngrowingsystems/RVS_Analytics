@@ -178,7 +178,7 @@
      <string>File</string>
     </property>
     <addaction name="action_select_network"/>
-    <addaction name="action_mqtt_broker"/>
+    <addaction name="action_settings"/>
     <addaction name="action_download_images"/>
     <addaction name="action_delete_images"/>
     <addaction name="separator"/>
@@ -670,6 +670,11 @@
   <action name="action_delete_images">
    <property name="text">
     <string>Delete images from camera...</string>
+   </property>
+  </action>
+  <action name="action_settings">
+   <property name="text">
+    <string>Settings...</string>
    </property>
   </action>
  </widget>
