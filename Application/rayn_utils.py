@@ -314,7 +314,7 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
     mask_options = settings["experimentSettings"]["analysis"]["maskOptions"]
 
     if create_preview:
-        out_image = preview_settings["output_image"]
+        out_image = settings["outputImage"]
         image_file_name = os.path.normpath(out_image)
         print("Writing image to " + image_file_name)
 
