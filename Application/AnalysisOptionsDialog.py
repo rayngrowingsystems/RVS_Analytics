@@ -37,6 +37,9 @@ class AnalysisOptionsDialog(QDialog):
         self.option_checkboxes = []
         self.option_sliders = []
         self.option_dropdowns = []
+        self.option_spinboxes = []
+
+        self.option_ranges = []
 
         self.default_values = {}
 
@@ -53,7 +56,7 @@ class AnalysisOptionsDialog(QDialog):
                 tprint(data)
 
                 # Script options
-                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.default_values = \
+                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.option_spinboxes, self.default_values = \
                     Helper.get_ui_elements_from_config(options=data['script']['options'], settings=self.main_window.experiment.script_options, \
                                                     execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
                                                     slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
