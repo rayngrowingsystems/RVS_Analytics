@@ -507,6 +507,8 @@ class MainWindow(QMainWindow):
                     profiler = Profiler(interval=0.0001)
                     profiler.start()
 
+                settings["experimentSettings"]["sessionData"] = self.experiment.session_data  # Make sure we get the latest data
+
                 return_list = analysis_script.execute(script_name, settings, mask_file_name)
 
                 for command, value in return_list:
@@ -1235,6 +1237,10 @@ class MainWindow(QMainWindow):
 
         if command == "results":  # When processing is done: File name for results
             self.process_results(self.current_camera_name, value, self.current_image_timestamp)
+            handled = True
+
+        if command == "session_data":
+            self.experiment.session_data = value
             handled = True
 
         if command == "error":

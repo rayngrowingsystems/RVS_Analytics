@@ -84,6 +84,8 @@ class Experiment:
 
         self.crop_rect = QRect()
 
+        self.session_data = {}
+
     class RoiInfo:
         PlacementMode = Enum('PlacementMode', ['Matrix', 'Manual'])
         Shape = Enum('Shape', ['Circle', 'Rectangle', 'Ellipse', 'Polygon'])
@@ -203,6 +205,7 @@ class Experiment:
           "mqttUserName": self.mqtt_username,
           "mqttPassword": self.mqtt_password,
           "theme": self.theme,
+          "sessionData": self.session_data,
           "cropRect": [self.crop_rect.left(), self.crop_rect.top(), self.crop_rect.width(), self.crop_rect.height()],
         }
 
@@ -383,6 +386,9 @@ class Experiment:
         else:
             self.theme = "auto"
            
+        if "sessionData" in d:
+            self.session_data = d["sessionData"]
+
         if "cropRect" in d:
             self.crop_rect = QRect(d["cropRect"][0], d["cropRect"][1], d["cropRect"][2], d["cropRect"][3])
 
