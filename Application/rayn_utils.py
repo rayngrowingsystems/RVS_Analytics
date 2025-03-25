@@ -196,8 +196,8 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
         spectral_data = crop(spectral_data,
                              x=crop_rectangle[0],
                              y=crop_rectangle[1],
-                             h=crop_rectangle[2],
-                             w=crop_rectangle[3])
+                             h=crop_rectangle[3],
+                             w=crop_rectangle[2])
 
     return spectral_data, rvs_dict
 
@@ -327,3 +327,6 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
 
         else:
             print_image(img=mask, filename=image_file_name)
+
+    else:
+        warnings.warn("Missing settings: No mask preview was generated.")
