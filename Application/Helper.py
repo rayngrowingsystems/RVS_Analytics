@@ -18,7 +18,7 @@ from datetime import datetime
 import os
 import json
 
-from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame, QStyledItemDelegate, QSlider, QGroupBox, QVBoxLayout
+from PySide6.QtWidgets import QGridLayout, QCheckBox, QLabel, QComboBox, QFrame, QStyledItemDelegate, QSlider, QGroupBox, QVBoxLayout, QHBoxLayout, QSpinBox
 from PySide6.QtCore import QTimer, QEvent
 from PySide6 import QtCore
 from PySide6.QtGui import QPalette, QFontMetrics, QStandardItem
@@ -304,6 +304,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
     option_sliders = []
     option_wavelengths = []
     option_dropdowns = []
+    option_spinboxes = []
 
     # Store ranges for related sliders
     option_ranges = []
@@ -555,6 +556,63 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 # Connect the signal of dropdown menu change to the main function for updating the mask script
                 option_dropdown.currentIndexChanged.connect(execute_on_change)
             
+            # Handle spinbox options
+            elif option["type"] == "spinBox":
+                option_label = QLabel()
+                option_label.setText(option["displayName"])
+                if "hint" in option:
+                    option_label.setToolTip(option["hint"])
+
+                start_value = 0
+                option_spinbox = QSpinBox()
+
+                min = int(option["minimum"])
+                max = int(option["maximum"])
+
+                default_value = 0  # TODO?
+
+                # Check if the spinbox value is set
+                if option["name"] in settings:
+                    tprint("Found spinbox option:", option["name"], settings[option["name"]])
+                    start_value = settings[option["name"]]  # Use last value
+                elif "value" in option:
+                    start_value = default_value  # Use default value
+
+                default_values[option_spinbox] = default_value
+
+                display_name = option["displayName"]
+                name = option["name"]
+
+                # Set spinbox properties
+                option_spinbox.name = name
+                option_spinbox.displayName = display_name
+                option_spinbox.optionLabel = option_label
+                option_spinbox.min = min
+                option_spinbox.max = max
+                option_spinbox.defaultValue = default_value
+                option_spinbox.startValue = start_value
+
+                option_spinbox.setRange(min, max)
+
+                # TODO? Connect spinbox value change to script execution
+                #option_spinbox.valueChanged.connect(lambda a, name=name, optionSpinBox=option_spinbox: spinbox_value_changed(name, optionSpinbox))
+                #option_spinbox.valueChanged.emit(0)  # Force refresh of label
+                option_spinbox.setValue(start_value)
+                if "hint" in option:
+                    option_spinbox.setToolTip(option["hint"])
+
+                layout = QHBoxLayout()
+                layout.addWidget(option_label)
+                layout.addWidget(option_spinbox)
+                layout.addStretch(1)
+                
+                section_grid.addLayout(layout, row, column)
+                row += 1
+
+                option_spinboxes.append((option["name"], option_spinbox,))
+
+                option_spinbox.valueChanged.connect(execute_on_change)
+
             # Handle divider
             elif option["type"] == "divider":
                 line = QFrame()
@@ -573,7 +631,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
     # section_grid.setRowStretch(section_grid.rowCount(), 1)
 
-    return top_layout, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges, default_values
+    return top_layout, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges, option_spinboxes, default_values
 
 def set_ui_elements_default_values(values):
     for option, value in values.items():
@@ -602,6 +660,9 @@ def get_settings_for_ui_elements(dialog):
 
     for name, dropdown in dialog.option_dropdowns:
         settings[name] = dropdown.currentData()
+
+    for name, spinbox in dialog.option_spinboxes:
+        settings[name] = spinbox.value()
 
     return settings
 

@@ -48,6 +48,7 @@ class ImageMaskDialog(QDialog):
         self.option_sliders = []
         self.option_wavelengths = []
         self.option_dropdowns = []
+        self.option_spinboxes = []
 
         # Store ranges for related sliders
         self.option_ranges = []
@@ -126,7 +127,7 @@ class ImageMaskDialog(QDialog):
             if "mask" in data:
                 self.mask_description = data['mask']['info']['description']
 
-            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.default_values = \
+            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.option_spinboxes, self.default_values = \
                 Helper.get_ui_elements_from_config(options=data['mask']['options'], settings=self.main_window.experiment.mask, \
                                                    execute_on_change=self.run_mask_script, dropdown_changed=self.dropdown_changed, \
                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
