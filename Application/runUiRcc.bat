@@ -17,5 +17,6 @@ pyside6-uic ui\ImageRoiDialog.ui        > ui_ImageRoiDialog.py
 pyside6-uic ui\ImageSourceDialog.ui     > ui_ImageSourceDialog.py
 pyside6-uic ui\MainWindow.ui            > ui_MainWindow.py
 pyside6-uic ui\SelectImageDialog.ui     > ui_SelectImageDialog.py
+pyside6-uic ui\SettingsDialog.ui        > ui_SettingsDialog.py
 
 pyside6-rcc resources/CameraApp.qrc -o CameraApp_rc.py

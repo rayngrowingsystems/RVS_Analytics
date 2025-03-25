@@ -35,6 +35,8 @@ import warnings
 
 import csv
 
+import qdarktheme
+
 from importlib.metadata import version
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog, QStyle, QMessageBox, QInputDialog, QLineEdit, QFileDialog, QLabel, QCheckBox
@@ -61,6 +63,7 @@ from EulaDialog import EulaDialog
 from CameraStartDialog import CameraStartDialog
 from FolderStartDialog import FolderStartDialog
 from SelectImageDialog import SelectImageDialog
+from SettingsDialog import SettingsDialog
 
 import Config
 import Helper
@@ -208,6 +211,8 @@ class MainWindow(QMainWindow):
 
         self.experiment.from_json()
 
+        qdarktheme.setup_theme(self.experiment.theme)
+
         # Set up RVS path and check for EULA acceptance
         self.rvs_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
 
@@ -293,13 +298,13 @@ class MainWindow(QMainWindow):
         self.ui.action_save_analysis.triggered.connect(self.save_analysis)
         self.ui.action_save_as_analysis.triggered.connect(self.save_as_analysis)
 
-        # Set-up vaiours buttons and commands
+        # Set-up various buttons and commands
         self.ui.action_select_network.triggered.connect(self.select_network)
-
-        self.ui.action_mqtt_broker.triggered.connect(self.select_mqtt_broker)
 
         self.ui.action_download_images.triggered.connect(self.open_download_images_dialog)
         self.ui.action_delete_images.triggered.connect(self.open_delete_images_dialog)
+
+        self.ui.action_settings.triggered.connect(self.open_settings_dialog)
 
         self.ui.action_about.triggered.connect(self.open_about_dialog)
         self.ui.action_help.triggered.connect(self.open_help_dialog)
@@ -567,7 +572,7 @@ class MainWindow(QMainWindow):
         self.on_mqtt_status_changed("", False)
         QApplication.instance().processEvents()
 
-        self.mqtt = Mqtt(self.experiment.mqtt_broker, 1883)
+        self.mqtt = Mqtt(self.experiment.mqtt_broker, int(self.experiment.mqtt_port), self.experiment.mqtt_username, self.experiment.mqtt_password) 
         self.mqtt.status_changed.connect(self.on_mqtt_status_changed)
         self.mqtt.start()
 
@@ -622,18 +627,6 @@ class MainWindow(QMainWindow):
                         tprint("Camera: cameraDiscovery is None. Cannot change ip")
 
                 self.update_experiment_file(False)
-
-    def select_mqtt_broker(self):
-        text, ok = QInputDialog.getText(self, 'MQTT Broker', 'Enter IP address:', QLineEdit.Normal, self.experiment.mqtt_broker)
-        if ok:
-            self.experiment.mqtt_broker = str(text)
-
-            if self.experiment.mqtt_broker != "":
-                self.start_mqtt()
-            else:
-                self.on_mqtt_status_changed("No broker defined", True)
-
-            self.update_experiment_file(False)
 
     def refresh_comboboxes(self):
         script_index = self.ui.script_selection_combobox.findText(self.experiment.selected_script)
@@ -1746,6 +1739,26 @@ class MainWindow(QMainWindow):
         else:
             self.ui.stop_button.setStyleSheet("")
 
+    def open_settings_dialog(self):
+        settings_dialog = SettingsDialog(self)
+
+        if settings_dialog.exec() == QDialog.Accepted:
+            self.experiment.mqtt_broker =  settings_dialog.ui.ip_lineedit.text()
+
+            self.experiment.mqtt_port = "1883"
+            if settings_dialog.ui.port_lineedit.text().isdigit():
+                self.experiment.mqtt_port = settings_dialog.ui.port_lineedit.text()
+
+            self.experiment.mqtt_username = settings_dialog.ui.username_lineedit.text()
+            self.experiment.mqtt_password = settings_dialog.ui.password_lineedit.text()
+
+            if self.experiment.mqtt_broker != "":
+                self.start_mqtt()
+            else:
+                self.on_mqtt_status_changed("No broker defined", True)
+
+            self.update_experiment_file(False)
+
     def open_about_dialog(self):
         about_dialog = AboutDialog()
 
@@ -1996,3 +2009,7 @@ class MainWindow(QMainWindow):
         else:
            # For other modes, present selection dialog to pick image source
            select_image_dialog.exec()
+
+    def set_theme(self, theme):
+        qdarktheme.setup_theme(theme)
+
