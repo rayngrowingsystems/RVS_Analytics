@@ -317,19 +317,8 @@ class MainWindow(QMainWindow):
         # Populate analysis script selection combobox
         self.ui.script_selection_combobox.clear()
 
-        file_list = []
-
-        # Add official scripts
-        for root, dirs, files in os.walk(self.script_folder):  # Collect all .py files in the scripts folder tree
-            for f in files:
-                if f.endswith(".py"):
-                    file_list.append(os.path.join(root, f))
-
-        # Add user scripts
-        for root, dirs, files in os.walk(os.path.join(documents_path, "Scripts")):  # Collect all .py files in the user scripts folder tree
-            for f in files:
-                if f.endswith(".py"):
-                    file_list.append(os.path.join(root, f))
+        # Official and user scripts
+        file_list = self.python_files_in_tree([self.script_folder, os.path.join(documents_path, "Scripts")])  # Collect all .py files in the scripts folder tree
 
         sorted_file_list = sorted(file_list)  # Sort and add to the combobox
         for f in sorted_file_list:
@@ -342,19 +331,8 @@ class MainWindow(QMainWindow):
         self.ui.mask_selection_combobox.clear()
         self.ui.mask_selection_combobox.addItem("Default")
 
-        file_list = []
-
-        # Add official masks
-        for root, dirs, files in os.walk(self.mask_folder):  # Collect all .py files in the masks folder tree
-            for f in files:
-                if f.endswith(".py"):
-                    file_list.append(os.path.join(root, f))
-
-        # Add user masks
-        for root, dirs, files in os.walk(os.path.join(documents_path, "Masks")):  # Collect all .py files in the user masks folder tree
-            for f in files:
-                if f.endswith(".py"):
-                    file_list.append(os.path.join(root, f))
+        # Official and user masks
+        file_list = self.python_files_in_tree([self.mask_folder, os.path.join(documents_path, "Masks")])  # Collect all .py files in the mask folder tree
 
         sorted_file_list = sorted(file_list)  # Sort and add to the combobox
         for f in sorted_file_list:
@@ -459,6 +437,21 @@ class MainWindow(QMainWindow):
     def load_ui(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+
+    def python_files_in_tree(self, folders):
+        file_list = []
+
+        for folder in folders:
+            for root, dirs, files in os.walk(folder):  # Collect all .py files in the scripts folder tree
+                if "tests" in dirs:
+                    dirs.remove("tests")  # Skip the tests folder
+
+                for f in files:
+                    if f.endswith(".py"):
+                        file_list.append(os.path.join(root, f))
+
+        return file_list
 
     def camera_discovery_function(self, main_window, ip):
         tprint("Camera: Starting cameraDiscoveryFunction:", ip)
