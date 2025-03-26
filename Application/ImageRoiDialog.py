@@ -277,6 +277,9 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image1.crop_reset.connect(self.on_crop_reset)
         self.ui.reference_image2.crop_reset.connect(self.on_crop_reset)
 
+        self.ui.reference_image1.show_magnify_button = False
+        self.ui.reference_image2.show_magnify_button = False
+
         # Create and configure ROI grids for reference images
         self.roi_grid1 = RoiGrid(self.ui.reference_image1, self, [])
         self.ui.reference_image1.set_roi_grid(self.roi_grid1)

@@ -72,7 +72,7 @@ class ClickableLabel(QLabel):
         self.mouse_pos = QPoint()
 
         self.select_image_button = QPushButton("Image...", self)
-        self.select_image_button.setMaximumWidth(55)
+        self.select_image_button.setMaximumWidth(60)
         self.select_image_button.setDefault(False)
         self.select_image_button.setAutoDefault(False)
 
@@ -111,6 +111,8 @@ class ClickableLabel(QLabel):
         self.magnify_button.clicked.connect(self.on_magnify)
         self.magnify_button.hide()
      
+        self.show_magnify_button = True
+
         QTimer.singleShot(300, lambda: self.refresh())  # Delayed initial refresh to make sure sizes are established
 
     def paintEvent(self, e):  # Qt override, keep casing
@@ -145,8 +147,9 @@ class ClickableLabel(QLabel):
     def refresh(self):
         self.refresh_crop_buttons(self.width())
 
-        self.magnify_button.show()
-        self.magnify_button.move(self.width() - self.magnify_button.width(), self.height() - self.magnify_button.height())
+        if self.show_magnify_button:
+            self.magnify_button.show()
+            self.magnify_button.move(self.width() - self.magnify_button.width(), self.height() - self.magnify_button.height())
 
     def set_crop_parent(self, parent):
         self.crop_button.setParent(parent)
