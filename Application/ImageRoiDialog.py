@@ -393,10 +393,14 @@ class ImageRoiDialog(QDialog):
 
     def select_reference_image1(self):
         self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
+        self.ui.reference_image1.on_crop_reset()
+        self.ui.reference_image2.on_crop_reset()
 
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
             self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
+            self.ui.reference_image1.on_crop_reset()
+            self.ui.reference_image2.on_crop_reset()
         else:
             QMessageBox.warning(self, "Image selection", "You must select the left image first")
 
