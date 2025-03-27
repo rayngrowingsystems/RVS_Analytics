@@ -18,11 +18,9 @@ import os
 
 from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 
-import CameraApp_rc
-
+from Helper import tprint
 from ui_DownloadImagesDialog import Ui_DownloadImagesDialog
 
-from Helper import tprint
 
 class DownloadImagesDialog(QDialog):
     def __init__(self, parent):
@@ -51,7 +49,9 @@ class DownloadImagesDialog(QDialog):
             self.ui.browse_button.clicked.connect(self.set_target_path)
             self.ui.target_path_label.setText(self.main_window.experiment.camera_file_path)
 
-            self.ui.header_text.setText("Download multiple images from <b>" + self.main_window.cameras[self.main_window.experiment.camera_cid]["name"] + "</b>")
+            self.ui.header_text.setText("Download multiple images from <b>" +
+                                        self.main_window.cameras[self.main_window.experiment.camera_cid]["name"] +
+                                         "</b>")
 
     def load_ui(self):
         self.ui = Ui_DownloadImagesDialog()
@@ -81,7 +81,8 @@ class DownloadImagesDialog(QDialog):
 
     def fetch_images(self):
         if self.ui.target_path_label.text() in ["", "."]:
-            QMessageBox.warning(self, "No target folder defined", "Please press the Browse button to select a target folder")
+            QMessageBox.warning(self, "No target folder defined",
+                                "Please press the Browse button to select a target folder")
         else:
             images = []
             for i in range(self.ui.start_combo_box.currentIndex(), self.ui.stop_combo_box.currentIndex() + 1):
@@ -91,7 +92,8 @@ class DownloadImagesDialog(QDialog):
                     images.append(os.path.splitext(self.files[i])[0] + ".PNG")  # Get corresponding PNG file
 
             if len(images) / 3 > 150:
-                QMessageBox.warning(self, "Too many files", "Currently, a maximum of 150 images can be transferred at once. Consider using the SD-card to transfer many images at once")
+                QMessageBox.warning(self, "Too many files", "Currently, a maximum of 150 images can be transferred "
+                "at once. Consider using the SD-card to transfer many images at once")
             elif len(images) > 0:
                 tprint("Fetch images", images)
 
@@ -100,7 +102,8 @@ class DownloadImagesDialog(QDialog):
                 self.main_window.ui.image_preview_progressbar.setValue(0)
                 self.main_window.ui.image_preview_progressbar.setRange(0, len(images) / 3)
 
-                self.main_window.camera.get_files(images, self.ui.target_path_label.text(), False, self.ui.delete_from_camera_checkbox.isChecked())
+                self.main_window.camera.get_files(images, self.ui.target_path_label.text(), False,
+                                                  self.ui.delete_from_camera_checkbox.isChecked())
 
                 # self.mainWindow.camera.setLastReceivedFile(images[-1])
 

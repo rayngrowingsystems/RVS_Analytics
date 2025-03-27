@@ -15,26 +15,20 @@
 # This Python file uses the following encoding: utf-8
 
 import json
-import tempfile
 import os
+import tempfile
 
-from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame
-from PySide6.QtGui import QPixmap, QGuiApplication, QCursor
-from PySide6.QtCore import QTimer
 from PySide6 import QtCore
-
-import CameraApp_rc
-
-from ImageRoiDialog import RoiGrid
-from ui_ImageMaskDialog import Ui_ImageMaskDialog
-
-from SelectImageDialog import SelectImageDialog
-
-from DoubleSlider import DoubleSlider
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
+from PySide6.QtWidgets import QDialog, QMessageBox
 
 import Config
 import Helper
 from Helper import tprint
+from ImageRoiDialog import RoiGrid
+from ui_ImageMaskDialog import Ui_ImageMaskDialog
+
 
 class ImageMaskDialog(QDialog):
     # MASK_FILE_PREFIX = "mask_"
@@ -67,7 +61,9 @@ class ImageMaskDialog(QDialog):
         super(ImageMaskDialog, self).__init__()
 
         # Set window flags to customize window behavior
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
+        # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint |
+                            QtCore.Qt.WindowMaximizeButtonHint)
 
         # Load the UI from the ui file
         self.load_ui()
@@ -127,12 +123,17 @@ class ImageMaskDialog(QDialog):
             if "mask" in data:
                 self.mask_description = data['mask']['info']['description']
 
-            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.option_spinboxes, self.default_values = \
-                Helper.get_ui_elements_from_config(options=data['mask']['options'], settings=self.main_window.experiment.mask, \
-                                                   execute_on_change=self.run_mask_script, dropdown_changed=self.dropdown_changed, \
-                                                   slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                   script_for_dropdown_values=self.main_window.current_mask_script(), preset_folder=self.main_window.preset_folder)
-            
+            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, \
+                self.option_dropdowns, self.option_ranges, self.option_spinboxes, self.default_values = \
+                Helper.get_ui_elements_from_config(options=data['mask']['options'],
+                                                   settings=self.main_window.experiment.mask,
+                                                   execute_on_change=self.run_mask_script,
+                                                   dropdown_changed=self.dropdown_changed,
+                                                   slider_value_changed=self.slider_value_changed,
+                                                   wavelength_changed=self.wavelength_changed,
+                                                   script_for_dropdown_values=self.main_window.current_mask_script(),
+                                                   preset_folder=self.main_window.preset_folder)
+
             # Set the layout for mask options
             self.ui.main_box.setLayout(grid)
 
@@ -143,7 +144,8 @@ class ImageMaskDialog(QDialog):
             self.ui.script_label.setText("Script: " + self.main_window.ui.script_selection_combobox.currentText())
             self.ui.script_description.setText(self.script_description)
         else:
-            self.ui.script_label.setText("Mask: " + self.main_window.ui.mask_selection_combobox.currentText().replace(".py", ""))
+            self.ui.script_label.setText("Mask: " +
+                                         self.main_window.ui.mask_selection_combobox.currentText().replace(".py", ""))
             self.ui.script_description.setText(self.mask_description)
 
         # For some reason, geometry won't work unless we move the update outside the constructor
@@ -157,7 +159,8 @@ class ImageMaskDialog(QDialog):
         self.ui.setupUi(self)
 
     def slider_value_changed(self, name, option_slider):
-        tprint("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max, option_slider.steps, option_slider.stepSize)
+        tprint("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max,
+               option_slider.steps, option_slider.stepSize)
         if option_slider.stepSize == 1.0:
             option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(int(option_slider.value()))))
         else:
@@ -169,7 +172,8 @@ class ImageMaskDialog(QDialog):
 
     def populate_wavelengths(self):
         if self.ui.reference_image1.image_file_name != "":
-            date, time, camera, image_wavelengths = Helper.info_from_header_file(self.ui.reference_image1.image_file_name)
+            date, time, camera, image_wavelengths = \
+                Helper.info_from_header_file(self.ui.reference_image1.image_file_name)
 
             tprint("Wavelengths from image:", image_wavelengths)
 
@@ -197,7 +201,9 @@ class ImageMaskDialog(QDialog):
 
                 mask_script = self.main_window.current_mask_script()
 
-                slider.min, slider.max, slider.steps, slider.defaultValue = mask_script.range_values(name, dropdown.currentData(), dropdown.currentIndex())
+                slider.min, slider.max, slider.steps, slider.defaultValue = mask_script.range_values(name,
+                                                                                                     dropdown.currentData(),
+                                                                                                     dropdown.currentIndex())
 
                 slider.stepSize = (slider.max - slider.min) / slider.steps
 
@@ -243,11 +249,13 @@ class ImageMaskDialog(QDialog):
 
     def load_reference_images(self):
         if self.main_window.experiment.mask_reference_image1 is not None:
-            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.mask_reference_image1, self.main_window.experiment.image_options_to_dict())
+            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.mask_reference_image1,
+                                                         self.main_window.experiment.image_options_to_dict())
             tprint("Mask: Load left preview image:", self.main_window.experiment.mask_reference_image1)
 
         if self.main_window.experiment.mask_reference_image2 is not None:
-            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.mask_reference_image2, self.main_window.experiment.image_options_to_dict())
+            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.mask_reference_image2,
+                                                         self.main_window.experiment.image_options_to_dict())
             tprint("Mask: Load right preview image:", self.main_window.experiment.mask_reference_image2)
 
         self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
@@ -283,7 +291,8 @@ class ImageMaskDialog(QDialog):
             settings['experimentSettings']['imageOptions'] = {}
 
             # Populate mask options from UI elements
-            # Note: If you change ui elements here, you are likely to have to update openImageMaskDialog when dialog is closed
+            # Note: If you change ui elements here, you are likely to have to update openImageMaskDialog
+            # when dialog is closed
             for name, checkbox in self.option_checkboxes:
                 settings['experimentSettings']['analysis']['maskOptions'][name] = checkbox.isChecked()
 
@@ -314,7 +323,7 @@ class ImageMaskDialog(QDialog):
                 # Load the generated mask preview image
                 if not self.main_window.experiment.crop_rect.isEmpty():
                     self.original_preview_image1 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
-                else:    
+                else:
                     self.original_preview_image1 = QPixmap(temp_file_name)
 
                 # Refresh the preview image on the UI
@@ -330,7 +339,7 @@ class ImageMaskDialog(QDialog):
                 # Load the generated mask preview image
                 if not self.main_window.experiment.crop_rect.isEmpty():
                     self.original_preview_image2 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
-                else:    
+                else:
                     self.original_preview_image2 = QPixmap(temp_file_name)
 
                 # Refresh the preview image on the UI
@@ -348,7 +357,8 @@ class ImageMaskDialog(QDialog):
             height = self.ui.preview_image1.height()
 
             # Scale pixmap to follow available space
-            self.ui.preview_image1.setPixmap(self.original_preview_image1.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+            self.ui.preview_image1.setPixmap(self.original_preview_image1.scaled(width, height,
+                                                                                 QtCore.Qt.KeepAspectRatio))
 
             scaling_factor = self.ui.preview_image1.pixmap().width() / self.original_preview_image1.width()
 
@@ -359,14 +369,15 @@ class ImageMaskDialog(QDialog):
 
             self.roi_grid1.scaling_factor = scaling_factor
             self.roi_grid1.setFixedSize(self.ui.preview_image1.pixmap().size())
-       
+
     def refresh_preview_image2(self):
         if self.original_preview_image2 is not None:
             width = self.ui.preview_image2.width()
             height = self.ui.preview_image2.height()
 
             # Scale pixmap to follow available space
-            self.ui.preview_image2.setPixmap(self.original_preview_image2.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+            self.ui.preview_image2.setPixmap(self.original_preview_image2.scaled(width, height,
+                                                                                 QtCore.Qt.KeepAspectRatio))
 
             scaling_factor = self.ui.preview_image2.pixmap().width() / self.original_preview_image2.width()
 
@@ -397,10 +408,9 @@ class ImageMaskDialog(QDialog):
         self.blockSignals(True)
         Helper.set_ui_elements_default_values(self.default_values)
         self.blockSignals(False)
-            
+
     def on_magnify_state_changed1(self, mode, pos, zoom_factor):
         self.ui.preview_image1.set_magnifier_mode(mode, pos, zoom_factor)
-    
+
     def on_magnify_state_changed2(self, mode, pos, zoom_factor):
         self.ui.preview_image2.set_magnifier_mode(mode, pos, zoom_factor)
-    

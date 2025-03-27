@@ -17,7 +17,7 @@
 import os
 from os import path
 
-from PySide6.QtCore import QSettings, QStandardPaths, QDir
+from PySide6.QtCore import QDir, QSettings, QStandardPaths
 
 from Helper import tprint
 

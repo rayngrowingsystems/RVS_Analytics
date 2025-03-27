@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+import platform
 import socket
 import struct
-import platform
-import json
 
 from Helper import tprint
+
 
 class EtcDiscover:
     MULTICAST_ADDRESS = "239.69.84.67"
@@ -51,7 +52,7 @@ class EtcDiscover:
 
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
             sock.settimeout(1)
-        except:
+        except BaseException:
             sock = None
             tprint('opening mulitcast failed')
         return sock
@@ -81,7 +82,7 @@ class EtcDiscover:
         if self.sock is not None:             # valid socket?
             try:
                 data, addr = self.sock.recvfrom(1024)
-            except socket.error as e:
+            except socket.error:
                 data = None  # nothing to do no data
             else:
                 if self.__frame_is_valid(data):

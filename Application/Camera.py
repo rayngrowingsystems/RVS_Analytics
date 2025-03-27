@@ -14,31 +14,28 @@
 
 # This Python file uses the following encoding: utf-8
 
-import time
-import json
 import datetime
+import json
 import os
-
+import time
+from multiprocessing import Queue
 from threading import Thread
 
-from multiprocessing import Queue
-
-from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QPixmap
-from PySide6 import QtCore
-
 import requests
+from PySide6 import QtCore
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QApplication
 
 import Config
 import Helper
-
 from Helper import tprint
+
 
 def fetch_files_in_the_background(camera, feedback_queue):
     progress = 0
 
     files_to_delete = []
-            
+
     while True:
         if len(camera.files_to_fetch) > 0:
             camera.wait_for_files_arrived = True
@@ -74,7 +71,8 @@ def fetch_files_in_the_background(camera, feedback_queue):
                         image = r.content  # get the image
                         tprint("Camera: Received content file size:", len(r.content))
                     elif r is not None:
-                        tprint("Camera: ERROR: /files/get command failed, response code:", str(r.status_code), "info:", str(r.content))
+                        tprint("Camera: ERROR: /files/get command failed, response code:",
+                               str(r.status_code), "info:", str(r.content))
                     else:
                         tprint("Camera: ERROR: /files/get command timeout")
 
@@ -115,7 +113,7 @@ def fetch_files_in_the_background(camera, feedback_queue):
                     camera.delete_file("scheduler", file_name)
 
                 files_to_delete = []
-                
+
                 feedback_queue.put(["done"])
                 progress = 0
 
@@ -138,7 +136,8 @@ class Camera:
         self.start_date_time = yesterday
         self.end_date_time = datetime.datetime.now()
 
-        tprint("Camera: Init: Url:", self.base_url, "Start time:", self.start_date_time, "End time:", self.end_date_time)
+        tprint("Camera: Init: Url:", self.base_url, "Start time:", self.start_date_time,
+               "End time:", self.end_date_time)
 
         self.files_to_fetch = []
         self.wait_for_files_arrived = False
@@ -156,7 +155,8 @@ class Camera:
 
         tprint('Camera: Starting background task that fetches the files...')
 
-        daemon = Thread(target=fetch_files_in_the_background, args=(self, self.fetch_feedback_queue,), daemon=True, name='Fetch')
+        daemon = Thread(target=fetch_files_in_the_background,
+                        args=(self, self.fetch_feedback_queue,), daemon=True, name='Fetch')
         daemon.start()
 
         self.tick_divider = 0
@@ -167,13 +167,17 @@ class Camera:
             self.tick_divider = 0
 
             if Config.verbose_mode:
-                tprint("Camera tick:", self.main_window.analysis_running, len(self.files_to_fetch), self.wait_for_files_arrived, self.images_need_analysis)
+                tprint("Camera tick:", self.main_window.analysis_running, len(self.files_to_fetch),
+                       self.wait_for_files_arrived, self.images_need_analysis)
 
             if self.main_window is not None:
-                if self.main_window.analysis_running and self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Camera and self.main_window.experiment.camera_file_path != "":
+                if self.main_window.analysis_running and \
+                    self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Camera and \
+                        self.main_window.experiment.camera_file_path != "":
                     if len(self.files_to_fetch) == 0 and not self.wait_for_files_arrived:
-                        if self.get_first_in_range() == False:  # Nothing more to fetch right now -> process accumulated ones
-                            if self.images_need_analysis == True:
+                        # Nothing more to fetch right now -> process accumulated ones
+                        if self.get_first_in_range() is False:
+                            if self.images_need_analysis is True:
                                 self.main_window.start_analysis(True, False, True)
                                 self.images_need_analysis = False
                 while not self.fetch_feedback_queue.empty():
@@ -202,7 +206,8 @@ class Camera:
                         else:
                             width = self.main_window.ui.image_preview.width()  # No pixmap, use label width
 
-                        self.main_window.ui.image_preview.setPixmap(QPixmap(value).scaledToWidth(width, QtCore.Qt.SmoothTransformation))
+                        self.main_window.ui.image_preview.setPixmap(QPixmap(value).scaledToWidth(width,
+                                                                                                 QtCore.Qt.SmoothTransformation))
                         self.main_window.ui.image_preview.setText("")
 
                     QApplication.instance().processEvents()
@@ -219,7 +224,8 @@ class Camera:
         date, time, camera, wavelength = Helper.info_from_header_file(file_name)
         tprint("Camera: Info from HDR file: Camera:", camera, "Date/time:", date, time, "Wavelength", wavelength)
 
-        # Convert to real date/time object and add 1 second. Filename looks like this: RaynCamera-2218FC_000000_20221031_085538
+        # Convert to real date/time object and add 1 second.
+        # Filename looks like this: RaynCamera-2218FC_000000_20221031_085538
         new_start_date_time = datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S')
 
         new_start_date_time = new_start_date_time + datetime.timedelta(seconds=1)
@@ -268,7 +274,7 @@ class Camera:
             r = requests.get(url, timeout=5, json=parameters)
 
             tprint("Response:", r)
-        except:
+        except BaseException:
             tprint("No camera found")
 
     def get_file(self, folder, file):
@@ -283,7 +289,7 @@ class Camera:
             r = requests.get(url, timeout=5, json=parameters)
             image = r.content
             return image
-        except:
+        except BaseException:
             tprint("No camera found")
             return None
 
@@ -317,7 +323,7 @@ class Camera:
                     more_files = (index !=0)
 
             return files
-        except:
+        except BaseException:
             tprint("No camera found")
             return []
 
@@ -360,7 +366,8 @@ class Camera:
                 if len(json_files) > 0:
                     tprint("Camera: Replied with these files:", json_files)
 
-                    self.get_files(json_files, self.main_window.experiment.camera_file_path, True, self.delete_from_camera)
+                    self.get_files(json_files, self.main_window.experiment.camera_file_path,
+                                   True, self.delete_from_camera)
 
                     # self.setLastReceivedFile(jsonFiles[-1])
 

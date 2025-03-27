@@ -16,13 +16,11 @@
 
 import os
 
-from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
-
-import CameraApp_rc
-
-from ui_DeleteImagesDialog import Ui_DeleteImagesDialog
+from PySide6.QtWidgets import QDialog, QMessageBox
 
 from Helper import tprint
+from ui_DeleteImagesDialog import Ui_DeleteImagesDialog
+
 
 class DeleteImagesDialog(QDialog):
     def __init__(self, parent):
@@ -48,7 +46,8 @@ class DeleteImagesDialog(QDialog):
 
             self.refresh_selected_images_label()
 
-            self.ui.header_text.setText("Delete multiple images from <b>" + self.main_window.cameras[self.main_window.experiment.camera_cid]["name"] + "</b>")
+            self.ui.header_text.setText("Delete multiple images from <b>" +
+                                self.main_window.cameras[self.main_window.experiment.camera_cid]["name"] + "</b>")
 
     def load_ui(self):
         self.ui = Ui_DeleteImagesDialog()
@@ -75,7 +74,8 @@ class DeleteImagesDialog(QDialog):
             self.main_window.ui.image_preview_progressbar.setValue(0)
             self.main_window.ui.image_preview_progressbar.setRange(0, len(images) / 3)
 
-            # TODO self.main_window.camera.get_files(images, self.ui.target_path_label.text(), False, self.ui.delete_from_camera_checkbox.isChecked())
+            # TODO self.main_window.camera.get_files(images, self.ui.target_path_label.text(), False,
+            # self.ui.delete_from_camera_checkbox.isChecked())
 
             for file_name in images:
                 self.main_window.camera.delete_file("scheduler", file_name)

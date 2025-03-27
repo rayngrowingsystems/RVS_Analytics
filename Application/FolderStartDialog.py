@@ -16,8 +16,6 @@
 
 from PySide6.QtWidgets import QDialog
 
-import CameraApp_rc
-
 from ui_FolderStartDialog import Ui_FolderStartDialog
 
 

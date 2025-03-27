@@ -14,21 +14,15 @@
 
 # This Python file uses the following encoding: utf-8
 
-import sys
-import os
 import json
-import importlib
 
-from PySide6.QtWidgets import QDialog, QCheckBox, QSlider, QLabel, QVBoxLayout, QComboBox, QFrame
-from PySide6 import QtCore
 from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QCheckBox, QDialog
 
 import Helper
 from Helper import tprint
-
-import CameraApp_rc
-
 from ui_AnalysisOptionsDialog import Ui_AnalysisOptionsDialog
+
 
 class AnalysisOptionsDialog(QDialog):
     def __init__(self, main_window):
@@ -47,7 +41,8 @@ class AnalysisOptionsDialog(QDialog):
         self.load_ui()
 
         if self.main_window.experiment.selected_script != "":
-            config_file_name = self.main_window.script_paths[self.main_window.experiment.selected_script].replace(".py", ".config")
+            config_file_name = self.main_window.script_paths[
+                self.main_window.experiment.selected_script].replace(".py", ".config")
 
             tprint("Analysis options config:", config_file_name)
 
@@ -56,14 +51,19 @@ class AnalysisOptionsDialog(QDialog):
                 tprint(data)
 
                 # Script options
-                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.option_spinboxes, self.default_values = \
-                    Helper.get_ui_elements_from_config(options=data['script']['options'], settings=self.main_window.experiment.script_options, \
-                                                    execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
-                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                    script_for_dropdown_values=self.main_window.current_analysis_script(), preset_folder=self.main_window.preset_folder)
-                
-            self.ui.main_groupbox.setLayout(grid)   
-            
+                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, \
+                    self.option_dropdowns, self.option_ranges, self.option_spinboxes, self.default_values = \
+                    Helper.get_ui_elements_from_config(options=data['script']['options'],
+                                                       settings=self.main_window.experiment.script_options,
+                                                       execute_on_change=self.refresh_values,
+                                                       dropdown_changed=self.dropdown_changed,
+                                                       slider_value_changed=self.slider_value_changed,
+                                                       wavelength_changed=self.wavelength_changed,
+                                                       script_for_dropdown_values=self.main_window.current_analysis_script(),
+                                                       preset_folder=self.main_window.preset_folder)
+
+            self.ui.main_groupbox.setLayout(grid)
+
             # Set active checkboxes
             chart_checkboxes = self.ui.main_groupbox.findChildren(QCheckBox)
             for child_checkbox in chart_checkboxes:
@@ -83,7 +83,8 @@ class AnalysisOptionsDialog(QDialog):
         self.ui.setupUi(self)
 
     def slider_value_changed(self, name, option_slider):
-        tprint("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max, option_slider.steps, option_slider.stepSize)
+        tprint("Slider value changed", name, option_slider, option_slider.value(), option_slider.min, option_slider.max,
+               option_slider.steps, option_slider.stepSize)
         if option_slider.stepSize == 1.0:
             option_slider.optionLabel.setText(str(option_slider.displayName + ": " + str(int(option_slider.value()))))
         else:
@@ -102,4 +103,3 @@ class AnalysisOptionsDialog(QDialog):
         self.blockSignals(True)
         Helper.set_ui_elements_default_values(self.default_values)
         self.blockSignals(False)
- 

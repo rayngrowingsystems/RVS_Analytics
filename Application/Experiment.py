@@ -16,16 +16,15 @@
 
 import json
 import os
+from enum import Enum
 from os import path
 
-from PySide6.QtCore import QRect, QSize, QStandardPaths, QDir, QPoint
+from PySide6.QtCore import QDir, QPoint, QRect, QSize, QStandardPaths
 from PySide6.QtWidgets import QApplication
 
-from enum import Enum
-
 import Config
-
 from Helper import tprint
+
 
 class Experiment:
     ImageSource = Enum('ImageSource', ['Image', 'Folder', 'Camera'])
@@ -43,7 +42,9 @@ class Experiment:
         self.camera_cid = ""
         self.camera_api_keys = {}
 
-        self.output_file_path = os.path.join(os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)), QApplication.organizationName(), QApplication.applicationName(), 'Analysis')
+        self.output_file_path = os.path.join(
+            os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)),
+                             QApplication.organizationName(), QApplication.applicationName(), 'Analysis')
         QDir().mkpath(self.output_file_path)
         tprint("Output folder", self.output_file_path)
 
@@ -77,7 +78,7 @@ class Experiment:
 
         self.mqtt_broker = ""
         self.mqtt_port = "1883"
-        self.mqtt_username = "" 
+        self.mqtt_username = ""
         self.mqtt_password = ""
 
         self.theme = "auto"
@@ -173,7 +174,8 @@ class Experiment:
           "outputFilePath": self.output_file_path,
           "cameraCid": self.camera_cid,
           "cameraApiKeys": self.camera_api_keys,
-          "roiInfo": {"rect": [self.roi_info.rect.left(), self.roi_info.rect.top(), self.roi_info.rect.width(), self.roi_info.rect.height()],
+          "roiInfo": {"rect": [self.roi_info.rect.left(), self.roi_info.rect.top(),
+                               self.roi_info.rect.width(), self.roi_info.rect.height()],
                       "columns": self.roi_info.columns,
                       "rows": self.roi_info.rows,
                       "radius": self.roi_info.radius,
@@ -258,7 +260,8 @@ class Experiment:
             self.camera_api_keys = d["cameraApiKeys"]
 
         if "roiInfo" in d:
-            self.roi_info.rect = QRect(d["roiInfo"]["rect"][0], d["roiInfo"]["rect"][1], d["roiInfo"]["rect"][2], d["roiInfo"]["rect"][3])
+            self.roi_info.rect = QRect(d["roiInfo"]["rect"][0], d["roiInfo"]["rect"][1],
+                                       d["roiInfo"]["rect"][2], d["roiInfo"]["rect"][3])
             self.roi_info.columns = d["roiInfo"]["columns"]
             self.roi_info.rows = d["roiInfo"]["rows"]
             self.roi_info.radius = d["roiInfo"]["radius"]
@@ -300,7 +303,7 @@ class Experiment:
                             result.append([int(point[0]), int(point[1])])
 
                         roi_item["points"] = result
-             
+
                     self.roi_info.manual_roi_items.append(roi_item)
 
                 # tprint("RoiList unscaled:", self.roi_info.manual_roi_items)
@@ -377,15 +380,15 @@ class Experiment:
 
         if "mqttUserName" in d:
             self.mqtt_username = d["mqttUserName"]
-            
+
         if "mqttPassword" in d:
             self.mqtt_password = d["mqttPassword"]
-           
+
         if "theme" in d:
             self.theme = d["theme"]
         else:
             self.theme = "auto"
-           
+
         if "sessionData" in d:
             self.session_data = d["sessionData"]
 
@@ -409,7 +412,7 @@ class Experiment:
         return self.mask_reference_image1 in [None, '.'] and self.mask_reference_image2 in [None, '.'] and \
                self.roi_reference_image1 in [None, '.'] and self.roi_reference_image2 in [None, '.'] and \
                self.script_reference_image1 in [None, '.'] and self.script_reference_image2 in [None, '.']
-    
+
     def clear_all_preview_images(self):
         self.mask_reference_image1 = None
         self.mask_reference_image2 = None
@@ -417,7 +420,7 @@ class Experiment:
         self.roi_reference_image2 = None
         self.script_reference_image1 = None
         self.script_reference_image2 = None
-        
+
     def clear_analysis(self):
         if self.analysis is not None:
             self.analysis["maskOptions"] = {}
@@ -433,21 +436,22 @@ class Experiment:
             return self.camera_file_path
         else:
             return ""
-        
+
     # Conversion routines between original image coordinates and UI coordinates via an optional crop rectangle
 
     def image_to_point_coordinates(self, point, crop_rect, scaling_factor):
         if not crop_rect.isEmpty():
             p = point - crop_rect.topLeft()  # Change from original image to crop_rect coordinates
-            p = QPoint(p.x() * scaling_factor, p.y() * scaling_factor)  # Change from crop_rect to UI coordinates     
+            p = QPoint(p.x() * scaling_factor, p.y() * scaling_factor)  # Change from crop_rect to UI coordinates
 
             return p
         else:
             return QPoint(point.x() * scaling_factor, point.y() * scaling_factor)
-    
+
     def point_to_image_coordinates(self, point, crop_rect, scaling_factor):
         if not crop_rect.isEmpty():
-            p = QPoint(point.x() / scaling_factor, point.y() / scaling_factor)  # Change from UI to crop_rect coordinates
+            # Change from UI to crop_rect coordinates
+            p = QPoint(point.x() / scaling_factor, point.y() / scaling_factor)
             p = p + crop_rect.topLeft()  # Change from crop_rect to original image coordinates
 
             return p
@@ -461,6 +465,4 @@ class Experiment:
     def rect_to_image_coordinates(self, rect, crop_rect, scaling_factor):
         return QRect(self.point_to_image_coordinates(rect.topLeft(), crop_rect, scaling_factor), \
                      QSize(rect.width() / scaling_factor, rect.height() / scaling_factor))
-   
-
 

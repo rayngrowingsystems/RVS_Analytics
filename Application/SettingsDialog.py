@@ -16,11 +16,8 @@
 
 from PySide6.QtWidgets import QDialog
 
-import CameraApp_rc
-
 from ui_SettingsDialog import Ui_SettingsDialog
 
-from Helper import tprint
 
 class SettingsDialog(QDialog):
     def __init__(self, main_window):
@@ -38,7 +35,7 @@ class SettingsDialog(QDialog):
             self.ui.theme_combo_box.setCurrentIndex(1)
         elif self.main_window.experiment.theme == "dark":
             self.ui.theme_combo_box.setCurrentIndex(2)
-            
+
         self.ui.theme_combo_box.currentIndexChanged.connect(self.on_theme_changed)
 
         self.ui.ip_lineedit.setText(self.main_window.experiment.mqtt_broker)
@@ -57,7 +54,7 @@ class SettingsDialog(QDialog):
             self.main_window.experiment.theme = "light"
         elif self.ui.theme_combo_box.currentIndex() == 2:
             self.main_window.experiment.theme = "dark"
-        
+
         self.main_window.set_theme(self.main_window.experiment.theme)
 
         self.main_window.update_experiment_file(False)
