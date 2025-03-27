@@ -16,12 +16,10 @@
 
 from os import path
 
-from PySide6.QtWidgets import QDialog
+from PySide6 import QtCore
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
-from PySide6 import QtCore
-
-import CameraApp_rc
+from PySide6.QtWidgets import QDialog
 
 from ui_AboutDialog import Ui_AboutDialog
 
@@ -30,7 +28,8 @@ class AboutDialog(QDialog):
     def __init__(self):
         super(AboutDialog, self).__init__()
 
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)  # Get rid of What's this icon in title bar
+        # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
 
         self.load_ui()
 

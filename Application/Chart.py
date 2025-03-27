@@ -14,19 +14,18 @@
 
 # This Python file uses the following encoding: utf-8
 
-from datetime import datetime
-from os import path
 import os
 import uuid
+from datetime import datetime
 
 import plotly.graph_objects as go
-
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import QStandardPaths
+from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from Helper import tprint
+
 
 class Chart:
     def __init__(self, main_window, title, y_label):
@@ -53,8 +52,10 @@ class Chart:
         # Create temp files for charting
         base_file_name = str(uuid.uuid4())
 
-        self.temp_image_file = os.path.normpath(os.path.join(QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".svg"))
-        self.temp_html_file = os.path.normpath(os.path.join(QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".html"))
+        self.temp_image_file = os.path.normpath(os.path.join(
+            QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".svg"))
+        self.temp_html_file = os.path.normpath(os.path.join(
+            QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".html"))
 
         tprint("Temp files:", self.temp_image_file, self.temp_html_file)
 
@@ -71,7 +72,7 @@ class Chart:
 
         self.preview_view.hide()
 
-        self.tab_index = self.main_window.ui.tabWidget.addTab(self.widget, title)        
+        self.tab_index = self.main_window.ui.tabWidget.addTab(self.widget, title)
 
     def add_roi(self, timestamp, y, name):
         found = False
@@ -112,7 +113,8 @@ class Chart:
          self.fig.write_image(self.image_file())
 
          config = {'doubleClickDelay': 1000}
-         self.fig.write_html(self.web_page(), config=config)  # TODO Only necessary on last iteration or stop to produce resulting html file
+         self.fig.write_html(self.web_page(), config=config)
+         # TODO Only necessary on last iteration or stop to produce resulting html file
 
          self.preview_label.setPixmap(self.pixmap())
 

@@ -14,8 +14,9 @@
 
 # This Python file uses the following encoding: utf-8
 
-from PySide6.QtWidgets import QSlider
 from PySide6 import QtCore
+from PySide6.QtWidgets import QSlider
+
 
 # Special slider that can handle the necessary negative and decimal ranges
 class DoubleSlider(QSlider):

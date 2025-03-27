@@ -14,18 +14,16 @@
 
 # This Python file uses the following encoding: utf-8
 
-import os
 import glob
+import os
 
-from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMessageBox
-from PySide6.QtGui import QGuiApplication, QCursor
 from PySide6 import QtCore
-
-import CameraApp_rc
-
-from ui_SelectImageDialog import Ui_SelectImageDialog
+from PySide6.QtGui import QCursor, QGuiApplication
+from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMessageBox
 
 from Helper import tprint
+from ui_SelectImageDialog import Ui_SelectImageDialog
+
 
 class SelectImageDialog(QDialog):
     def __init__(self, main_window, dialog, corresponding_label):
@@ -74,7 +72,8 @@ class SelectImageDialog(QDialog):
 
                 self.dialog.load_reference_images()  # Reload images in this dialog
             else:
-                self.corresponding_label.set_image_file_name(file_name, self.main_window.experiment.image_options_to_dict())
+                self.corresponding_label.set_image_file_name(file_name,
+                                                             self.main_window.experiment.image_options_to_dict())
 
             tprint("Set image preview:", file_name)
 
@@ -128,7 +127,8 @@ class SelectImageDialog(QDialog):
                             tprint("Fetch: IOError", e)
 
                     if hdr_file != "":
-                        self.corresponding_label.set_image_file_name(os.path.join(target_folder, hdr_file), self.main_window.experiment.image_options_to_dict())
+                        self.corresponding_label.set_image_file_name(os.path.join(target_folder, hdr_file),
+                                                                     self.main_window.experiment.image_options_to_dict())
                         tprint("Set preview image:", os.path.join(target_folder, hdr_file))
 
                 else:
@@ -154,7 +154,8 @@ class SelectImageDialog(QDialog):
                             f.write(image_cube)
                             f.close()
 
-                            self.corresponding_label.set_image_file_name(os.path.join(target_folder, image_hdr_file), self.main_window.experiment.image_options_to_dict())
+                            self.corresponding_label.set_image_file_name(os.path.join(target_folder, image_hdr_file),
+                                                                         self.main_window.experiment.image_options_to_dict())
                             tprint("Set preview image:", os.path.join(target_folder, image_hdr_file))
 
                         except IOError as e:

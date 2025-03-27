@@ -16,7 +16,8 @@
 
 from multiprocessing import freeze_support
 
-# freeze_support should be at the top to be able to handle multiprocessing in the installer. Otherwise, the CameraApp module is executed multiple times
+# freeze_support should be at the top to be able to handle multiprocessing in the installer.
+# Otherwise, the CameraApp module is executed multiple times
 # https://github.com/pyinstaller/pyinstaller/issues/3957
 
 # Thread about multiprocessing and why Process spawn runs the main module again, with a different name (__mp_main__):
@@ -29,22 +30,22 @@ from Helper import tprint
 
 tprint("Loading CameraApp", __name__)
 
-import sys
-import os
 import glob
-import stackprinter
-from datetime import datetime
 import logging
+import os
+import sys
+from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
-from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
-from PySide6.QtGui import QPixmap
-from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
+import stackprinter
 from PySide6 import QtCore
+from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
+from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
 
-import CameraApp_rc
 from MainWindow import MainWindow
+
 
 class StreamToLogger(object):
     """
@@ -136,7 +137,7 @@ def remove_camera_files():
     for file_path in file_list:
         try:
             os.remove(file_path)
-        except:
+        except BaseException:
             tprint("Error while deleting file : ", file_path)
 
 def validate_folder(folder):
@@ -144,10 +145,12 @@ def validate_folder(folder):
         for f in files:
             if f.endswith(".py"):
                 return True  # At least one file found
-            
+
     return False
 
-if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp_main__) so let's make sure nothing is executed if in that case
+if __name__ == '__main__':
+    # Process will re-run CameraApp.py (with name = __mp_main__) so let's make
+    # sure nothing is executed if in that case
 
     stackprinter.set_excepthook()
     rvs_app, splash = start_application()
@@ -177,14 +180,15 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     # Open main window
     widget = MainWindow(script_folder, mask_folder, preset_folder)
 
-    # Stunt to prevent application from moving around then OpenGL is switched on the first opened QWebEngineView. RAYNCAMANA-387
+    # Stunt to prevent application from moving around then OpenGL is switched
+    # on the first opened QWebEngineView. RAYNCAMANA-387
     dummy_view = QWebEngineView(widget)
     dummy_view.resize(1, 1)
     dummy_view.load(QUrl.fromLocalFile("dummy.html"))
 
     widget.resize(1200, 800)
     widget.show()
-    
+
     dummy_view.hide()
 
     if splash:

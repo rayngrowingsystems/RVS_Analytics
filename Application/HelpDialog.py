@@ -14,16 +14,13 @@
 
 # This Python file uses the following encoding: utf-8
 
-import os
 from os import path
 
-from PySide6.QtWidgets import QDialog, QVBoxLayout
 from PySide6 import QtCore
-from PySide6.QtCore import QUrl, QDir
-from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import QUrl
 from PySide6.QtWebEngineCore import QWebEnginePage
-
-import CameraApp_rc
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import QDialog, QVBoxLayout
 
 from ui_HelpDialog import Ui_HelpDialog
 
@@ -32,7 +29,8 @@ class HelpDialog(QDialog):
     def __init__(self):
         super(HelpDialog, self).__init__()
 
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)  # Get rid of What's this icon in title bar
+        # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
 
         self.load_ui()
 
@@ -42,7 +40,7 @@ class HelpDialog(QDialog):
         self.help_view = QWebEngineView()
         layout.addWidget(self.help_view)
 
-        self.url = QUrl.fromLocalFile(path.join(path.dirname(__file__), 'Help', 'Default.htm'));
+        self.url = QUrl.fromLocalFile(path.join(path.dirname(__file__), 'Help', 'Default.htm'))
         self.help_view.load(self.url)
 
         self.ui.home_button.clicked.connect(self.home)

@@ -18,7 +18,6 @@ import json
 import random
 
 import paho.mqtt.client as mqtt
-
 from PySide6 import QtCore
 from PySide6.QtCore import QObject
 

@@ -12,16 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import warnings
+from os import path
+
 import cv2
 import numpy as np
-import os
-from os import path
-from plantcv.plantcv import spectral_index
-from plantcv.plantcv import readimage
+from plantcv.plantcv import crop, print_image, readimage, spectral_index
 from plantcv.plantcv.transform import rotate
-from plantcv.plantcv import print_image
-from plantcv.plantcv import crop
 
 
 def load_coefficients(path):
@@ -170,7 +168,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
     # undistort the image cube
     if image_options["lensAngle"] != 0:  # only undistort if angle is selected
         cam_calibration_file = path.join(path.dirname(__file__),
-                                         f"calibration_data/{image_options['lensAngle']}_calibration_data.yml")  # select the data set
+                                         f"calibration_data/{image_options['lensAngle']}_calibration_data.yml")
         mtx, dist = load_coefficients(cam_calibration_file)  # depending on the lens angle
         spectral_data.array_data = undistort_data_cube(spectral_data.array_data, mtx, dist)
         spectral_data.pseudo_rgb = undistort_data_cube(spectral_data.pseudo_rgb, mtx, dist)
