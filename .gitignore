@@ -113,6 +113,12 @@ Application/generated/
 
 Application/Installer
 
-Test/test_results/
+tests/test_data/analysis_results/
 
-Test/log/
+tests/test_data/test_results/
+
+tests/UI_test/log/
+
+
+
+
