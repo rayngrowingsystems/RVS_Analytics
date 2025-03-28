@@ -1,1 +1,1 @@
-define({r:0.5,st:'Stem',n:1,t:[0,79],m:[],u:['../Content/ButtonDevicesAddDevice.html'],s:['+','effect','pot'],p:[['+',27],['an',73],['browse',6],['controllers',113],['enter',128],['id',135],['list',37],['on',47],['provides',14],['selected',15],['tab',113],['to',106],['will',108]]});
+define({r:0.5,st:'Stem',n:1,t:[0,79],m:[],u:['../Content/ButtonDevicesAddDevice.html'],s:['+','edit','port'],p:[['+',27],['an',56],['bright',113],['controlled',114],['enclosure',25],['hours',73],['light',109],['of',135],['product',92],['see',88],['system',72],['to',49],['which',66]]});
