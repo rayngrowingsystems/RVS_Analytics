@@ -14,22 +14,6 @@
 
 # This Python file uses the following encoding: utf-8
 
-from multiprocessing import freeze_support
-
-# freeze_support should be at the top to be able to handle multiprocessing in the installer.
-# Otherwise, the CameraApp module is executed multiple times
-# https://github.com/pyinstaller/pyinstaller/issues/3957
-
-# Thread about multiprocessing and why Process spawn runs the main module again, with a different name (__mp_main__):
-# https://stackoverflow.com/questions/72497140/in-python-multiprocessing-why-is-child-process-name-mp-main-is-there-a-way
-
-freeze_support()
-
-import Helper
-from Helper import tprint
-
-tprint("Loading CameraApp", __name__)
-
 import glob
 import logging
 import os
@@ -44,8 +28,11 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
 
+import Helper
+from Helper import tprint
 from MainWindow import MainWindow
 
+tprint("Loading CameraApp", __name__)
 
 class StreamToLogger(object):
     """
