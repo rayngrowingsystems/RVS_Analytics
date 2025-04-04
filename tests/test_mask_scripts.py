@@ -3,8 +3,9 @@ import importlib.util
 import os
 import pytest
 import datetime
-from Experiment import Experiment
 import json
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "Application"))
+from Experiment import Experiment
 
 
 def find_mask_folders(base_dir, excluded_dirs=None):
