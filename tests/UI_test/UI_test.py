@@ -1,19 +1,34 @@
-from os import path
+import os
 import sys
 import stackprinter
-import time
 
-from PIL.JpegPresets import presets
 
-sys.path.append(path.join("../..", "Application"))
+def find_presets_folder(root_dir):
+    for dirpath, dirnames, _ in os.walk(root_dir):
+        if "presets" in dirnames:
+            return os.path.join(dirpath, "presets")
 
+    print("No presets folder found.")
+    return None  # Not found
+
+
+REPO_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)  # Set REPO_DIR to the directory above test file
+
+# changing working directory to the test folder so the paths in the exp files work
+os.chdir(os.path.join(REPO_DIR, "tests"))
+
+sys.path.append(os.path.join(REPO_DIR, "Application"))
 import cameraapp
 from MainWindow import MainWindow
 
-SCRIPTS_FOLDER = path.join("../..", "Application", "Scripts")
-MASKS_FOLDER = path.join("../..", "Application", 'Masks')
-PRESETS_FOLDER = path.join("../..", "Application", "Scripts/RVS-A_analysis_scripts/presets")
-TEST_DATA_FOLDER = path.join("..", "test_data")
+SCRIPTS_FOLDER = os.path.join(REPO_DIR, "Application", "Scripts")
+MASKS_FOLDER = os.path.join(REPO_DIR, "Application", 'Masks')
+TEST_DATA_FOLDER = os.path.join(REPO_DIR, "tests", "test_data")
+
+PRESETS_FOLDER = find_presets_folder(SCRIPTS_FOLDER)
+
 
 if __name__ == "__main__":
 
@@ -28,7 +43,7 @@ if __name__ == "__main__":
     main_window.show()
 
     # load experiment file
-    main_window.open_experiment_directly(path.join(TEST_DATA_FOLDER, "experiment_files", "basil_test2.xp"))
+    main_window.open_experiment_directly(os.path.join(TEST_DATA_FOLDER, "experiment_files", "basil_test2.xp"))
     rvs_app.processEvents()
 
     # open all UI dialogstes

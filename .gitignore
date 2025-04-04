@@ -111,9 +111,9 @@ Application/generated/
 
 Application/Installer
 
-tests/test_data/analysis_results
+tests/test_data/analysis_results/*
 
-tests/test_data/test_results
+tests/test_data/test_results/*
 
 tests/UI_test/log/
 
