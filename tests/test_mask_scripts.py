@@ -44,16 +44,11 @@ def create_settings_from_experiment(experiment_file, timestamp):
     settings["outputFolder"]["visuals"] = os.path.join(base_folder, "visuals")
     settings["outputFolder"]["data"] = os.path.join(base_folder, "rawData")
 
-    if not os.path.exists(settings["outputFolder"]["appData"]):
-        os.mkdir(settings["outputFolder"]["appData"])
-    if not os.path.exists(settings["outputFolder"]["appData"]):
-        os.mkdir(settings["outputFolder"]["appData"])
-    if not os.path.exists(settings["outputFolder"]["images"]):
-        os.mkdir(settings["outputFolder"]["images"])
-    if not os.path.exists(settings["outputFolder"]["visuals"]):
-        os.mkdir(settings["outputFolder"]["visuals"])
-    if not os.path.exists(settings["outputFolder"]["data"]):
-        os.mkdir(settings["outputFolder"]["data"])
+    os.makedirs(settings["outputFolder"]["appData"], exist_ok=True)
+    os.makedirs(settings["outputFolder"]["appData"], exist_ok=True)
+    os.makedirs(settings["outputFolder"]["images"], exist_ok=True)
+    os.makedirs(settings["outputFolder"]["visuals"], exist_ok=True)
+    os.makedirs(settings["outputFolder"]["data"], exist_ok=True)
 
     return settings
 
