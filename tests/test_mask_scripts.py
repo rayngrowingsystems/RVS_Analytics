@@ -7,36 +7,25 @@ from Experiment import Experiment
 import json
 
 
-REPO_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..")
-)  # Set REPO_DIR to the directory above test file
+def find_mask_folders(base_dir, excluded_dirs=None):
+    excluded_dirs = excluded_dirs or set()
+    mask_dict = {}
 
-MASKS_FOLDER = os.path.normpath(os.path.join(REPO_DIR, "Application/Masks/RVS-A_mask_scripts"))
-TEST_EXPERIMENT_PATH = os.path.normpath(os.path.join(REPO_DIR, "tests/test_data/experiment_files"))
-TEST_DATA_OUT = os.path.normpath(os.path.join(REPO_DIR, "tests/test_data/analysis_results"))
+    for dirpath, dirnames, filenames in os.walk(base_dir):
+        folder_name = os.path.basename(dirpath)
 
-EXCLUDED_DIRS = {
-    ".git",
-    ".idea",
-    "tests",
-    ".github",
-    ".pytest_cache",
-    ".ruff_cache",
-}
+        if folder_name in excluded_dirs:
+            continue
 
-# Find all script/config folders, **excluding hidden and test directories**
-mask_dirs = [d for d in os.listdir(MASKS_FOLDER) if os.path.isdir(os.path.join(MASKS_FOLDER, d))
-             and d not in EXCLUDED_DIRS]
+        # Only include folders that contain files and no subfolders
 
-mask_dict = {
-    d: os.path.join(MASKS_FOLDER, d)
-    for d in mask_dirs
-}
+        expected_py = f"{folder_name}.py"
+        expected_config = f"{folder_name}.config"
+        if expected_py in filenames or expected_config in filenames:
+            mask_dict[folder_name] = dirpath
 
-exp_files = ["test_data/experiment_files/basil_test2.xp", "test_data/experiment_files/basil_test3.xp"]
+    return mask_dict
 
-now = datetime.datetime.now()
-TEST_TIMESTAMP = now.strftime("%Y%m%d_%H%M%S")
 
 def create_settings_from_experiment(experiment_file, timestamp):
     experiment = Experiment(experiment_file)
@@ -106,9 +95,40 @@ def extract_mask_settings(config_path):
     return mask_options_dict
 
 
+REPO_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)  # Set REPO_DIR to the directory above test file
+
+MASKS_FOLDER = os.path.join(REPO_DIR, "Application", "Masks")
+TEST_DATA_FOLDER = os.path.join(REPO_DIR, "tests", "test_data")
+
+TEST_EXPERIMENT_PATH = os.path.normpath(os.path.join(TEST_DATA_FOLDER, "experiment_files"))
+TEST_DATA_OUT = os.path.normpath(os.path.join(TEST_DATA_FOLDER, "analysis_results"))
+
+EXCLUDED_DIRS = {
+    ".git",
+    ".idea",
+    "tests",
+    ".github",
+    ".pytest_cache",
+    ".ruff_cache",
+    "Installer",
+    "packages"
+}
+
+exp_files = ["test_data/experiment_files/basil_test2.xp", "test_data/experiment_files/basil_test3.xp"]
+
+now = datetime.datetime.now()
+TEST_TIMESTAMP = now.strftime("%Y%m%d_%H%M%S")
+
+mask_folders = find_mask_folders(MASKS_FOLDER, EXCLUDED_DIRS)
+mask_list = [mask for mask in mask_folders]
+print(f"Detected {len(mask_list)} valid mask folder: {mask_list}")
+
+
 @pytest.mark.parametrize("mask_name, mask_folder_path",
-                         [(name, path) for name, path in mask_dict.items()],
-                         ids=[f"Mask: {mask_name}" for mask_name in mask_dict])
+                         [(name, path) for name, path in mask_folders.items()],
+                         ids=[f"Mask: {mask_name}" for mask_name in mask_folders])
 class TestMaskScripts:
     def test_script_files_exist(self, mask_name, mask_folder_path):
         """Test if the mask script file and the config file exists"""

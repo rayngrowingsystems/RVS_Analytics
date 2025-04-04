@@ -24,7 +24,7 @@ import cameraapp
 from MainWindow import MainWindow
 
 SCRIPTS_FOLDER = os.path.join(REPO_DIR, "Application", "Scripts")
-MASKS_FOLDER = os.path.join(REPO_DIR, "Application", 'Masks')
+MASKS_FOLDER = os.path.join(REPO_DIR, "Application", "Masks")
 TEST_DATA_FOLDER = os.path.join(REPO_DIR, "tests", "test_data")
 
 PRESETS_FOLDER = find_presets_folder(SCRIPTS_FOLDER)
