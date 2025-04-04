@@ -152,6 +152,7 @@ class TestMaskScripts:
         mask_options = extract_mask_settings(mask_config_path)
         settings["experimentSettings"]["analysis"]["maskOptions"] = mask_options
 
+        print(settings["experimentSettings"]["folderFilePath"])
         for image_path in os.listdir(settings["experimentSettings"]["folderFilePath"]):
 
             if os.path.isfile(image_path) and '.' not in image_path:
