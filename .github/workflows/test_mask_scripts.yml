@@ -41,4 +41,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/test_mask_scripts.py --maxfail=1 --disable-warnings -q
+          pytest tests/test_scripts.py --maxfail=1 --disable-warnings -q
