@@ -146,18 +146,16 @@ class TestMaskScripts:
         """Test the mask scripts with default settings"""
         mask_script_path = os.path.join(mask_folder_path, f"{mask_name}.py")
         mask_config_path = os.path.join(mask_folder_path, f"{mask_name}.config")
-        print(mask_script_path)
+
         spec = importlib.util.spec_from_file_location(mask_name, mask_script_path)
         mask_script = importlib.util.module_from_spec(spec)
         sys.modules[mask_name] = mask_script
         spec.loader.exec_module(mask_script)
 
-        print(test_experiment)
-
         settings = create_settings_from_experiment(test_experiment, TEST_TIMESTAMP)
         mask_options = extract_mask_settings(mask_config_path)
         settings["experimentSettings"]["analysis"]["maskOptions"] = mask_options
-        print(settings)
+
         for image_path in os.listdir(settings["experimentSettings"]["folderFilePath"]):
 
             if os.path.isfile(image_path) and '.' not in image_path:
