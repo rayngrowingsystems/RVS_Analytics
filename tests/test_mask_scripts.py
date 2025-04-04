@@ -153,7 +153,7 @@ class TestMaskScripts:
         settings["experimentSettings"]["analysis"]["maskOptions"] = mask_options
 
         print(settings["experimentSettings"]["folderFilePath"])
-        for image_path in os.listdir(os.path.join(REPO_DIR, settings["experimentSettings"]["folderFilePath"])):
+        for image_path in os.listdir(os.path.join(REPO_DIR, "tests", settings["experimentSettings"]["folderFilePath"])):
 
             if os.path.isfile(image_path) and '.' not in image_path:
                 settings["experimentSettings"]["inputImage"] = image_path
