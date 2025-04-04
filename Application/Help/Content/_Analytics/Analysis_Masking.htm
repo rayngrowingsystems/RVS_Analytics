@@ -117,12 +117,18 @@
                                         <p>
                                             <img src="../Resources/Images/Analytics/analysis_masking1.png" style="max-width: 70%;height: auto;" />
                                         </p>
+                                        <p>The <b>Default</b> button in the bottom right will restore all values to their original defaults. <b>Cancel</b> will close the window without applying any changes. <b>Done</b> will apply any changes and close the window.</p>
                                         <h2>Reference Images</h2>
                                         <p>Use the <b>Image...</b> buttons in the top left of either preview window to choose one or two  images to reference while defining regions. It is often best for this to be the first and last image of a series, to ensure the regions contain the full range of growth captured by your images.</p>
                                         <p>The following options are available:</p>
                                         <ul>
                                             <li><b>Pick existing image</b> - opens Windows Explorer or macOS&#160;Finder to allow you to select an image on your computer.</li>
                                             <li><b>Fetch image from camera</b> - opens a pop-up to allow you to import an image from a <a href="RVS_Camera.htm" class="MCXref xref">RAYN&#160;Vision System&#160;Camera</a>. The camera must already be detected in the <a href="Setup_Image_Source.htm" class="MCXref xref">Image Source</a> window. Use the dropdown to select an existing image, or <b>Take new image</b> to capture a new one. A pop-up window will warn that this process will take a minute or two. You must close this pop-up with the <b>OK</b> button or the <b>X</b> in the top-right  for the image capture process to start. When complete, the image will appear in the reference window.</li>
+                                        </ul>
+                                        <p>Choosing a source in the <a href="Setup_Image_Source.htm" class="MCXref xref">Image Source</a> window can bypass these options.</p>
+                                        <ul>
+                                            <li>If a folder source has been chosen, the <b>Image...</b> buttons will open directly to that folder in Windows Explorer or macOS&#160;Finder.</li>
+                                            <li>If a camera source has been chosen, <b>Image...</b> will automatically open the <b>Fetch image from camera</b> pop-up.</li>
                                         </ul>
                                         <p>The <b>Cancel</b> button will close the window without choosing an image.</p>
                                         <h2>Mask Script</h2>
@@ -142,6 +148,7 @@
                                             <li><b>Fill Speckles</b> - fills holes in the binary mask up to the maximum given pixel size.</li>
                                             <li><b>Dilate Pixel</b> - enlarges pixels, which may help smooth the boundaries of individual objects.</li>
                                             <li><b>Invert Mask</b> - reverses selection areas of the applied mask.</li>
+                                            <li><b>Show Image Overlay</b> - replaces the  preview of the mask with an image preview that uses the mask.<p><img src="../Resources/Images/Analytics/analysis_masking2.png" style="max-width: 70%;height: auto;" /></p></li>
                                         </ul>
                                         <p>Select the <b>Show ROIs</b> box to display any reference image <a href="Setup_Regions.htm" class="MCXref xref">Regions of Interest</a>, which can assist with masking accuracy.</p>
                                     </div>
