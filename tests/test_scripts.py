@@ -265,7 +265,7 @@ class TestAnalysisScripts:
 
         for image in os.listdir(image_folder):
             image_path = os.path.join(image_folder, image)
-            if os.path.isfile(image_path) and '.' not in image:
+            if os.path.isfile(image_path) and os.path.splitext(image_path)[1] == ".hdr":
                 settings["inputImage"] = image_path
                 settings["experimentSettings"]["cropRect"] = [0, 0, 0, 0]
                 analysis_script.execute(analysis_name, settings, mask_file_name="")
