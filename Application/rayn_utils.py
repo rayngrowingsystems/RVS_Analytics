@@ -328,3 +328,44 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
 
     else:
         warnings.warn("Missing settings: No mask preview was generated.")
+
+
+def apply_theme_to_chart_dict(chart_dict: dict, theme: str):
+    # Define theme-specific colors
+    if theme == "dark":
+        label_color = "white"
+        bg_color = "#1f2024"
+    else:
+        label_color = "black"
+        bg_color = "#f8f9fa"
+
+    # Make sure required sections exist
+    chart_dict.setdefault("config", {})
+    chart_dict.setdefault("facet", {})
+    chart_dict["config"].setdefault("axis", {})
+    chart_dict["config"].setdefault("legend", {})
+    chart_dict["config"].setdefault("title", {})
+    chart_dict["config"].setdefault("facet", {})
+    chart_dict["facet"].setdefault("header", {})
+
+    # Apply theme settings
+    chart_dict["config"]["background"] = bg_color
+    chart_dict["config"]["title"]["color"] = label_color
+
+    chart_dict["config"]["axis"].update({
+        "labelColor": label_color,
+        "titleColor": label_color,
+        "domainColor": label_color
+    })
+
+    chart_dict["config"]["legend"].update({
+        "labelColor": label_color,
+        "titleColor": label_color
+    })
+
+    if "facet" in chart_dict:
+        chart_dict["facet"].setdefault("header", {})
+        chart_dict["facet"]["header"].update({
+            "labelColor": label_color,
+            "titleColor": label_color
+        })
