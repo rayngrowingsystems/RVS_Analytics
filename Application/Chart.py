@@ -18,13 +18,52 @@ import os
 import uuid
 from datetime import datetime
 
-import plotly.graph_objects as go
+import altair as alt
+import pandas as pd
 from PySide6.QtCore import QStandardPaths
 from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
-
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QPalette
+from PySide6.QtGui import QColor
 from Helper import tprint
+
+
+def get_background_color_from_app():
+    palette = QApplication.instance().palette()
+    bg_color = palette.color(QPalette.Window)
+    return bg_color.name()
+
+
+def is_dark(hex_color: str) -> bool:
+    c = QColor(hex_color)
+    # Using the perceived brightness formula
+    brightness = (0.299 * c.red() + 0.587 * c.green() + 0.114 * c.blue())
+    return brightness < 128
+
+
+def dark_theme():
+    return {
+        "config": {
+            "background": "#111",
+            "title": {"color": "white"},
+            "axis": {
+                "labelColor": "white",
+                "titleColor": "white",
+                "gridColor": "#333",
+                "domainColor": "#666"
+            },
+            "legend": {
+                "labelColor": "white",
+                "titleColor": "white"
+            }
+        }
+    }
+
+
+alt.themes.register('custom_dark', dark_theme)
+alt.themes.enable('custom_dark')
 
 
 class Chart:
@@ -32,32 +71,18 @@ class Chart:
         tprint("Chart.init")
 
         self.main_window = main_window
+        self.title = title
+        self.y_label = y_label
+        self.data = []
 
-        self.fig = go.Figure()
-
-        self.fig.update_layout(
-            title=title,
-            xaxis_title="Timestamp",
-            yaxis_title=y_label,
-            legend_title="Rois"
-            # hovermode="x"
-            # ,
-            # font=dict(
-            #     family="Courier New, monospace",
-            #     size=18,
-            #     color="RebeccaPurple"
-            # )
-        )
-
-        # Create temp files for charting
+        # Create temp file paths
         base_file_name = str(uuid.uuid4())
-
         self.temp_image_file = os.path.normpath(os.path.join(
             QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".svg"))
         self.temp_html_file = os.path.normpath(os.path.join(
             QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".html"))
 
-        tprint("Temp files:", self.temp_image_file, self.temp_html_file)
+        # tprint("Temp files:", self.temp_image_file, self.temp_html_file)
 
         self.widget = QWidget()
         layout = QVBoxLayout()
@@ -69,39 +94,61 @@ class Chart:
         self.preview_view = QWebEngineView()
         layout.addWidget(self.preview_view)
         self.preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
-
         self.preview_view.hide()
 
         self.tab_index = self.main_window.ui.tabWidget.addTab(self.widget, title)
 
     def add_roi(self, timestamp, y, name):
-        found = False
-        for data in self.fig.data:
-            if data.name == name:
-                found = True
-                break
-
-        if not found:
-            self.fig.add_scatter(name=name)
-
-            tprint("Added scatter", name)
-
         dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        self.data.append({
+            "Timestamp": dt,
+            "Value": y,
+            "Roi": name
+        })
+        # tprint(f"Added data point: {name}, {dt}, {y}")
 
-        for data in self.fig.data:
-            if data.name == name:
-                if data.y is None:
-                    data.y = ()
-                    data.x = ()
+    def generate_chart(self):
+        df = pd.DataFrame(self.data)
 
-                data.y = data.y + (y,)
-                data.x = data.x + (dt,)
+        if df.empty:
+            tprint("No data to plot.")
+            return None
 
-                # tprint("Added datapoint", name, dt, y, data.y)
-                break
+        selection = alt.selection_multi(fields=["Roi"], bind="legend")
+        bg_color = self.widget.palette().color(QPalette.Window).name()
 
-    def pixmap(self):
-        return QPixmap(self.image_file())
+        chart = alt.Chart(df).mark_line(point=True).encode(
+            x=alt.X("Timestamp:T", title="Timestamp"),
+            y=alt.Y("Value:Q", title=self.y_label),
+            color=alt.Color("Roi:N", title="Rois"),
+            tooltip=[
+                alt.Tooltip("Timestamp:T", title="Timestamp"),
+                alt.Tooltip("Value:Q", title=self.y_label),
+                alt.Tooltip("Roi:N", title="ROI")
+            ],
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.1))
+        ).add_selection(
+            selection
+        ).interactive(  # enables zooming/panning
+        ).properties(
+            title=self.title,
+            width=600,
+            height=400
+        ).configure_view(
+            fill=bg_color, stroke=None
+        ).configure(
+            background=bg_color
+        ).configure_axis(
+            labelColor="white" if is_dark(bg_color) else "black",
+            titleColor="white" if is_dark(bg_color) else "black"
+        ).configure_legend(
+            labelColor="white" if is_dark(bg_color) else "black",
+            titleColor="white" if is_dark(bg_color) else "black"
+        ).configure_title(
+            color="white" if is_dark(bg_color) else "black"
+        )
+
+        return chart
 
     def image_file(self):
         return self.temp_image_file
@@ -109,12 +156,29 @@ class Chart:
     def web_page(self):
         return self.temp_html_file
 
+    def pixmap(self):
+        return QPixmap(self.image_file())
+
     def update_images(self):
-         self.fig.write_image(self.image_file())
+        chart = self.generate_chart()
+        if chart is None:
+            return
 
-         config = {'doubleClickDelay': 1000}
-         self.fig.write_html(self.web_page(), config=config)
-         # TODO Only necessary on last iteration or stop to produce resulting html file
+        #chart.save(self.web_page(), embed_options={"theme": "custom_dark"}, inline=True)  # HTML export
+        chart.save(self.image_file())  # SVG export
 
-         self.preview_label.setPixmap(self.pixmap())
+        chart_html = chart.to_html(embed_options={"theme": "custom_dark"}, inline=True)
 
+        # Inject CSS override
+        injected_html = chart_html.replace(
+            "</head>",
+            """<style>
+               body { background-color: transparent !important; }
+               .vega-embed { background-color: transparent !important; }
+             </style></head>"""
+        )
+
+        with open(self.web_page(), "w", encoding="utf-8") as f:
+            f.write(injected_html)
+
+        self.preview_label.setPixmap(self.pixmap())

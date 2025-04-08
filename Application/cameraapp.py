@@ -34,6 +34,7 @@ from MainWindow import MainWindow
 
 tprint("Loading CameraApp", __name__)
 
+
 class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.
@@ -51,6 +52,7 @@ class StreamToLogger(object):
 
     def flush(self):
         pass
+
 
 def start_application(testing=False):
     QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
@@ -127,6 +129,7 @@ def remove_camera_files():
         except BaseException:
             tprint("Error while deleting file : ", file_path)
 
+
 def validate_folder(folder):
     for root, dirs, files in os.walk(folder):  # Collect all .py files in the folder tree
         for f in files:
@@ -134,6 +137,7 @@ def validate_folder(folder):
                 return True  # At least one file found
 
     return False
+
 
 if __name__ == '__main__':
     # Process will re-run CameraApp.py (with name = __mp_main__) so let's make
