@@ -24,16 +24,9 @@ from PySide6.QtCore import QStandardPaths
 from PySide6.QtGui import QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
-from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
 from PySide6.QtGui import QColor
 from Helper import tprint
-
-
-def get_background_color_from_app():
-    palette = QApplication.instance().palette()
-    bg_color = palette.color(QPalette.Window)
-    return bg_color.name()
 
 
 def is_dark(hex_color: str) -> bool:
@@ -140,7 +133,9 @@ class Chart:
             background=bg_color
         ).configure_axis(
             labelColor="white" if is_dark(bg_color) else "black",
-            titleColor="white" if is_dark(bg_color) else "black"
+            titleColor="white" if is_dark(bg_color) else "black",
+            gridOpacity=1 if is_dark(bg_color) else 0.1,
+
         ).configure_legend(
             labelColor="white" if is_dark(bg_color) else "black",
             titleColor="white" if is_dark(bg_color) else "black"
@@ -167,7 +162,10 @@ class Chart:
         #chart.save(self.web_page(), embed_options={"theme": "custom_dark"}, inline=True)  # HTML export
         chart.save(self.image_file())  # SVG export
 
-        chart_html = chart.to_html(embed_options={"theme": "custom_dark"}, inline=True)
+        chart_html = chart.to_html(embed_options={
+            "theme": "custom_dark",
+            "actions": False
+        }, inline=True)
 
         # Inject CSS override
         injected_html = chart_html.replace(
