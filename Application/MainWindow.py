@@ -33,7 +33,7 @@ from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
 from PySide6 import QtCore
 from PySide6.QtCore import QDir, QObject, QRunnable, QStandardPaths, QThreadPool, QTimer, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QScreen
+from PySide6.QtGui import QDesktopServices, QIcon, QPalette, QPixmap, QScreen
 from PySide6.QtNetwork import QAbstractSocket, QNetworkInterface
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
@@ -1654,6 +1654,11 @@ class MainWindow(QMainWindow):
         for key, chart in self.charts.items():
             if os.path.exists(chart.web_page()):
                 chart.preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), chart.web_page())))
+
+                application_palette = qdarktheme.load_palette(self.experiment.theme)
+                background_color = application_palette.color(QPalette.Window)
+
+                chart.preview_view.page().setBackgroundColor(background_color.name())
                 chart.preview_view.show()
 
                 # Copy webPage() to "outputFolder"
