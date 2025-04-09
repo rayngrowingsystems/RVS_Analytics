@@ -41,6 +41,12 @@ class Ui_SettingsDialog(object):
         self.theme_combo_box.addItem("")
         self.theme_combo_box.addItem("")
         self.theme_combo_box.setObjectName(u"theme_combo_box")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.theme_combo_box.sizePolicy().hasHeightForWidth())
+        self.theme_combo_box.setSizePolicy(sizePolicy)
+        self.theme_combo_box.setMinimumSize(QSize(90, 0))
 
         self.horizontalLayout_2.addWidget(self.theme_combo_box)
 

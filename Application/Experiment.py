@@ -19,7 +19,9 @@ import os
 from enum import Enum
 from os import path
 
+import qdarktheme
 from PySide6.QtCore import QDir, QPoint, QRect, QSize, QStandardPaths
+from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QApplication
 
 import Config
@@ -207,6 +209,7 @@ class Experiment:
           "mqttUserName": self.mqtt_username,
           "mqttPassword": self.mqtt_password,
           "theme": self.theme,
+          "themeBackgroundColor": self.theme_background_color(),
           "sessionData": self.session_data,
           "cropRect": [self.crop_rect.left(), self.crop_rect.top(), self.crop_rect.width(), self.crop_rect.height()],
         }
@@ -465,4 +468,9 @@ class Experiment:
     def rect_to_image_coordinates(self, rect, crop_rect, scaling_factor):
         return QRect(self.point_to_image_coordinates(rect.topLeft(), crop_rect, scaling_factor), \
                      QSize(rect.width() / scaling_factor, rect.height() / scaling_factor))
+
+    def theme_background_color(self):
+        application_palette = qdarktheme.load_palette(self.theme)
+        background_color = application_palette.color(QPalette.Window)
+        return background_color.name()
 
