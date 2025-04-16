@@ -16,6 +16,7 @@
 
 import json
 
+from PySide6 import QtCore
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QCheckBox, QDialog
 
@@ -38,6 +39,12 @@ class AnalysisOptionsDialog(QDialog):
         self.default_values = {}
 
         super(AnalysisOptionsDialog, self).__init__()
+
+        # Set window flags to customize window behavior
+        # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint |
+                            QtCore.Qt.WindowMaximizeButtonHint)
+
         self.load_ui()
 
         if self.main_window.experiment.selected_script != "":
