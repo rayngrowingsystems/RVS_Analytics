@@ -89,7 +89,7 @@ class Chart:
         self.preview_view.setHtml("<!DOCTYPE html><html><body><h1>No Chart data yet</h1></body></html>")
         self.preview_view.hide()
 
-        self.tab_index = self.main_window.ui.tabWidget.addTab(self.widget, title)
+        self.tab_index = self.main_window.ui.tab_widget.addTab(self.widget, title)
 
     def add_roi(self, timestamp, y, name):
         dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")

@@ -111,13 +111,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addLayout(self.gridLayout)
 
-        self.tabWidget = QTabWidget(self.centralwidget)
-        self.tabWidget.setObjectName(u"tabWidget")
+        self.tab_widget = QTabWidget(self.centralwidget)
+        self.tab_widget.setObjectName(u"tab_widget")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy2)
+        sizePolicy2.setHeightForWidth(self.tab_widget.sizePolicy().hasHeightForWidth())
+        self.tab_widget.setSizePolicy(sizePolicy2)
         self.preview_tab = QWidget()
         self.preview_tab.setObjectName(u"preview_tab")
         self.horizontalLayout_3 = QHBoxLayout(self.preview_tab)
@@ -142,9 +142,9 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_3.addWidget(self.image_preview)
 
-        self.tabWidget.addTab(self.preview_tab, "")
+        self.tab_widget.addTab(self.preview_tab, "")
 
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.verticalLayout.addWidget(self.tab_widget)
 
         self.timestamp_label = QLabel(self.centralwidget)
         self.timestamp_label.setObjectName(u"timestamp_label")
@@ -396,7 +396,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.action_exit.triggered.connect(MainWindow.close)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tab_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -439,7 +439,7 @@ class Ui_MainWindow(object):
         self.camera_status.setText("")
         self.mqtt_status.setText("")
         self.image_preview.setText("")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"Preview", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"Preview", None))
         self.timestamp_label.setText("")
         self.menu_file.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menu_help.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
