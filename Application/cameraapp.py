@@ -80,7 +80,7 @@ def start_application(testing=False):
 
 
 def start_logger(testing=False):
-    run_date_time = datetime.now().strftime("%Y-%d-%m_%H%M%S")
+    run_date_time = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
     if not testing:
         local_data_location_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
