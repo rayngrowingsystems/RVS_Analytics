@@ -1169,8 +1169,8 @@ class MainWindow(QMainWindow):
 
     def tab_exists(self, tab_name):
         found = False
-        for index in range(self.ui.tabWidget.count()):
-            if self.ui.tabWidget.tabText(index) == tab_name:
+        for index in range(self.ui.tab_widget.count()):
+            if self.ui.tab_widget.tabText(index) == tab_name:
                 found = True
 
         return found
@@ -1419,9 +1419,9 @@ class MainWindow(QMainWindow):
 
     def remove_result_tabs(self):
         # Remove old tabs except for the first one
-        while self.ui.tabWidget.count() > 1:
-            w = self.ui.tabWidget.widget(1)
-            self.ui.tabWidget.removeTab(1)
+        while self.ui.tab_widget.count() > 1:
+            w = self.ui.tab_widget.widget(1)
+            self.ui.tab_widget.removeTab(1)
             del w
 
     def start_analysis(self, resume, all_images, force):
@@ -2005,11 +2005,11 @@ class MainWindow(QMainWindow):
         tprint("add_preview_tab", tab_name, file_name)
         if not self.tab_exists(tab_name):
             label = QLabel()
-            self.ui.tabWidget.addTab(label, tab_name)
+            self.ui.tab_widget.addTab(label, tab_name)
 
-        for index in range(self.ui.tabWidget.count()):
-            if self.ui.tabWidget.tabText(index) == tab_name:
-                self.ui.tabWidget.widget(index).setPixmap(QPixmap(file_name))
+        for index in range(self.ui.tab_widget.count()):
+            if self.ui.tab_widget.tabText(index) == tab_name:
+                self.ui.tab_widget.widget(index).setPixmap(QPixmap(file_name))
 
     def mask_info(self):
         if self.ui.mask_selection_combobox.currentIndex() == 0:  ## Default item -> use mask in script
