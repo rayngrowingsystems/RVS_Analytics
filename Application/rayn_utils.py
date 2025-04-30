@@ -326,9 +326,6 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
         else:
             print_image(img=mask, filename=image_file_name)
 
-    else:
-        warnings.warn("Missing settings: No mask preview was generated.")
-
 
 def apply_theme_to_chart_dict(chart_dict: dict, theme: str):
     # Define theme-specific colors
