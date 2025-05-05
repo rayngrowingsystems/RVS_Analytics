@@ -316,7 +316,7 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
         image_file_name = os.path.normpath(out_image)
         print("Writing image to " + image_file_name)
 
-        if mask_options["overlay_mask"]:
+        if mask_options.get("overlay_mask") and mask_options["overlay_mask"]:
             _alpha_base_level = 60
             alpha = np.ones(pseudo_rgb.shape[:2], dtype=np.uint8)*_alpha_base_level
             alpha = np.where(mask > 0, 255, alpha)

@@ -29,7 +29,7 @@ matplotlib==3.10.0
 msgpack==1.1.0
 narwhals==1.22.0
 networkx==3.4.2
-numpy==1.26.4
+numpy==2.2.4
 opencv-python==4.11.0.86
 packaging==24.2
 paho-mqtt==2.1.0
