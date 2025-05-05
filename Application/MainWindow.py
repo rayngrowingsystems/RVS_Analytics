@@ -281,6 +281,8 @@ class MainWindow(QMainWindow):
         self.ui.stop_button.setCheckable(True)
         self.ui.stop_button.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
 
+        self.ui.clear_sessiondata_button.clicked.connect(self.clear_sessiondata)
+
         # Set-up the items in the Experiment menu
         self.ui.action_new_experiment.triggered.connect(self.new_experiment)
         self.ui.action_open_experiment.triggered.connect(self.open_experiment)
@@ -1674,6 +1676,8 @@ class MainWindow(QMainWindow):
 
         json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
+        self.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
+
     def play(self):
         ready, reason = self.ready_to_run()
         if ready:
@@ -1708,6 +1712,11 @@ class MainWindow(QMainWindow):
         self.threadpool.waitForDone()
 
         self.stop_analysis(True)
+
+    def clear_sessiondata(self):
+        # Clear all session data
+        self.experiment.session_data["persistent"] = {}
+        self.experiment.session_data["temporary"] = {}
 
     def ready_to_run(self):
         ready = True
