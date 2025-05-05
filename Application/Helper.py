@@ -15,9 +15,13 @@
 # This Python file uses the following encoding: utf-8
 
 from datetime import datetime
+import os
+import json
 
-from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame
-from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame, QStyledItemDelegate, QSlider, QGroupBox, QVBoxLayout
+from PySide6.QtCore import QTimer, QEvent
+from PySide6 import QtCore
+from PySide6.QtGui import QPalette, QFontMetrics, QStandardItem
 
 from DoubleSlider import DoubleSlider
 
@@ -148,8 +152,153 @@ def _parse_envi(headername):
 
     return header_dict, wavelength_dict
 
+class CheckableComboBox(QComboBox):
+
+    # Subclass Delegate to increase item height
+    class Delegate(QStyledItemDelegate):
+        def sizeHint(self, option, index):
+            size = super().sizeHint(option, index)
+            size.setHeight(20)
+            return size
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make the combo editable to set a custom text, but readonly
+        self.setEditable(True)
+        self.lineEdit().setReadOnly(True)
+        # Make the lineedit the same color as QPushButton
+        palette = qApp.palette()
+        palette.setBrush(QPalette.Base, palette.button())
+        self.lineEdit().setPalette(palette)
+
+        # Use custom delegate
+        self.setItemDelegate(CheckableComboBox.Delegate())
+
+        # Update the text when an item is toggled
+        self.model().dataChanged.connect(self.updateText)
+        self.model().dataChanged.connect(self.signalChange)
+
+        # Hide and show popup when clicking the line edit
+        self.lineEdit().installEventFilter(self)
+        self.closeOnLineEditClick = False
+
+        # Prevent popup from closing when clicking on an item
+        self.view().viewport().installEventFilter(self)
+
+    def resizeEvent(self, event):
+        # Recompute text to elide as needed
+        self.updateText()
+        super().resizeEvent(event)
+
+    def eventFilter(self, object, event):
+
+        if object == self.lineEdit():
+            if event.type() == QEvent.MouseButtonRelease:
+                if self.closeOnLineEditClick:
+                    self.hidePopup()
+                else:
+                    self.showPopup()
+                return True
+            return False
+
+        if object == self.view().viewport():
+            if event.type() == QEvent.MouseButtonRelease:
+                index = self.view().indexAt(event.pos())
+                item = self.model().item(index.row())
+
+                if item.checkState() == QtCore.Qt.Checked:
+                    item.setCheckState(QtCore.Qt.Unchecked)
+                else:
+                    item.setCheckState(QtCore.Qt.Checked)
+
+                return True
+        return False
+
+    def showPopup(self):
+        super().showPopup()
+        # When the popup is displayed, a click on the lineedit should close it
+        self.closeOnLineEditClick = True
+
+    def hidePopup(self):
+        super().hidePopup()
+        # Used to prevent immediate reopening when clicking on the lineEdit
+        self.startTimer(100)
+        # Refresh the display text when closing
+        self.updateText()
+
+    def timerEvent(self, event):
+        # After timeout, kill timer, and reenable click on line edit
+        self.killTimer(event.timerId())
+        self.closeOnLineEditClick = False
+
+    def updateText(self):
+        texts = []
+        for i in range(self.model().rowCount()):
+            if self.model().item(i).checkState() == QtCore.Qt.Checked:
+                texts.append(self.model().item(i).text())
+        text = ", ".join(texts)
+
+        # Compute elided text (with "...")
+        metrics = QFontMetrics(self.lineEdit().font())
+        elidedText = metrics.elidedText(text, QtCore.Qt.ElideRight, self.lineEdit().width())
+        self.lineEdit().setText(elidedText)
+
+    def signalChange(self):
+        self.currentIndexChanged.emit(0)
+
+    def addItem(self, text, data=None):
+        item = QStandardItem()
+        item.setText(text)
+        if data is None:
+            item.setData(text)
+        else:
+            item.setData(data)
+        item.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable)
+        item.setData(QtCore.Qt.Unchecked, QtCore.Qt.CheckStateRole)
+        self.model().appendRow(item)
+
+    def addItems(self, texts, datalist=None):
+        for i, text in enumerate(texts):
+            try:
+                data = datalist[i]
+            except (TypeError, IndexError):
+                data = None
+            self.addItem(text, data)
+
+    def currentData(self):
+        # Return the list of selected items data
+        res = []
+        for i in range(self.model().rowCount()):
+            if self.model().item(i).checkState() == QtCore.Qt.Checked:
+                res.append(self.model().item(i).data())
+        return res
+    
+    def setCurrentData(self, data):
+        for i in range(self.model().rowCount()):
+            if self.model().item(i).data() in data:
+                self.model().item(i).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.model().item(i).setCheckState(QtCore.Qt.Unchecked)
+        
+        QTimer.singleShot(300, lambda:self.updateText())  # Delayed update to get size established
+    
+def expand_presets(preset_folder, preset_list):
+    settings_list = []
+
+    for file_name in preset_list:
+        with open(os.path.join(preset_folder, file_name), 'r') as f:
+            j = f.read()
+            d = json.loads(j)
+
+            if "settings" in d:
+                for setting in d["settings"]:
+                    settings_list.append(setting)
+        
+    return settings_list
+
 # Create grid of ui elements defined in a config file
-def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_changed, slider_value_changed, wavelength_changed, script_for_dropdown_values):
+def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_changed, slider_value_changed, wavelength_changed, script_for_dropdown_values, preset_folder):
     # Lists to hold various UI elements
     option_checkboxes = []
     option_sliders = []
@@ -164,223 +313,276 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
     wavelength_value = {}
 
-    # Create a grid layout to hold mask options
-    grid = QGridLayout()
+    default_values = {}  # Keep a list of default values for each element
 
-    row = 0
-    column = 0
+    top_layout = QVBoxLayout()
 
-    # Iterate over each option
-    for option in options:
-        # Handle layout for new column
-        if option["type"] == "newColumn":
-            column += 1
-            row = 0
+    for section in options["sections"]:
+        display_name = section["displayName"]
+        name = section["name"]
 
-        # Handle checkbox options
-        if option["type"] == "checkBox":
-            option_checkbox = QCheckBox(option["displayName"])
-            if "hint" in option:
-                option_checkbox.setToolTip(option["hint"])
-            grid.addWidget(option_checkbox, row, column)
-            row += 1
+        settings_list = []
+        if "settings" in section:
+            settings_list = section["settings"]
+        
+        preset_list = []
+        if "presets" in section:
+            preset_list = section["presets"]
 
-            # Check if the option is already set
-            if option["name"] in settings:
-                tprint("Found checkbox option:", option["name"], settings[option["name"]])
-                option_checkbox.setChecked(settings[option["name"]])
-            else:
-                option_checkbox.setChecked(option["value"] == "true")
+        if len(preset_list) > 0:
+            settings_list.extend(expand_presets(preset_folder, preset_list))
 
-            option_checkboxes.append((option["name"], option_checkbox,))
+        section_groupbox = QGroupBox(display_name) 
+        section_grid = QGridLayout()
 
-            option_checkbox.toggled.connect(execute_on_change)
+        row = 0
+        column = 0
 
-        # Handle slider options
-        elif option["type"] == "slider":
-            option_label = QLabel()
-            if "hint" in option:
-                option_label.setToolTip(option["hint"])
-            grid.addWidget(option_label, row, column)
-            row += 1
+        # Iterate over each option
+        for option in settings_list:
+            # Handle layout for new column
+            if option["type"] == "newColumn":
+                column += 1
+                row = 0
 
-            start_value = 0
-            option_slider = DoubleSlider()
-
-            # Handle sliders dependent on dropdown values
-            if "getRangesFor" in option:
-                # Save optionSlider + related optionDropdown and update on currentIndexChange
-                found = False
-                for name, dropdown in option_dropdowns:  # Find referenced dropdown
-                    if name == option["getRangesFor"]:
-                        option_ranges.append((option_slider, dropdown, name,))
-
-                        tprint("Force delayed refresh of related slider range", name)
-                        # Force refresh of initial dropdown range. Needs a delay, otherwise, it won't activate the new range
-                        QTimer.singleShot(200, lambda name=name, dropdown=dropdown: dropdown_changed(name, dropdown, True))
-                        found = True
-                        break
-
-                if not found:
-                    tprint("Slider is referring a non-existent dropdown", option["getRangesFor"])
-
-                min = 0
-                max = 1
-                steps = 2
-                step_size = 1
-                default_value = 0
-            else:
-                # Set slider properties based on configuration
-                min = int(option["minimum"])
-                max = int(option["maximum"])
-                if "steps" in option:
-                    steps = int(option["steps"])
+            # Handle checkbox options
+            if option["type"] == "checkBox":
+                option_checkbox = QCheckBox(option["displayName"])
+                option_checkbox.setObjectName(option["name"])
+                if "chartOptionType" in option:
+                    option_checkbox.setProperty("chartOptionType", option["chartOptionType"])
                 else:
-                    steps = max - min + 1
-                step_size = (max - min) / (steps - 1)
-                default_value = float(option["value"])
+                    option_checkbox.setProperty("chartOptionType", "")
+                if "hint" in option:
+                    option_checkbox.setToolTip(option["hint"])
+                section_grid.addWidget(option_checkbox, row, column)
+                row += 1
 
-            # Check if the slider value is set
-            if option["name"] in settings:
-                tprint("Found slider option:", option["name"], settings[option["name"]])
-                start_value = settings[option["name"]]  # Use last value
-            elif "value" in option:
-                start_value = default_value  # Use default value
+                # Check if the option is already set
+                if option["name"] in settings:
+                    tprint("Found checkbox option:", option["name"], settings[option["name"]])
+                    option_checkbox.setChecked(settings[option["name"]])
+                else:
+                    option_checkbox.setChecked(option["value"] == "true")
 
-            display_name = option["displayName"]
-            name = option["name"]
+                default_values[option_checkbox] = (option["value"] == "true")
 
-            # Set slider properties
-            option_slider.name = name
-            option_slider.displayName = display_name
-            option_slider.optionLabel = option_label
-            option_slider.min = min
-            option_slider.max = max
-            option_slider.steps = steps
-            option_slider.stepSize = step_size
-            option_slider.defaultValue = default_value
-            option_slider.startValue = start_value
+                option_checkboxes.append((option["name"], option_checkbox,))
 
-            option_slider.setTracking(False)
-            option_slider.setRange(min, max)
-            option_slider.setSingleStep((max - min) / steps)
+                option_checkbox.toggled.connect(execute_on_change)
 
-            # Connect slider value change to script execution
-            option_slider.valueChanged.connect(lambda a, name=name, optionSlider=option_slider: slider_value_changed(name, optionSlider))
-            option_slider.valueChanged.emit(0)  # Force refresh of label
-            option_slider.setValue(start_value)
-            if "hint" in option:
-                option_slider.setToolTip(option["hint"])
-            grid.addWidget(option_slider, row, column)
-            row += 1
+            # Handle slider options
+            elif option["type"] == "slider":
+                option_label = QLabel()
+                if "hint" in option:
+                    option_label.setToolTip(option["hint"])
+                section_grid.addWidget(option_label, row, column)
+                row += 1
 
-            option_sliders.append((option["name"], option_slider, min, step_size,))
+                start_value = 0
+                option_slider = DoubleSlider()
 
-            option_slider.valueChanged.connect(execute_on_change)
+                # Handle sliders dependent on dropdown values
+                if "getRangesFor" in option:
+                    # Save optionSlider + related optionDropdown and update on currentIndexChange
+                    found = False
+                    for name, dropdown in option_dropdowns:  # Find referenced dropdown
+                        if name == option["getRangesFor"]:
+                            option_ranges.append((option_slider, dropdown, name,))
 
-        # Handle wavelength options
-        elif option["type"] == "wavelength":
-            option_label = QLabel()
-            option_label.setText(option["displayName"])
-            if "hint" in option:
-                option_label.setToolTip(option["hint"])
-            grid.addWidget(option_label, row, column)
-            row += 1
+                            tprint("Force delayed refresh of related slider range", name)
+                            # Force refresh of initial dropdown range. Needs a delay, otherwise, it won't activate the new range
+                            QTimer.singleShot(200, lambda name=name, dropdown=dropdown: dropdown_changed(name, dropdown, True))
+                            found = True
+                            break
 
-            option_wavelength = QComboBox()
-            if "hint" in option:
-                option_wavelength.setToolTip(option["hint"])
-            grid.addWidget(option_wavelength, row, column)
-            row += 1
+                    if not found:
+                        tprint("Slider is referring a non-existent dropdown", option["getRangesFor"])
 
-            option_wavelength.addItem("")  # Dummy item until properly populated
+                    min = 0
+                    max = 1
+                    steps = 2
+                    step_size = 1
+                    default_value = 0
+                else:
+                    # Set slider properties based on configuration
+                    min = int(option["minimum"])
+                    max = int(option["maximum"])
+                    if "steps" in option:
+                        steps = int(option["steps"])
+                    else:
+                        steps = max - min + 1
+                    step_size = (max - min) / (steps - 1)
+                    default_value = float(option["value"])
 
-            name = option["name"]
-            display_name = option["displayName"]
+                # Check if the slider value is set
+                if option["name"] in settings:
+                    tprint("Found slider option:", option["name"], settings[option["name"]])
+                    start_value = settings[option["name"]]  # Use last value
+                elif "value" in option:
+                    start_value = default_value  # Use default value
 
-            option_wavelengths.append((name, option_wavelength,))
+                default_values[option_slider] = default_value
 
-            if option["name"] in settings:
-                wavelength_value[name] = settings[name]
-            else:
-                wavelength_value[name] = option["value"]
+                display_name = option["displayName"]
+                name = option["name"]
 
-            # Connect wavelength change to script execution
-            option_wavelength.currentIndexChanged.connect(
-            lambda a, name=name, option_wavelength=option_wavelength: wavelength_changed(name, option_wavelength))
+                # Set slider properties
+                option_slider.name = name
+                option_slider.displayName = display_name
+                option_slider.optionLabel = option_label
+                option_slider.min = min
+                option_slider.max = max
+                option_slider.steps = steps
+                option_slider.stepSize = step_size
+                option_slider.defaultValue = default_value
+                option_slider.startValue = start_value
 
-            option_wavelength.currentIndexChanged.connect(execute_on_change)
+                option_slider.setTracking(False)
+                option_slider.setRange(min, max)
+                option_slider.setSingleStep((max - min) / steps)
 
-        # Handle dropdown options
-        elif option["type"] == "dropdown":
-            # Create a label for the dropdown option
-            option_label = QLabel()
-            option_label.setText(option["displayName"])
-            if "hint" in option:
-                 option_label.setToolTip(option["hint"])
-            grid.addWidget(option_label, row, column)
-            row += 1
+                # Connect slider value change to script execution
+                option_slider.valueChanged.connect(lambda a, name=name, optionSlider=option_slider: slider_value_changed(name, optionSlider))
+                option_slider.valueChanged.emit(0)  # Force refresh of label
+                option_slider.setValue(start_value)
+                if "hint" in option:
+                    option_slider.setToolTip(option["hint"])
+                section_grid.addWidget(option_slider, row, column)
+                row += 1
 
-            # Create a dropdown menu
-            option_dropdown = QComboBox()
-            if "hint" in option:
-                 option_dropdown.setToolTip(option["hint"])
-            grid.addWidget(option_dropdown, row, column)
-            row += 1
+                option_sliders.append((option["name"], option_slider, min, step_size,))
 
-            # If the dropdown menu needs to be populated dynamically based on a script function
-            if "getValuesFor" in option:
-                # Get the values for the dropdown from the script function
-                display_names, names = script_for_dropdown_values.dropdown_values(option["getValuesFor"], [])
+                option_slider.valueChanged.connect(execute_on_change)
 
-                # Add the items to the dropdown menu
-                for index, display_name in enumerate(display_names):
-                    option_dropdown.addItem(display_name, names[index])
-            # If the dropdown menu has predefined values in the configuration file
-            else:
-                # Add the predefined items to the dropdown menu
-                for index, display_name in enumerate(option["displayNames"]):
-                    option_dropdown.addItem(display_name, option["names"][index])
+            # Handle wavelength options
+            elif option["type"] == "wavelength":
+                option_label = QLabel()
+                option_label.setText(option["displayName"])
+                if "hint" in option:
+                    option_label.setToolTip(option["hint"])
+                section_grid.addWidget(option_label, row, column)
+                row += 1
 
-            # Restore the last used index for the dropdown menu
-            if option["name"] in settings:
-                value = settings[option["name"]]
-                index = option_dropdown.findData(value)
+                option_wavelength = QComboBox()
+                if "hint" in option:
+                    option_wavelength.setToolTip(option["hint"])
+                section_grid.addWidget(option_wavelength, row, column)
+                row += 1
 
-                if index != -1:
-                    option_dropdown.setCurrentIndex(index)
+                option_wavelength.addItem("")  # Dummy item until properly populated
+
+                name = option["name"]
+                display_name = option["displayName"]
+
+                option_wavelengths.append((name, option_wavelength,))
+
+                if option["name"] in settings:
+                    wavelength_value[name] = settings[name]
+                else:
+                    wavelength_value[name] = option["value"]
+
+                default_values[option_wavelength] = option["value"]
+
+                # Connect wavelength change to script execution
+                option_wavelength.currentIndexChanged.connect(
+                lambda a, name=name, option_wavelength=option_wavelength: wavelength_changed(name, option_wavelength))
+
+                option_wavelength.currentIndexChanged.connect(execute_on_change)
+
+            # Handle dropdown options
+            elif option["type"] == "dropdown" or option["type"] == "dropdownMultiSelect":
+                # Create a label for the dropdown option
+                option_label = QLabel()
+                option_label.setText(option["displayName"])
+                if "hint" in option:
+                    option_label.setToolTip(option["hint"])
+                section_grid.addWidget(option_label, row, column)
+                row += 1
+
+                # Create a dropdown menu
+                if option["type"] == "dropdown":
+                    option_dropdown = QComboBox()
+                else:
+                    option_dropdown = CheckableComboBox()
+
+                if "hint" in option:
+                    option_dropdown.setToolTip(option["hint"])
+                section_grid.addWidget(option_dropdown, row, column)
+                row += 1
+
+                # If the dropdown menu needs to be populated dynamically based on a script function
+                if "getValuesFor" in option:
+                    # Get the values for the dropdown from the script function
+                    display_names, names = script_for_dropdown_values.dropdown_values(option["getValuesFor"], [])
+
+                    # Add the items to the dropdown menu
+                    for index, display_name in enumerate(display_names):
+                        option_dropdown.addItem(display_name, names[index])
+                # If the dropdown menu has predefined values in the configuration file
+                else:
+                    # Add the predefined items to the dropdown menu
+                    for index, display_name in enumerate(option["displayNames"]):
+                        option_dropdown.addItem(display_name, option["names"][index])
+
+                # Restore the last used index for the dropdown menu
+                if option["name"] in settings:
+                    value = settings[option["name"]]
+
+                    if option["type"] == "dropdownMultiSelect":
+                        option_dropdown.setCurrentData(value)
+                    else:
+                        index = option_dropdown.findData(value)
+
+                        if index != -1:
+                            option_dropdown.setCurrentIndex(index)
+                        else:
+                            option_dropdown.currentIndexChanged.emit(0)
                 else:
                     option_dropdown.currentIndexChanged.emit(0)
-            else:
-                option_dropdown.currentIndexChanged.emit(0)
 
-            name = option["name"]
-            display_name = option["displayName"]
-            option_dropdowns.append((name, option_dropdown,))
+                if "value" in option:
+                    default_values[option_dropdown] = option["value"]
 
-            # Connect the signal of dropdown menu change to its handling function
-            option_dropdown.currentIndexChanged.connect(
-                lambda a, name=name, option_dropdown=option_dropdown: dropdown_changed(name, option_dropdown, False))
+                name = option["name"]
+                display_name = option["displayName"]
+                option_dropdowns.append((name, option_dropdown,))
 
-            # Connect the signal of dropdown menu change to the main function for updating the mask script
-            option_dropdown.currentIndexChanged.connect(execute_on_change)
-        
-        # Handle divider
-        elif option["type"] == "divider":
-            line = QFrame()
-            line.setFrameShape(QFrame.HLine)
-            line.setStyleSheet('color: rgb(100,100,100)')
-            grid.addWidget(line, row, column)
-            row += 1
+                # Connect the signal of dropdown menu change to its handling function
+                option_dropdown.currentIndexChanged.connect(
+                    lambda a, name=name, option_dropdown=option_dropdown: dropdown_changed(name, option_dropdown, False))
 
-        # Adjust row and column for grid layout
-        if row > 5:
-            column += 1
-            row = 0
+                # Connect the signal of dropdown menu change to the main function for updating the mask script
+                option_dropdown.currentIndexChanged.connect(execute_on_change)
+            
+            # Handle divider
+            elif option["type"] == "divider":
+                line = QFrame()
+                line.setFrameShape(QFrame.HLine)
+                line.setStyleSheet('color: rgb(100,100,100)')
+                section_grid.addWidget(line, row, column)
+                row += 1
 
-    grid.setRowStretch(grid.rowCount(), 1)
+            # Adjust row and column for grid layout
+            if row > 5:
+                column += 1
+                row = 0
 
-    return grid, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges
+        section_groupbox.setLayout(section_grid)
+        top_layout.addWidget(section_groupbox)
+
+    # section_grid.setRowStretch(section_grid.rowCount(), 1)
+
+    return top_layout, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges, default_values
+
+def set_ui_elements_default_values(values):
+    for option, value in values.items():
+        if isinstance(option, QSlider):
+            option.setValue(value)
+        elif isinstance(option, QCheckBox):
+            option.setChecked(bool(value))
+        elif isinstance(option, QComboBox):
+            option.setCurrentIndex(int(value))
 
 # Get a settings dict for the UI elements of the dialog
 def get_settings_for_ui_elements(dialog):

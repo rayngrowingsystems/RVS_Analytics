@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ImageSourceDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,9 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QFrame,
-    QGridLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QSizePolicy, QSpacerItem, QVBoxLayout,
-    QWidget)
+    QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 import CameraApp_rc
 
 class Ui_ImageSourceDialog(object):
@@ -27,7 +27,7 @@ class Ui_ImageSourceDialog(object):
             ImageSourceDialog.setObjectName(u"ImageSourceDialog")
         ImageSourceDialog.setWindowModality(Qt.NonModal)
         ImageSourceDialog.resize(629, 463)
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(ImageSourceDialog.sizePolicy().hasHeightForWidth())
@@ -64,7 +64,7 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_8.addWidget(self.image_file_path)
 
-        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_7)
 
@@ -73,8 +73,8 @@ class Ui_ImageSourceDialog(object):
 
         self.line_3 = QFrame(ImageSourceDialog)
         self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.vertical_layout.addWidget(self.line_3)
 
@@ -102,7 +102,7 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_6.addWidget(self.folder_file_path)
 
-        self.horizontal_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontal_spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_6.addItem(self.horizontal_spacer)
 
@@ -111,8 +111,8 @@ class Ui_ImageSourceDialog(object):
 
         self.line = QFrame(ImageSourceDialog)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.vertical_layout.addWidget(self.line)
 
@@ -138,18 +138,29 @@ class Ui_ImageSourceDialog(object):
 
         self.camera_refresh_button = QPushButton(ImageSourceDialog)
         self.camera_refresh_button.setObjectName(u"camera_refresh_button")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.camera_refresh_button.sizePolicy().hasHeightForWidth())
         self.camera_refresh_button.setSizePolicy(sizePolicy1)
         icon = QIcon()
-        icon.addFile(u":/images/Refresh.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/images/Refresh.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.camera_refresh_button.setIcon(icon)
 
         self.horizontalLayout_4.addWidget(self.camera_refresh_button)
 
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.label_6 = QLabel(ImageSourceDialog)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_4.addWidget(self.label_6)
+
+        self.camera_api_key = QLineEdit(ImageSourceDialog)
+        self.camera_api_key.setObjectName(u"camera_api_key")
+        self.camera_api_key.setEnabled(False)
+
+        self.horizontalLayout_4.addWidget(self.camera_api_key)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
@@ -163,18 +174,18 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_4.addWidget(self.camera_configure_button)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_2)
 
         self.horizontalLayout_4.setStretch(0, 1)
         self.horizontalLayout_4.setStretch(1, 1)
-        self.horizontalLayout_4.setStretch(2, 1)
-        self.horizontalLayout_4.setStretch(5, 8)
+        self.horizontalLayout_4.setStretch(4, 1)
+        self.horizontalLayout_4.setStretch(7, 8)
 
         self.vertical_layout.addLayout(self.horizontalLayout_4)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.vertical_layout.addItem(self.verticalSpacer_2)
 
@@ -195,7 +206,7 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_5.addWidget(self.camera_file_path)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer_3)
 
@@ -204,12 +215,12 @@ class Ui_ImageSourceDialog(object):
 
         self.line_2 = QFrame(ImageSourceDialog)
         self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.HLine)
-        self.line_2.setFrameShadow(QFrame.Sunken)
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.vertical_layout.addWidget(self.line_2)
 
-        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.vertical_layout.addItem(self.verticalSpacer_3)
 
@@ -230,20 +241,20 @@ class Ui_ImageSourceDialog(object):
 
         self.horizontalLayout_7.addWidget(self.output_file_path)
 
-        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer_6)
 
 
         self.vertical_layout.addLayout(self.horizontalLayout_7)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.vertical_layout.addItem(self.verticalSpacer)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_5)
 
@@ -292,6 +303,7 @@ class Ui_ImageSourceDialog(object):
         self.label_4.setText(QCoreApplication.translate("ImageSourceDialog", u"New images from the selected camera will be copied to a folder and analysed on-the-fly", None))
         self.camera_selection_combobox.setPlaceholderText(QCoreApplication.translate("ImageSourceDialog", u"No cameras found", None))
         self.camera_refresh_button.setText("")
+        self.label_6.setText(QCoreApplication.translate("ImageSourceDialog", u"Key:", None))
         self.camera_identify_button.setText(QCoreApplication.translate("ImageSourceDialog", u"Identify", None))
         self.camera_configure_button.setText(QCoreApplication.translate("ImageSourceDialog", u"Configure", None))
         self.label.setText(QCoreApplication.translate("ImageSourceDialog", u"Target folder", None))

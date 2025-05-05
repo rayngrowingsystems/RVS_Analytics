@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MainWindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -63,14 +63,16 @@ class Ui_MainWindow(object):
         self.action_save_analysis = QAction(MainWindow)
         self.action_save_analysis.setObjectName(u"action_save_analysis")
         self.action_save_analysis.setEnabled(True)
+        self.action_delete_images = QAction(MainWindow)
+        self.action_delete_images.setObjectName(u"action_delete_images")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.line = QFrame(self.centralwidget)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.VLine)
-        self.line.setFrameShadow(QFrame.Sunken)
+        self.line.setFrameShape(QFrame.Shape.VLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.verticalLayout.addWidget(self.line)
 
@@ -78,7 +80,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.image_source = QLabel(self.centralwidget)
         self.image_source.setObjectName(u"image_source")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.image_source.sizePolicy().hasHeightForWidth())
@@ -96,7 +98,7 @@ class Ui_MainWindow(object):
 
         self.mqtt_status = QLabel(self.centralwidget)
         self.mqtt_status.setObjectName(u"mqtt_status")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.mqtt_status.sizePolicy().hasHeightForWidth())
@@ -109,7 +111,7 @@ class Ui_MainWindow(object):
 
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        sizePolicy2 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
@@ -122,7 +124,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setContentsMargins(6, 6, 6, 6)
         self.image_preview = QLabel(self.preview_tab)
         self.image_preview.setObjectName(u"image_preview")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.image_preview.sizePolicy().hasHeightForWidth())
@@ -144,7 +146,7 @@ class Ui_MainWindow(object):
 
         self.timestamp_label = QLabel(self.centralwidget)
         self.timestamp_label.setObjectName(u"timestamp_label")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.timestamp_label.sizePolicy().hasHeightForWidth())
@@ -219,10 +221,10 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addLayout(self.horizontalLayout, 2, 0, 1, 1)
 
         self.statusDockWidget.setWidget(self.dockWidgetContents_3)
-        MainWindow.addDockWidget(Qt.BottomDockWidgetArea, self.statusDockWidget)
+        MainWindow.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.statusDockWidget)
         self.dockWidget = QDockWidget(MainWindow)
         self.dockWidget.setObjectName(u"dockWidget")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.dockWidget.sizePolicy().hasHeightForWidth())
@@ -240,7 +242,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addWidget(self.image_mask_button, 5, 0, 1, 1)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.gridLayout_3.addItem(self.verticalSpacer, 10, 0, 1, 1)
 
@@ -260,8 +262,8 @@ class Ui_MainWindow(object):
 
         self.line_3 = QFrame(self.dock_widget_contents)
         self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.gridLayout_3.addWidget(self.line_3, 11, 0, 1, 1)
 
@@ -322,7 +324,7 @@ class Ui_MainWindow(object):
 
         self.image_source_button = QPushButton(self.dock_widget_contents)
         self.image_source_button.setObjectName(u"image_source_button")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy6.setHorizontalStretch(0)
         sizePolicy6.setVerticalStretch(0)
         sizePolicy6.setHeightForWidth(self.image_source_button.sizePolicy().hasHeightForWidth())
@@ -344,8 +346,8 @@ class Ui_MainWindow(object):
 
         self.line_2 = QFrame(self.dock_widget_contents)
         self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.HLine)
-        self.line_2.setFrameShadow(QFrame.Sunken)
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.verticalLayout_3.addWidget(self.line_2)
 
@@ -364,7 +366,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.analysis_preview_button, 9, 0, 1, 1)
 
         self.dockWidget.setWidget(self.dock_widget_contents)
-        MainWindow.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidget)
+        MainWindow.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockWidget)
 
         self.menubar.addAction(self.menu_file.menuAction())
         self.menubar.addAction(self.menu_experiment.menuAction())
@@ -373,6 +375,7 @@ class Ui_MainWindow(object):
         self.menu_file.addAction(self.action_select_network)
         self.menu_file.addAction(self.action_mqtt_broker)
         self.menu_file.addAction(self.action_download_images)
+        self.menu_file.addAction(self.action_delete_images)
         self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_exit)
         self.menu_help.addAction(self.action_help)
@@ -428,6 +431,7 @@ class Ui_MainWindow(object):
         self.action_save_as_analysis.setText(QCoreApplication.translate("MainWindow", u"Save As Analysis...", None))
         self.action_new_analysis.setText(QCoreApplication.translate("MainWindow", u"New Analysis", None))
         self.action_save_analysis.setText(QCoreApplication.translate("MainWindow", u"Save Analysis", None))
+        self.action_delete_images.setText(QCoreApplication.translate("MainWindow", u"Delete images from camera...", None))
         self.image_source.setText("")
         self.camera_status.setText("")
         self.mqtt_status.setText("")

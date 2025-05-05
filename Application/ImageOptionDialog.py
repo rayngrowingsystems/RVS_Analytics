@@ -16,11 +16,11 @@
 
 from PySide6.QtWidgets import QDialog
 from PySide6 import QtCore
+from PySide6.QtCore import QTimer
 
 import CameraApp_rc
 
 from ui_ImageOptionDialog import Ui_ImageOptionDialog
-
 
 class ImageOptionDialog(QDialog):
     def __init__(self, main_window):
@@ -43,16 +43,13 @@ class ImageOptionDialog(QDialog):
         self.ui.normalize_checkbox.setChecked(self.main_window.experiment.normalize)
         self.ui.normalize_checkbox.toggled.connect(self.on_normalize)
 
-        self.ui.light_correction_checkbox.setChecked(self.main_window.experiment.light_correction)
-        self.ui.light_correction_checkbox.toggled.connect(self.on_light_correction)
-
         self.ui.rotation_spinbox.setValue(self.main_window.experiment.rotation)
         self.ui.rotation_spinbox.valueChanged.connect(self.on_rotation)
 
-        self.ui.crop_checkbox.setChecked(self.main_window.experiment.crop)
-        self.ui.crop_checkbox.toggled.connect(self.on_crop)
-
         self.ui.done_button.clicked.connect(self.accept)
+
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageOptionDialog()
@@ -72,15 +69,6 @@ class ImageOptionDialog(QDialog):
         self.main_window.experiment.normalize = self.ui.normalize_checkbox.isChecked()
         self.main_window.update_experiment_file(False)
 
-    def on_light_correction(self):
-        self.main_window.experiment.light_correction = self.ui.light_correction_checkbox.isChecked()
-        self.main_window.update_experiment_file(False)
-
     def on_rotation(self):
         self.main_window.experiment.rotation = self.ui.rotation_spinbox.value()
         self.main_window.update_experiment_file(False)
-
-    def on_crop(self):
-        self.main_window.experiment.crop = self.ui.crop_checkbox.isChecked()
-        self.main_window.update_experiment_file(False)
-

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ImageRoiDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -41,7 +41,7 @@ class Ui_ImageRoiDialog(object):
         self.horizontal_layout.setObjectName(u"horizontal_layout")
         self.reference_image1 = ClickableLabel(ImageRoiDialog)
         self.reference_image1.setObjectName(u"reference_image1")
-        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.reference_image1.sizePolicy().hasHeightForWidth())
@@ -116,7 +116,7 @@ class Ui_ImageRoiDialog(object):
 
         self.grid_layout.addWidget(self.width_label, 1, 5, 1, 1)
 
-        self.horizontal_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontal_spacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.grid_layout.addItem(self.horizontal_spacer, 1, 4, 1, 1)
 
@@ -190,7 +190,7 @@ class Ui_ImageRoiDialog(object):
 
         self.horizontalLayout_2.addLayout(self.grid_layout)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
 
@@ -209,7 +209,7 @@ class Ui_ImageRoiDialog(object):
 
         self.vertical_layout.addWidget(self.info_label)
 
-        self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.vertical_layout.addItem(self.vertical_spacer)
 
@@ -221,7 +221,7 @@ class Ui_ImageRoiDialog(object):
 
         self.horizontalLayout_4.addWidget(self.clear_button)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 
@@ -233,7 +233,7 @@ class Ui_ImageRoiDialog(object):
 
         self.done_button = QPushButton(ImageRoiDialog)
         self.done_button.setObjectName(u"done_button")
-        self.done_button.setAutoDefault(False)
+        self.done_button.setAutoDefault(True)
 
         self.horizontalLayout_4.addWidget(self.done_button)
 

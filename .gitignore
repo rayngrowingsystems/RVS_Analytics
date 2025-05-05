@@ -72,8 +72,6 @@ Application/.rvs
 
 Application/old scripts/
 
-*.xp
-
 *.log
 
 ApplicationQt5/
@@ -111,8 +109,14 @@ Application/resources/rc_CameraApp.py
 
 Application/generated/
 
-Application/runUiRcc.bat
-
 Application/Installer
 
-Test/
+tests/test_data/analysis_results/*
+
+tests/test_data/test_results/*
+
+tests/UI_test/log/
+
+
+
+

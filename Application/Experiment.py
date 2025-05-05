@@ -18,7 +18,7 @@ import json
 import os
 from os import path
 
-from PySide6.QtCore import QRect, QSize, QStandardPaths, QDir
+from PySide6.QtCore import QRect, QSize, QStandardPaths, QDir, QPoint
 from PySide6.QtWidgets import QApplication
 
 from enum import Enum
@@ -35,12 +35,13 @@ class Experiment:
 
         self.experiment_file_name = experiment_file_name
 
-        self.ImageSource = self.ImageSource.Folder
+        self.image_source = self.ImageSource.Folder
 
         self.image_file_path = ""
         self.folder_file_path = ""
         self.camera_file_path = ""
         self.camera_cid = ""
+        self.camera_api_keys = {}
 
         self.output_file_path = os.path.join(os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)), QApplication.organizationName(), QApplication.applicationName(), 'Analysis')
         QDir().mkpath(self.output_file_path)
@@ -54,12 +55,9 @@ class Experiment:
 
         self.lens_angle = 60
         self.normalize = False
-        self.light_correction = False
         self.rotation = 0
-        self.crop = False
 
         self.script_options = {}
-        self.chart_options = {}
         self.chart_option_types = {}
 
         self.roi_info = self.RoiInfo()
@@ -78,6 +76,8 @@ class Experiment:
         self.analysis = None
 
         self.mqtt_broker = ""
+
+        self.crop_rect = QRect()
 
     class RoiInfo:
         PlacementMode = Enum('PlacementMode', ['Matrix', 'Manual'])
@@ -150,46 +150,6 @@ class Experiment:
 
             return roi_items
 
-        def shape_number(self):
-            if self.shape == self.Shape.Circle:
-                return 0
-            elif self.shape == self.Shape.Rectangle:
-                return 1
-            elif self.shape == self.Shape.Ellipse:
-                return 2
-            elif self.shape == self.Shape.Polygon:
-                return 3
-            else:
-                return -1
-
-        def placement_mode_number(self):
-            if self.placement_mode == self.PlacementMode.Matrix:
-                return 0
-            elif self.placement_mode == self.PlacementMode.Manual:
-                return 1
-            else:
-                return -1
-
-        def detection_mode_number(self):
-            if self.detection_mode == self.DetectionMode.Partial:
-                return 0
-            elif self.detection_mode == self.DetectionMode.CutTo:
-                return 1
-            elif self.detection_mode == self.DetectionMode.Largest:
-                return 2
-            else:
-                return -1
-
-    def image_source_number(self):
-        if self.ImageSource == self.ImageSource.Image:
-            return 0
-        elif self.ImageSource == self.ImageSource.Folder:
-            return 1
-        elif self.ImageSource == self.ImageSource.Camera:
-            return 2
-        else:
-            return -1
-
     def safe_normpath(self, image):
         if image is not None:
             return os.path.normpath(image)
@@ -199,26 +159,26 @@ class Experiment:
     def to_dict(self):
         return {
           "name": self.name,
-          "imageSource": self.image_source_number(),
+          "imageSource": self.image_source.value - 1,
           "imageFilePath": self.image_file_path,
           "folderFilePath": self.folder_file_path,
           "cameraFilePath": self.camera_file_path,
           "outputFilePath": self.output_file_path,
           "cameraCid": self.camera_cid,
+          "cameraApiKeys": self.camera_api_keys,
           "roiInfo": {"rect": [self.roi_info.rect.left(), self.roi_info.rect.top(), self.roi_info.rect.width(), self.roi_info.rect.height()],
                       "columns": self.roi_info.columns,
                       "rows": self.roi_info.rows,
                       "radius": self.roi_info.radius,
                       "width": self.roi_info.width,
                       "height": self.roi_info.height,
-                      "shape": self.roi_info.shape_number(),
-                      "placementMode": self.roi_info.placement_mode_number(),
-                      "detectionMode": self.roi_info.detection_mode_number(),
+                      "shape": self.roi_info.shape.value - 1,
+                      "placementMode": self.roi_info.placement_mode.value - 1,
+                      "detectionMode": self.roi_info.detection_mode.value - 1,
                       "roiList": self.roi_info.roi_items(1.0)},
           # NOTE: When things are added to the "analysis" section, update analysisToDict below
           "analysis": {"maskOptions": self.mask,
                        "scriptOptions": {"general": self.script_options},
-                       "chartOptions": self.chart_options,
                        "chartOptionTypes": self.chart_option_types,
                        "selectedScript": self.selected_script,
                        "selectedMask": self.selected_mask},
@@ -227,22 +187,20 @@ class Experiment:
           "maskReferenceImage2": self.safe_normpath(self.mask_reference_image2),
           "imageOptions": {"lensAngle": self.lens_angle,
                            "normalize": self.normalize,
-                           "lightCorrection": self.light_correction,
-                           "rotation": self.rotation,
-                           "crop": self.crop},
+                           "rotation": self.rotation},
           "roiReferenceImage1": self.safe_normpath(self.roi_reference_image1),
           "roiReferenceImage2": self.safe_normpath(self.roi_reference_image2),
           "scriptReferenceImage1": self.safe_normpath(self.script_reference_image1),
           "scriptReferenceImage2": self.safe_normpath(self.script_reference_image2),
           "cameraDiscoveryIp": self.camera_discovery_ip,
-          "mqttBroker": self.mqtt_broker
+          "mqttBroker": self.mqtt_broker,
+          "cropRect": [self.crop_rect.left(), self.crop_rect.top(), self.crop_rect.width(), self.crop_rect.height()],
         }
 
     def analysis_to_dict(self):
         return {
           "analysis": {"maskOptions": self.mask,
                        "scriptOptions": {"general": self.script_options},
-                       "chartOptions": self.chart_options,
                        "chartOptionTypes": self.chart_option_types,
                        "selectedScript": self.selected_script,
                        "selectedMask": self.selected_mask}
@@ -251,9 +209,7 @@ class Experiment:
     def image_options_to_dict(self):
         return {"lensAngle": self.lens_angle,
                 "normalize": self.normalize,
-                "lightCorrection": self.light_correction,
-                "rotation": self.rotation,
-                "crop": self.crop}
+                "rotation": self.rotation}
 
     def update_experiment_file(self):
         d = self.to_dict()
@@ -269,16 +225,14 @@ class Experiment:
         if "imageSource" in d:
             image_source_number = d["imageSource"]
 
-            if image_source_number == 0:
-                self.ImageSource = self.ImageSource.Image
-            elif image_source_number == 1:
-                self.ImageSource = self.ImageSource.Folder
-            elif image_source_number == 2:
-                self.ImageSource = self.ImageSource.Camera
+            self.image_source = self.ImageSource(image_source_number + 1)
+
         if "imageFilePath" in d:
             self.image_file_path = os.path.normpath(d["imageFilePath"])
+
         if "folderFilePath" in d:
             self.folder_file_path = os.path.normpath(d["folderFilePath"])
+
         if "cameraFilePath" in d:
             self.camera_file_path = os.path.normpath(d["cameraFilePath"])
 
@@ -287,6 +241,9 @@ class Experiment:
 
         if "cameraCid" in d:
             self.camera_cid = d["cameraCid"]
+
+        if "cameraApiKeys" in d:
+            self.camera_api_keys = d["cameraApiKeys"]
 
         if "roiInfo" in d:
             self.roi_info.rect = QRect(d["roiInfo"]["rect"][0], d["roiInfo"]["rect"][1], d["roiInfo"]["rect"][2], d["roiInfo"]["rect"][3])
@@ -303,32 +260,17 @@ class Experiment:
             if "shape" in d["roiInfo"]:
                 shape_number = d["roiInfo"]["shape"]
 
-                if shape_number == 0:
-                    self.roi_info.shape = self.roi_info.Shape.Circle
-                elif shape_number == 1:
-                    self.roi_info.shape = self.roi_info.Shape.Rectangle
-                elif shape_number == 2:
-                    self.roi_info.shape = self.roi_info.Shape.Ellipse
-                elif shape_number == 3:
-                    self.roi_info.shape = self.roi_info.Shape.Polygon
+                self.roi_info.shape = self.roi_info.Shape(shape_number + 1)
 
             if "placementMode" in d["roiInfo"]:
                 placement_mode_number = d["roiInfo"]["placementMode"]
 
-                if placement_mode_number == 0:
-                    self.roi_info.placement_mode = self.roi_info.PlacementMode.Matrix
-                elif placement_mode_number == 1:
-                    self.roi_info.placement_mode = self.roi_info.PlacementMode.Manual
+                self.roi_info.placement_mode = self.roi_info.PlacementMode(placement_mode_number + 1)
 
             if "detectionMode" in d["roiInfo"]:
                 detection_mode_number = d["roiInfo"]["detectionMode"]
 
-                if detection_mode_number == 0:
-                    self.roi_info.detection_mode = self.roi_info.DetectionMode.Partial
-                elif detection_mode_number == 1:
-                    self.roi_info.detection_mode = self.roi_info.DetectionMode.CutTo
-                elif detection_mode_number == 2:
-                    self.roi_info.detection_mode = self.roi_info.DetectionMode.Largest
+                self.roi_info.detection_mode = self.roi_info.DetectionMode(detection_mode_number + 1)
 
             if "roiList" in d["roiInfo"]:
                 self.roi_info.manual_roi_items = []
@@ -382,14 +324,8 @@ class Experiment:
 
             self.normalize = d["imageOptions"]["normalize"]
 
-            if "lightCorrection" in d["imageOptions"]:
-                self.light_correction = d["imageOptions"]["lightCorrection"]
-
             if "rotation" in d["imageOptions"]:
                 self.rotation = d["imageOptions"]["rotation"]
-
-            if "crop" in d["imageOptions"]:
-                self.crop = d["imageOptions"]["crop"]
 
         if "analysis" in d:
             self.script_options = d["analysis"]["scriptOptions"]["general"]
@@ -397,10 +333,6 @@ class Experiment:
 
             self.mask = d["analysis"]["maskOptions"]
             tprint("Loaded maskOptions", self.mask)
-
-            if "chartOptions" in d["analysis"]:
-                self.chart_options = d["analysis"]["chartOptions"]
-                tprint("Loaded chartOptions", self.chart_options)
 
             if "chartOptionTypes" in d["analysis"]:
                 self.chart_option_types = d["analysis"]["chartOptionTypes"]
@@ -428,6 +360,9 @@ class Experiment:
         if "mqttBroker" in d:
             self.mqtt_broker = d["mqttBroker"]
 
+        if "cropRect" in d:
+            self.crop_rect = QRect(d["cropRect"][0], d["cropRect"][1], d["cropRect"][2], d["cropRect"][3])
+
     def from_json(self):
         if path.exists(self.experiment_file_name):
             with open(self.experiment_file_name, 'r') as f:  # TODO
@@ -446,6 +381,14 @@ class Experiment:
                self.roi_reference_image1 in [None, '.'] and self.roi_reference_image2 in [None, '.'] and \
                self.script_reference_image1 in [None, '.'] and self.script_reference_image2 in [None, '.']
     
+    def clear_all_preview_images(self):
+        self.mask_reference_image1 = None
+        self.mask_reference_image2 = None
+        self.roi_reference_image1 = None
+        self.roi_reference_image2 = None
+        self.script_reference_image1 = None
+        self.script_reference_image2 = None
+        
     def clear_analysis(self):
         if self.analysis is not None:
             self.analysis["maskOptions"] = {}
@@ -453,11 +396,42 @@ class Experiment:
             self.analysis["chartOptions"] = {}
 
     def current_folder(self):
-        if self.ImageSource is self.ImageSource.Image:
+        if self.image_source is self.ImageSource.Image:
             return self.image_file_path
-        elif self.ImageSource is self.ImageSource.Folder:
+        elif self.image_source is self.ImageSource.Folder:
             return self.folder_file_path
-        elif self.ImageSource is self.ImageSource.Camera:
+        elif self.image_source is self.ImageSource.Camera:
             return self.camera_file_path
         else:
             return ""
+        
+    # Conversion routines between original image coordinates and UI coordinates via an optional crop rectangle
+
+    def image_to_point_coordinates(self, point, crop_rect, scaling_factor):
+        if not crop_rect.isEmpty():
+            p = point - crop_rect.topLeft()  # Change from original image to crop_rect coordinates
+            p = QPoint(p.x() * scaling_factor, p.y() * scaling_factor)  # Change from crop_rect to UI coordinates     
+
+            return p
+        else:
+            return QPoint(point.x() * scaling_factor, point.y() * scaling_factor)
+    
+    def point_to_image_coordinates(self, point, crop_rect, scaling_factor):
+        if not crop_rect.isEmpty():
+            p = QPoint(point.x() / scaling_factor, point.y() / scaling_factor)  # Change from UI to crop_rect coordinates
+            p = p + crop_rect.topLeft()  # Change from crop_rect to original image coordinates
+
+            return p
+        else:
+            return QPoint(point.x() / scaling_factor, point.y() / scaling_factor)
+
+    def image_to_rect_coordinates(self, rect, crop_rect, scaling_factor):
+        return QRect(self.image_to_point_coordinates(rect.topLeft(), crop_rect, scaling_factor), \
+                     QSize(rect.width() * scaling_factor, rect.height() * scaling_factor))
+
+    def rect_to_image_coordinates(self, rect, crop_rect, scaling_factor):
+        return QRect(self.point_to_image_coordinates(rect.topLeft(), crop_rect, scaling_factor), \
+                     QSize(rect.width() / scaling_factor, rect.height() / scaling_factor))
+   
+
+

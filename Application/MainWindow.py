@@ -19,7 +19,7 @@ import shutil
 import tempfile
 
 import datetime
-import time
+import time as systime
 
 import traceback
 from multiprocessing import Queue
@@ -54,11 +54,13 @@ from ImageRoiDialog import ImageRoiDialog
 from AnalysisPreviewDialog import AnalysisPreviewDialog
 from AnalysisOptionsDialog import AnalysisOptionsDialog
 from DownloadImagesDialog import DownloadImagesDialog
+from DeleteImagesDialog import DeleteImagesDialog
 from AboutDialog import AboutDialog
 from HelpDialog import HelpDialog
 from EulaDialog import EulaDialog
 from CameraStartDialog import CameraStartDialog
 from FolderStartDialog import FolderStartDialog
+from SelectImageDialog import SelectImageDialog
 
 import Config
 import Helper
@@ -161,7 +163,7 @@ class MainWindow(QMainWindow):
     analysis_done = QtCore.Signal()
     add_preview_tab = QtCore.Signal(str, str)
 
-    def __init__(self, script_folder, mask_folder):
+    def __init__(self, script_folder, mask_folder, preset_folder, test_mode=False, test_dialog_timeout=3000):
         super().__init__()
         # super(MainWindow, self).__init__()
 
@@ -171,9 +173,13 @@ class MainWindow(QMainWindow):
 
         tprint("Create MainWindow...")
 
+        self.test_mode = test_mode
+        self.test_dialog_timeout = test_dialog_timeout
+
         self.camera_configuration_view = None
         self.script_folder = script_folder
         self.mask_folder = mask_folder
+        self.preset_folder = preset_folder
 
         # Set up the experiment folder path and create it if it doesn't exist
         documents_path = os.path.join(os.path.normpath(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)), QApplication.organizationName(), QApplication.applicationName())
@@ -212,7 +218,7 @@ class MainWindow(QMainWindow):
         self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
 
         # Need to configure NIC?
-        if self.experiment.camera_discovery_ip == "":
+        if self.experiment.camera_discovery_ip == "" and not self.test_mode:
             self.select_network()
 
         # Set up background processing of images
@@ -293,6 +299,7 @@ class MainWindow(QMainWindow):
         self.ui.action_mqtt_broker.triggered.connect(self.select_mqtt_broker)
 
         self.ui.action_download_images.triggered.connect(self.open_download_images_dialog)
+        self.ui.action_delete_images.triggered.connect(self.open_delete_images_dialog)
 
         self.ui.action_about.triggered.connect(self.open_about_dialog)
         self.ui.action_help.triggered.connect(self.open_help_dialog)
@@ -377,7 +384,7 @@ class MainWindow(QMainWindow):
         self.add_preview_tab.connect(self.on_add_preview_tab)
 
         # If ongoing analysis, continue
-        if path.exists(self.current_session_file_name):
+        if path.exists(self.current_session_file_name) and not self.test_mode:
             self.resume_analysis()
 
         self.ui.statusbar.hide()
@@ -392,9 +399,9 @@ class MainWindow(QMainWindow):
 
         self.file_system_observer = None
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.watch_folder(self.experiment.folder_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.watch_folder(self.experiment.camera_file_path)
 
         self.images_added = False
@@ -696,6 +703,25 @@ class MainWindow(QMainWindow):
 
         tprint("Selected first", self.experiment.selected_script)
 
+    def open_experiment_directly(self, file_name):
+        if path.exists(file_name):
+            if path.exists(self.experiment_file_name):
+                os.remove(self.experiment_file_name)
+
+            shutil.copy2(file_name, self.experiment_file_name)
+
+            self.current_experiment_file = file_name
+            self.refresh_experiment()
+
+            self.remove_result_tabs()
+            
+            self.refresh_play_button_status()
+            self.refresh_ready_to_play()
+
+            self.experiment_dirty = False
+        else:
+            tprint("File does not exist:", file_name)
+
     def open_experiment(self):
         tprint("Open experiment")
 
@@ -707,20 +733,7 @@ class MainWindow(QMainWindow):
         file_name, filter = QFileDialog.getOpenFileName(self, "Open experiment", self.experiment_folder, "Experiment Files (*.xp)")
 
         if file_name != "":
-            if path.exists(self.experiment_file_name):
-                os.remove(self.experiment_file_name)
-
-            shutil.copy2(file_name, self.experiment_file_name)
-
-            self.current_experiment_file = file_name
-            self.refresh_experiment()
-
-            self.remove_result_tabs()
-         
-            self.refresh_play_button_status()
-            self.refresh_ready_to_play()
-
-            self.experiment_dirty = False
+            self.open_experiment_directly(file_name)
 
     def save_experiment(self):
         tprint("Save experiment", self.current_experiment_file)
@@ -735,17 +748,20 @@ class MainWindow(QMainWindow):
 
             self.experiment_dirty = False
 
+    def save_as_experiment_directly(self, file_name):
+        shutil.copy2(self.experiment_file_name, file_name)
+
+        self.current_experiment_file = file_name
+        self.refresh_window_title()
+
+        self.experiment_dirty = False
+
     def save_as_experiment(self):
         tprint("Save As experiment")
         file_name, filter = QFileDialog.getSaveFileName(self, "Save experiment", self.experiment_folder, "Experiment Files (*.xp)")
 
         if file_name != "":
-            shutil.copy2(self.experiment_file_name, file_name)
-
-            self.current_experiment_file = file_name
-            self.refresh_window_title()
-
-            self.experiment_dirty = False
+            self.save_as_experiment_directly(file_name)
 
     def new_analysis(self):
         tprint("New analysis")
@@ -773,6 +789,26 @@ class MainWindow(QMainWindow):
 
         self.analysis_dirty = False
 
+    def open_analysis_directly(self, file_name):
+        with open(file_name, 'r') as f:
+            j = f.read()
+            d = json.loads(j)
+
+            self.experiment.from_dict(d)  # An analysis file is just the "analysis" section of the experiment file
+
+        self.current_analysis_file = file_name
+        self.refresh_window_title()
+
+        self.remove_result_tabs()
+        
+        # self.refreshAnalysis() # TODO?
+        self.refresh_comboboxes()
+
+        self.refresh_play_button_status()
+        self.refresh_ready_to_play()
+
+        self.analysis_dirty = False
+
     def open_analysis(self):
         tprint("Open analysis")
     
@@ -784,24 +820,7 @@ class MainWindow(QMainWindow):
         file_name, filter = QFileDialog.getOpenFileName(self, "Open analysis", self.experiment_folder, "Analysis Files (*.af)")
 
         if file_name != "":
-            with open(file_name, 'r') as f:
-                j = f.read()
-                d = json.loads(j)
-
-                self.experiment.from_dict(d)  # An analysis file is just the "analysis" section of the experiment file
-
-            self.current_analysis_file = file_name
-            self.refresh_window_title()
-
-            self.remove_result_tabs()
-         
-            # self.refreshAnalysis() # TODO?
-            self.refresh_comboboxes()
-
-            self.refresh_play_button_status()
-            self.refresh_ready_to_play()
-   
-            self.analysis_dirty = False
+            self.open_analysis_directly(file_name)
 
     def save_analysis(self):
         tprint("Save analysis")
@@ -821,23 +840,26 @@ class MainWindow(QMainWindow):
 
         self.analysis_dirty = False
 
+    def save_as_analysis_directly(self, file_name):
+        d = self.experiment.analysis_to_dict()
+
+        j = json.dumps(d, indent=4)
+
+        with open(file_name, 'w') as f:
+            f.write(j)
+
+        self.current_analysis_file = file_name
+        self.refresh_window_title()
+
+        self.analysis_dirty = False
+
     def save_as_analysis(self):
         tprint("Save As analysis")
 
         file_name, filter = QFileDialog.getSaveFileName(self, "Save analysis", self.experiment_folder, "Analysis Files (*.af)")
 
         if file_name != "":
-            d = self.experiment.analysis_to_dict()
-
-            j = json.dumps(d, indent=4)
-
-            with open(file_name, 'w') as f:
-                f.write(j)
-
-            self.current_analysis_file = file_name
-            self.refresh_window_title()
-
-            self.analysis_dirty = False
+            self.save_as_analysis_directly(file_name)
 
     def default_script_options(self):
         if self.experiment.selected_script != "":
@@ -897,6 +919,9 @@ class MainWindow(QMainWindow):
                     self.camera = None
 
                 self.camera = Camera(self, camera_json["tags"]["disc"]["ipv4"])
+ 
+                if cid in self.experiment.camera_api_keys:
+                    self.camera.set_api_key(self.experiment.camera_api_keys[cid])
 
                 self.refresh_image_source_text()
 
@@ -907,6 +932,15 @@ class MainWindow(QMainWindow):
                 break
 
             item = item + 1
+
+    def camera_api_key_changed(self, text):
+        self.experiment.camera_api_key = text
+
+        self.camera.set_api_key(text)
+
+        self.experiment.camera_api_keys[self.experiment.camera_cid] = text
+
+        self.update_experiment_file(False)
 
     def configure_camera(self, index):
         tprint("ConfigureCamera:", index)
@@ -975,9 +1009,9 @@ class MainWindow(QMainWindow):
             tprint("onFileDeleted:", file_name)
 
     def refresh_image_source_text(self):
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             self.ui.image_source.setText("<b>Image source:</b> Image: " + self.experiment.image_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.ui.image_source.setText("<b>Image source:</b> Folder: " + self.experiment.folder_file_path)
         else:
             if self.experiment.camera_cid in self.cameras:
@@ -988,11 +1022,11 @@ class MainWindow(QMainWindow):
                 self.ui.image_source.setText("<b>Image source:</b> No source specified")
 
     def set_image_source(self, image_source):
-        self.experiment.ImageSource = image_source
+        self.experiment.image_source = image_source
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.watch_folder(self.experiment.folder_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.watch_folder(self.experiment.camera_file_path)
 
         self.update_experiment_file(False)
@@ -1013,7 +1047,7 @@ class MainWindow(QMainWindow):
         self.experiment.folder_file_path = location
         self.update_experiment_file(False)
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.watch_folder(location)
 
         self.refresh_image_source_text()
@@ -1024,7 +1058,7 @@ class MainWindow(QMainWindow):
         self.experiment.camera_file_path = location
         self.update_experiment_file(False)
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        if self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.watch_folder(location)
 
         self.refresh_image_source_text()
@@ -1094,15 +1128,15 @@ class MainWindow(QMainWindow):
     def on_analysis_done(self):
         tprint("Analysis: Done")
 
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             self.add_status_text.emit("Image processed")
 
             self.stop_analysis(False)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             self.add_status_text.emit("All images processed")
 
             self.stop_analysis(False)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             self.add_status_text.emit("Waiting for new images...")
 
             self.ui.image_preview_progressbar.setValue(self.ui.image_preview_progressbar.maximum())
@@ -1114,7 +1148,7 @@ class MainWindow(QMainWindow):
             self.camera.tick()
 
         # Poll camera status
-        if self.camera is not None and self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        if self.camera is not None and self.experiment.image_source is self.experiment.ImageSource.Camera:
             if self.camera_status_divider == 0:
                 status = self.camera.get_status()
 
@@ -1128,7 +1162,7 @@ class MainWindow(QMainWindow):
                     else:
                         self.ui.camera_status.setText("Camera Status: Free space: " + str(free_space) + "%")
 
-                    self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
+                self.camera_status_divider = self.CAMERA_STATUS_DIVIDER
             else:
                 self.camera_status_divider = self.camera_status_divider - 1
 
@@ -1196,12 +1230,14 @@ class MainWindow(QMainWindow):
             self.add_preview_tab.emit("Spectral Histogram", value)
             handled = True
         
-        if command == "index_hist":
-            self.add_preview_tab.emit("Index Histogram", value)
+        if command.startswith("index_hist"):
+            index = command.replace("index_hist_", "").replace("_", " ").upper()
+            self.add_preview_tab.emit(f"{index} Histogram", value)
             handled = True
 
-        if command == "index_false_color":
-            self.add_preview_tab.emit("Index False Color", value)
+        if command.startswith("index_false_color"):
+            index = command.replace("index_false_color_", "").replace("_", " ").upper()
+            self.add_preview_tab.emit(f"{index} False Color", value)
             handled = True
 
         if command == "results":  # When processing is done: File name for results
@@ -1247,7 +1283,7 @@ class MainWindow(QMainWindow):
             j = f.read()
             d = json.loads(j)
 
-            observations = d["observations"];
+            observations = d["observations"]
             plant_index = 1
             plant_key = f"plant_{plant_index}"
 
@@ -1264,11 +1300,12 @@ class MainWindow(QMainWindow):
                 convex_hull_area = plant["convex_hull_area"]["value"]
                 longest_path = plant["longest_path"]["value"]
 
-                # Mean index is special as it contains the index name. So we need to browse the keys and match the start of the name to find the value
-                mean_index = 0
+                # Mean index is special as it contains the index name.
+                # So we need to browse the keys and match the start of the name to find the value
+                mean_index_values = {}
                 for key in plant.keys():
                     if key.startswith("mean_index_"):
-                        mean_index = plant[key]["value"]
+                        mean_index_values[key] = plant[key]["value"]
 
                 if Config.verbose_mode:
                     tprint(plant_index, width, height, area, perimeter)
@@ -1289,7 +1326,7 @@ class MainWindow(QMainWindow):
                 roi["perimeter"] = perimeter
                 roi["convexHullArea"] = convex_hull_area
                 roi["longestPath"] = longest_path
-                roi["meanIndex"] = mean_index
+                roi["meanIndex"] = mean_index_values
 
                 payload = {}
                 payload["results"] = roi
@@ -1297,7 +1334,7 @@ class MainWindow(QMainWindow):
                 print("Roi:", roi)
                 
                 # MQTT
-                if self.mqtt and self.experiment.ImageSource is self.experiment.ImageSource.Camera:  # Only send in camera mode
+                if self.mqtt and self.experiment.image_source is self.experiment.ImageSource.Camera:  # Only send in camera mode
                     self.mqtt.publish_roi(camera_name, plant_index, payload)
 
                 # Chart
@@ -1316,8 +1353,8 @@ class MainWindow(QMainWindow):
                         value = roi["convexHullArea"]
                     elif key == "longest_path":
                         value = roi["longestPath"]
-                    elif key == "mean_index":
-                        value = roi["meanIndex"]
+                    elif key.startswith("mean_index_"):
+                        value = roi["meanIndex"][key]
                     else:
                         tprint("Unknown chart parameter key", key)
 
@@ -1330,10 +1367,11 @@ class MainWindow(QMainWindow):
             chart.update_images()
 
     def update_current_session_file(self):
-        j = json.dumps(self.current_session, indent=4)
+        if not self.test_mode:  # Don't generate a session file in test mode
+            j = json.dumps(self.current_session, indent=4)
 
-        with open(self.current_session_file_name, 'w') as f:
-            f.write(j)
+            with open(self.current_session_file_name, 'w') as f:
+                f.write(j)
 
     def resume_analysis(self):
         with open(self.current_session_file_name) as session_file:
@@ -1389,11 +1427,11 @@ class MainWindow(QMainWindow):
 
         # Initialize folder to watch
         folder_to_watch = ""
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             folder_to_watch = os.path.dirname(self.experiment.image_file_path)
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             folder_to_watch = self.experiment.folder_file_path
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             folder_to_watch = self.experiment.camera_file_path
 
         if folder_to_watch == "" or folder_to_watch == ".":
@@ -1409,7 +1447,7 @@ class MainWindow(QMainWindow):
             # Set-up list of image header files
             image_header_list = []
 
-            if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+            if self.experiment.image_source is self.experiment.ImageSource.Image:
                 image_header_list = [self.experiment.image_file_path]
             else:
                 image_header_list = sorted(glob.glob(folder_to_watch + '/*.hdr'))
@@ -1435,7 +1473,7 @@ class MainWindow(QMainWindow):
 
             # TODO How does the remove-already-processed-images logic above work? Conflict?
             # Check if existing image timestamps are earlier than self.camera.startDateTime
-            if self.experiment.ImageSource is self.experiment.ImageSource.Camera and self.camera is not None:
+            if self.experiment.image_source is self.experiment.ImageSource.Camera and self.camera is not None:
                 for i in image_header_list[:]:
                     date, time, camera, wavelength = Helper.info_from_header_file(i)
                     if datetime.datetime.strptime(date + " " + time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(seconds=1) < self.camera.start_date_time:
@@ -1476,25 +1514,26 @@ class MainWindow(QMainWindow):
             # analytics_script = importlib.import_module(analytics_script_name.replace(".py", ""))
             # title, y_label = analytics_script.get_display_name_for_chart(settings) # TODO?
 
-            self.remove_result_tabs();
+            self.remove_result_tabs()
 
             self.charts = {}
 
             # Create the Chart(s)
-            for key, value in self.experiment.chart_options.items():
-
-                if key == "mean_index":
-                    y_label = f"{self.experiment.script_options['index_selection'].upper()} Value"  # TODO Alex
-                    title = (f"{self.experiment.script_options['index_selection'].upper()} "
-                             f"{key.replace('_', ' ').title()}")  # TODO Alex
+            for key, value in self.experiment.script_options.items():
+                if key == "mean_index" and value:
+                    selected_indices = self.experiment.script_options["index_selection"]
+                    for index in selected_indices:
+                        y_label = f"{index.replace('_', ' ').upper()} Value"  # TODO Alex
+                        title = f"{index.replace('_', ' ').upper()} Mean"  # TODO Alex
+                        self.charts[f"mean_index_{index}"] = Chart(self, title, y_label)
                 else:
                     y_label = key.replace("_", " ").title()  # TODO Alex
                     title = key.replace("_", " ").title()  # TODO Alex
+                    if value is True and key in self.experiment.chart_option_types and \
+                            self.experiment.chart_option_types[key] == "plot":
+                        self.charts[key] = Chart(self, title, y_label)
 
-                tprint("Chart:", title, y_label, value)
-
-                if value is True and key in self.experiment.chart_option_types and self.experiment.chart_option_types[key] == "plot":
-                    self.charts[key] = Chart(self, title, y_label)
+                    tprint("Chart:", title, y_label, value)
 
             for key, chart in self.charts.items():
                 if path.exists(chart.web_page()):
@@ -1563,6 +1602,11 @@ class MainWindow(QMainWindow):
 
             self.ui.results_button.setEnabled(False)
 
+        if self.test_mode:
+            while self.analysis_running:
+                systime.sleep(1)
+                QApplication.instance().processEvents()
+
     def stop_analysis(self, terminate_process):
         tprint("Analysis: Stop: Done")
 
@@ -1607,6 +1651,8 @@ class MainWindow(QMainWindow):
         
         process_results(output_folder, combined_json)
         
+        self.save_as_experiment_directly(os.path.join(self.current_session["outputFolder"]["appData"], "experiment.xp"))
+        
         json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
     def play(self):
@@ -1614,9 +1660,9 @@ class MainWindow(QMainWindow):
         if ready:
             self.chart = None
 
-            if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+            if self.experiment.image_source is self.experiment.ImageSource.Image:
                 self.start_analysis(False, True, False)
-            elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+            elif self.experiment.image_source is self.experiment.ImageSource.Folder:
                 if self.images_added:
                     accepted, all_images = self.open_folder_start_dialog()
                     if accepted is True:  # Dialog wasn't cancelled
@@ -1625,7 +1671,7 @@ class MainWindow(QMainWindow):
                     self.images_added = False
                 else:
                     self.start_analysis(False, True, False)  # Process all images if nothing changed
-            elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+            elif self.experiment.image_source is self.experiment.ImageSource.Camera:
                 if self.open_camera_start_dialog() is True:  # Dialog wasn't cancelled
                     self.start_analysis(False, False, False)
 
@@ -1647,25 +1693,21 @@ class MainWindow(QMainWindow):
     def ready_to_run(self):
         ready = True
         reason = ""
-        if self.experiment.ImageSource is self.experiment.ImageSource.Image:
+        if self.experiment.image_source is self.experiment.ImageSource.Image:
             if self.experiment.image_file_path == "":
                 ready = False
                 reason = "No valid image source"
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Folder:
+        elif self.experiment.image_source is self.experiment.ImageSource.Folder:
             if self.experiment.folder_file_path == "":
                 ready = False
                 reason = "No valid image source"
-        elif self.experiment.ImageSource is self.experiment.ImageSource.Camera:
+        elif self.experiment.image_source is self.experiment.ImageSource.Camera:
             if self.experiment.camera_file_path == "":
                 ready = False
                 reason = "No target folder defined"
             elif self.experiment.camera_cid == "":
                 ready = False
                 reason = "No camera defined"
-
-        if len(self.experiment.chart_options) == 0:
-            ready = False
-            reason = "No chart options defined"
 
         if len(self.experiment.script_options) == 0:
             ready = False
@@ -1710,7 +1752,8 @@ class MainWindow(QMainWindow):
         about_dialog.exec()
 
     def open_help_dialog(self):
-        # Since HelpDialog is a non-modal dialog (to be able to have it open while using the application), we need to keep the instance around
+        # Since HelpDialog is a non-modal dialog (to be able to have it open while using the application),
+        # we need to keep the instance around
         # by assigning it to a class variable
         self.help_dialog = HelpDialog()
         self.help_dialog.show()
@@ -1816,6 +1859,8 @@ class MainWindow(QMainWindow):
             self.experiment.mask_reference_image1 = image_mask_dialog.ui.reference_image1.image_file_name
             self.experiment.mask_reference_image2 = image_mask_dialog.ui.reference_image2.image_file_name
 
+            # self.experiment.crop_rect = image_mask_dialog.ui.reference_image1.crop_rect  # Both images share the same crop rect
+
             self.update_experiment_file(True)
 
             tprint("Exit", self.experiment.mask)
@@ -1842,6 +1887,8 @@ class MainWindow(QMainWindow):
             self.experiment.roi_reference_image1 = image_roi_dialog.ui.reference_image1.image_file_name
             self.experiment.roi_reference_image2 = image_roi_dialog.ui.reference_image2.image_file_name
 
+            self.experiment.crop_rect = image_roi_dialog.ui.reference_image1.crop_rect  # Both images share the same crop rect
+
             self.update_experiment_file(False)
 
             self.refresh_play_button_status()
@@ -1853,6 +1900,8 @@ class MainWindow(QMainWindow):
         if analysis_preview_dialog.exec() == QDialog.Accepted:
             self.experiment.script_reference_image1 = analysis_preview_dialog.ui.reference_image1.image_file_name
             self.experiment.script_reference_image2 = analysis_preview_dialog.ui.reference_image2.image_file_name
+
+            # self.experiment.crop_rect = analysis_preview_dialog.ui.reference_image1.crop_rect  # Both images share the same crop rect
 
             self.update_experiment_file(False)
 
@@ -1868,15 +1917,14 @@ class MainWindow(QMainWindow):
             self.experiment.script_options = settings 
 
             # Capture the chart parameters
-            self.experiment.chart_options = {}
             self.experiment.chart_option_types = {}
-            child_checkboxes = analysis_options_dialog.ui.chart_options_box.findChildren(QCheckBox)
+            child_checkboxes = analysis_options_dialog.ui.main_groupbox.findChildren(QCheckBox)
             for child_checkbox in child_checkboxes:
-                self.experiment.chart_options[child_checkbox.objectName()] = child_checkbox.isChecked()
+                self.experiment.script_options[child_checkbox.objectName()] = child_checkbox.isChecked()
 
-                self.experiment.chart_option_types[child_checkbox.objectName()] = child_checkbox.property("optionType")
+                self.experiment.chart_option_types[child_checkbox.objectName()] = child_checkbox.property("chartOptionType")
 
-                tprint("Chart option:", child_checkbox.objectName(), child_checkbox.property("optionType"), child_checkbox.isChecked())
+                tprint("Chart option:", child_checkbox.objectName(), child_checkbox.property("chartOptionType"), child_checkbox.isChecked())
 
             self.update_experiment_file(False)
 
@@ -1884,9 +1932,20 @@ class MainWindow(QMainWindow):
             self.refresh_ready_to_play()
 
     def open_download_images_dialog(self):
-        download_images_dialog = DownloadImagesDialog(self)
+        if self.camera:
+            download_images_dialog = DownloadImagesDialog(self)
 
-        download_images_dialog.exec()
+            download_images_dialog.exec()
+        else:
+            QMessageBox.warning(self, "No camera connected", "Please connect a camera to download images")
+
+    def open_delete_images_dialog(self):
+        if self.camera:
+            delete_images_dialog = DeleteImagesDialog(self)
+
+            delete_images_dialog.exec()
+        else:
+            QMessageBox.warning(self, "No camera connected", "Please connect a camera to download images")
 
     def show_results(self):
         # os.startfile(self.currentSession["outputFolder"])
@@ -1928,3 +1987,12 @@ class MainWindow(QMainWindow):
         analytics_script_name = self.experiment.selected_script
         sys.path.append(os.path.dirname(self.script_paths[analytics_script_name]))
         return importlib.import_module(analytics_script_name.replace(".py", ""))
+
+    def select_image_dialog(self, main_window, dialog, reference_image):
+        select_image_dialog = SelectImageDialog(main_window, dialog, reference_image)
+
+        if self.experiment.image_source is self.experiment.ImageSource.Folder:  # In folder mode, pick file directly from selected folder
+           select_image_dialog.pick_image()
+        else:
+           # For other modes, present selection dialog to pick image source
+           select_image_dialog.exec()

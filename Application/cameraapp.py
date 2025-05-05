@@ -29,111 +29,134 @@ from Helper import tprint
 
 tprint("Loading CameraApp", __name__)
 
-if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp_main__) so let's make sure nothing is executed if in that case
-    from os import path
-    import sys
-    import stackprinter
-    from datetime import datetime
+import sys
+import os
+import glob
+import stackprinter
+from datetime import datetime
+import logging
+from logging.handlers import RotatingFileHandler
 
-    from PySide6.QtWidgets import QApplication, QLabel
-    from PySide6.QtGui import QPixmap
-    from PySide6.QtCore import QCoreApplication, QStandardPaths
-    from PySide6 import QtCore
+from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
+from PySide6 import QtCore
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
-    import CameraApp_rc
+import CameraApp_rc
+from MainWindow import MainWindow
+
+
+class StreamToLogger(object):
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
+    """
+
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
+        sys.stdout.write(buf)
+
+    def flush(self):
+        pass
+
+
+def check_system_theme():
 
     tprint("Platform:", sys.platform)
-
-    dark_mode = False
+    theme_dark_mode = False
 
     # Windows: Check for dark mode
     if sys.platform == "win32":
         try:
             import winreg
+            registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+            reg_keypath = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+
+            try:
+                reg_key = winreg.OpenKey(registry, reg_keypath)
+                for i in range(1024):
+                    try:
+                        value_name, value, _ = winreg.EnumValue(reg_key, i)
+                        if value_name == 'AppsUseLightTheme':
+                            theme_dark_mode = True
+                    except OSError:
+                        theme_dark_mode = False
+                        break
+
+            except FileNotFoundError:
+                tprint("Key not found")
+                theme_dark_mode = False
+
         except ImportError:
             tprint("winreg missing")
+            theme_dark_mode = False
 
-        registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
-        reg_keypath = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize'
-        try:
-            reg_key = winreg.OpenKey(registry, reg_keypath)
-        except FileNotFoundError:
-            tprint("Key not found")
+    return theme_dark_mode
 
-        for i in range(1024):
-            try:
-                value_name, value, _ = winreg.EnumValue(reg_key, i)
-                if value_name == 'AppsUseLightTheme':
-                    dark_mode = True
-            except OSError:
-                break
 
-    stackprinter.set_excepthook()
-
+def start_application(testing=False):
     QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-
     app = QApplication([])
-    app.setStyle( 'Fusion' )
+    app.setStyle('Fusion')
 
-    # Splash screen - need to happen after QApplication is created and before MainWindow is loaded
-    splash = QLabel(None, QtCore.Qt.SplashScreen)
-    splash.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-    splash.setPixmap(QPixmap(":/images/Splash.png"))
-    splash.show()
+    if not testing:
+        # Splash screen - need to happen after QApplication is created and before MainWindow is loaded
+        splash = QLabel(None, QtCore.Qt.SplashScreen)
+        splash.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        splash.setPixmap(QPixmap(":/images/Splash.png"))
+        splash.show()
 
-    app.processEvents()
+        app.processEvents()
+    else:
+        splash = None
 
     # Needs to be set before calling MainWindow. These settings are used to find the way to AppData and Documents
     QApplication.setOrganizationName("RAYN")
     QApplication.setApplicationName("RAYN Vision System")
 
-    from MainWindow import MainWindow
+    app.setQuitOnLastWindowClosed(True)
 
-    import os
-    import glob
+    return app, splash
 
-    import logging
-    from logging.handlers import RotatingFileHandler
 
-    # from qt_material import apply_stylesheet
+def start_logger(testing=False):
+    run_date_time = datetime.now().strftime("%Y-%d-%m_%H%M%S")
 
-    class StreamToLogger(object):
-        """
-        Fake file-like stream object that redirects writes to a logger instance.
-        """
-        def __init__(self, logger, log_level=logging.INFO):
-            self.logger = logger
-            self.log_level = log_level
-            self.linebuf = ''
+    if not testing:
+        local_data_location_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
 
-        def write(self, buf):
-            for line in buf.rstrip().splitlines():
-                self.logger.log(self.log_level, line.rstrip())
-            sys.stdout.write(buf)
+        if not os.path.exists(local_data_location_path):
+            os.makedirs(local_data_location_path)
 
-        def flush(self):
-            pass
+        debug_file_name = os.path.normpath(
+            os.path.join(local_data_location_path, run_date_time + ".log"))
+        error_file_name = os.path.normpath(os.path.join(local_data_location_path, "error.log"))
 
-    local_data_location_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)
+    else:
+        if not os.path.exists("log"):
+            print("Log folder does not exist. Creating new folder")
+            os.makedirs("log")
 
-    if not os.path.exists(local_data_location_path):
-        os.makedirs(local_data_location_path)
-
-    debug_file_name = os.path.normpath(os.path.join(local_data_location_path, datetime.now().strftime("%Y-%d-%m %H.%M.%S") + ".log"))
-    error_file_name = os.path.normpath(os.path.join(local_data_location_path, "error.log"))
+        debug_file_name = f"log/{run_date_time}_debug.log"
+        error_file_name = f"log/{run_date_time}_error.log"
 
     tprint("Debug file name:", debug_file_name)
     tprint("Error file name:", error_file_name)
-
     Helper.debug_file_name = debug_file_name
 
-    if path.exists(debug_file_name):
+    if os.path.exists(debug_file_name):
         os.remove(debug_file_name)
 
     logging.basicConfig(
-       level=logging.DEBUG,
-       format='%(asctime)s:%(message)s',
-       handlers=[RotatingFileHandler(error_file_name, maxBytes=200000, backupCount=5)]
+        level=logging.DEBUG,
+        format='%(asctime)s:%(message)s',
+        handlers=[RotatingFileHandler(error_file_name, maxBytes=200000, backupCount=5)]
     )
 
     # Log crash info
@@ -141,38 +164,68 @@ if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp
     sl = StreamToLogger(stderr_logger, logging.ERROR)
     sys.stderr = sl
 
-    def resource_path():
-        tprint("Path:", path.dirname(__file__))
+    return debug_file_name, error_file_name
 
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        tprint('running in a PyInstaller bundle')
 
-    resource_path()
-
-    app.setQuitOnLastWindowClosed(True)
-
-    script_folder = path.join(path.dirname(__file__), 'Scripts')  # In frozen mode (PyInstaller), __file__ contains the path to the execution folder
-    mask_folder = path.join(path.dirname(__file__), 'Masks')  # In frozen mode (PyInstaller), __file__ contains the path to the execution folder
-
-    # Get rid of old camera files
-    file_list = glob.glob(path.join('.', 'Camera_*.json'), recursive=False)
+def remove_camera_files():
+    file_list = glob.glob(os.path.join('.', 'Camera_*.json'), recursive=False)
     for file_path in file_list:
         try:
             os.remove(file_path)
         except:
             tprint("Error while deleting file : ", file_path)
 
-    # Open main window
-    widget = MainWindow(script_folder, mask_folder)
+def validate_folder(folder):
+    for root, dirs, files in os.walk(folder):  # Collect all .py files in the folder tree
+        for f in files:
+            if f.endswith(".py"):
+                return True  # At least one file found
+            
+    return False
 
-    # apply_stylesheet(app, theme='dark_amber.xml')
+if __name__ == '__main__':  # Process will re-run CameraApp.py (with name = __mp_main__) so let's make sure nothing is executed if in that case
+
+    dark_mode = check_system_theme()
+    stackprinter.set_excepthook()
+    rvs_app, splash = start_application()
+    start_logger()
+
+    tprint("Path:", os.path.dirname(__file__))
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        tprint('running in a PyInstaller bundle')
+
+    remove_camera_files()
+
+    # In frozen mode (PyInstaller), __file__ contains the path to the execution folder
+    script_folder = os.path.join(os.path.dirname(__file__), 'Scripts')
+    mask_folder = os.path.join(os.path.dirname(__file__), 'Masks')
+
+    if not validate_folder(script_folder) or not validate_folder(mask_folder):
+        QMessageBox.warning(None, "No Scripts or Masks found", "Please make sure you have Scripts and Masks folders")
+        sys.exit(0)
+
+    preset_folder = None
+    for root, dirs, files in os.walk(script_folder):  # Locate the presets folder in the Scripts tree
+        for d in dirs:
+            if d == "presets":
+                preset_folder = os.path.join(root, 'presets')
+                break
+
+    # Open main window
+    widget = MainWindow(script_folder, mask_folder, preset_folder)
+
+    # Stunt to prevent application from moving around then OpenGL is switched on the first opened QWebEngineView. RAYNCAMANA-387
+    dummy_view = QWebEngineView(widget)
+    dummy_view.resize(1, 1)
+    dummy_view.load(QUrl.fromLocalFile("dummy.html"))
 
     widget.resize(1200, 800)
-
     widget.show()
+    
+    dummy_view.hide()
 
-    splash.close()
+    if splash:
+        splash.close()
 
-    exit_code = app.exec()
-
+    exit_code = rvs_app.exec()
     sys.exit(exit_code)

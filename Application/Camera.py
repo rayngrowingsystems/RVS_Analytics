@@ -125,12 +125,12 @@ def fetch_files_in_the_background(camera, feedback_queue):
 
 
 class Camera:
-    unique_key = "123456"  # TODO
-
     def __init__(self, main_window, ip_address):
         self.main_window = main_window
 
         self.base_url = "http://" + ip_address + "/api/v1"
+
+        self.api_key = ""
 
         now = datetime.datetime.now()
         yesterday = now - datetime.timedelta(days=1)
@@ -170,7 +170,7 @@ class Camera:
                 tprint("Camera tick:", self.main_window.analysis_running, len(self.files_to_fetch), self.wait_for_files_arrived, self.images_need_analysis)
 
             if self.main_window is not None:
-                if self.main_window.analysis_running and self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Camera and self.main_window.experiment.camera_file_path != "":
+                if self.main_window.analysis_running and self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Camera and self.main_window.experiment.camera_file_path != "":
                     if len(self.files_to_fetch) == 0 and not self.wait_for_files_arrived:
                         if self.get_first_in_range() == False:  # Nothing more to fetch right now -> process accumulated ones
                             if self.images_need_analysis == True:
@@ -207,8 +207,11 @@ class Camera:
 
                     QApplication.instance().processEvents()
 
+    def set_api_key(self, api_key):
+        self.api_key = api_key
+
     def default_parameters(self):
-        return "?key=" + self.unique_key
+        return "?key=" + self.api_key
 
     def set_last_received_file(self, file_name):
         # Update the current start date/time
@@ -242,8 +245,13 @@ class Camera:
         url = self.base_url + "/status" + self.default_parameters()
         try:
             r = requests.get(url, timeout=5)
-            # tprint(r.status_code, r.json())
-            return r.json()
+            if r.status_code == 401:
+                tprint("Camera: Unauthorized")
+                self.main_window.add_status_text.emit("Unauthorized camera. Needs API key?")
+                return None
+            else:
+                # tprint(r.status_code, r.json())
+                return r.json()
         except BaseException as e:
             tprint("GetStatus: Exception", e)
             return None
@@ -285,11 +293,30 @@ class Camera:
         template = '{ "source" : "" }'
         parameters = json.loads(template)
         parameters['source'] = folder
+        # parameters['limit'] = 10
+
+        more_files = True
+        index = 0
+        files = []
 
         try:
-            r = requests.get(url, timeout=5, json=parameters)
-            # tprint("getFolder:", r.status_code, r.json())
-            return r.json()["files"]
+            while more_files:
+                parameters['index'] = index
+
+                r = requests.get(url, timeout=5, json=parameters)
+
+                if r.status_code == 401:
+                    tprint("Camera: Unauthorized")
+                    self.main_window.add_status_text.emit("Unauthorized camera. Needs API key?")
+                    return []
+                else:
+                    j = r.json()
+                    files += j['files']
+
+                    index = j['next']
+                    more_files = (index !=0)
+
+            return files
         except:
             tprint("No camera found")
             return []

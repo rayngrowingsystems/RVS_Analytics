@@ -156,8 +156,10 @@ class RoiGrid(QWidget):
 
             item_type = item["type"]
 
-            x = item["x"] * self.scaling_factor
-            y = item["y"] * self.scaling_factor
+            p = self.dialog.main_window.experiment.image_to_point_coordinates(QPoint(item["x"], item["y"]), self.dialog.ui.reference_image1.crop_rect, self.scaling_factor)
+            x = p.x()
+            y = p.y()
+
             width = item["width"] * self.scaling_factor
             height = item["height"] * self.scaling_factor
 
@@ -170,7 +172,11 @@ class RoiGrid(QWidget):
                 if "points" in item:
                     points = item["points"]
                     for point in points:
-                        polygon.append(QPoint(point[0] * self.scaling_factor, point[1] * self.scaling_factor))
+                        p = self.dialog.main_window.experiment.image_to_point_coordinates(QPoint(point[0], point[1]), self.dialog.ui.reference_image1.crop_rect, self.scaling_factor)
+                        x = p.x()
+                        y = p.y()
+
+                        polygon.append(QPoint(x, y))
                         
                     if polygon.size() == 1:  # Single point?
                         painter.drawEllipse(polygon.at(0), 2, 2)
@@ -221,7 +227,7 @@ class ImageRoiDialog(QDialog):
         DEFAULT_RADIUS = 20
 
         # Set window flags to remove 'What's this' icon from the title bar
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)
 
         # Load the UI elements for the dialog
         self.load_ui()
@@ -259,22 +265,35 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image1.rubberband_changed.connect(self.on_rubberband_changed)
         self.ui.reference_image2.rubberband_changed.connect(self.on_rubberband_changed)
 
+        self.ui.reference_image1.crop_rect_changed.connect(self.on_crop_rect_changed)
+        self.ui.reference_image2.crop_rect_changed.connect(self.on_crop_rect_changed)
+
+        self.ui.reference_image1.crop_state_changed.connect(self.on_crop_state_changed)
+        self.ui.reference_image2.crop_state_changed.connect(self.on_crop_state_changed)
+
+        self.ui.reference_image1.crop_accepted.connect(self.on_crop_accepted)
+        self.ui.reference_image2.crop_accepted.connect(self.on_crop_accepted)
+
+        self.ui.reference_image1.crop_reset.connect(self.on_crop_reset)
+        self.ui.reference_image2.crop_reset.connect(self.on_crop_reset)
+
         # Create and configure ROI grids for reference images
         self.roi_grid1 = RoiGrid(self.ui.reference_image1, self, [])
         self.ui.reference_image1.set_roi_grid(self.roi_grid1)
-        image_button = QPushButton("Image...", self.roi_grid1)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image1)
 
         self.roi_grid2 = RoiGrid(self.ui.reference_image2, self, [])
         self.ui.reference_image2.set_roi_grid(self.roi_grid2)
-        image_button = QPushButton("Image...", self.roi_grid2)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image2)
+
+        self.ui.reference_image1.show_crop_buttons = True
+        self.ui.reference_image1.select_image_button.setParent(self.roi_grid1)
+        self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
+ 
+        self.ui.reference_image2.show_crop_buttons = False
+        self.ui.reference_image2.select_image_button.setParent(self.roi_grid2)
+        self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
+
+        self.ui.reference_image1.set_crop_parent(self.roi_grid1)
+        self.ui.reference_image2.set_crop_parent(self.roi_grid2)
 
         # Set geometries and show ROI grids
         self.roi_grid1.setGeometry(self.ui.reference_image1.geometry())
@@ -327,9 +346,9 @@ class ImageRoiDialog(QDialog):
         self.ui.width_spinbox.setValue(self.main_window.experiment.roi_info.width)
         self.ui.height_spinbox.setValue(self.main_window.experiment.roi_info.height)
 
-        self.ui.roi_placement_mode.setCurrentIndex(self.main_window.experiment.roi_info.placement_mode_number())
-        self.ui.roi_shape.setCurrentIndex(self.main_window.experiment.roi_info.shape_number())
-        self.ui.roi_detection_mode.setCurrentIndex(self.main_window.experiment.roi_info.detection_mode_number())
+        self.ui.roi_placement_mode.setCurrentIndex(self.main_window.experiment.roi_info.placement_mode.value - 1)
+        self.ui.roi_shape.setCurrentIndex(self.main_window.experiment.roi_info.shape.value - 1)
+        self.ui.roi_detection_mode.setCurrentIndex(self.main_window.experiment.roi_info.detection_mode.value - 1)
 
         # Connect signals for ROI placement mode and shape changes
         self.ui.roi_placement_mode.currentIndexChanged.connect(self.on_placement_mode_change)
@@ -345,6 +364,9 @@ class ImageRoiDialog(QDialog):
         self.rubberband_rect = self.main_window.experiment.roi_info.rect
 
         QTimer.singleShot(300, lambda: self.load_reference_images())
+
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageRoiDialog()
@@ -367,15 +389,11 @@ class ImageRoiDialog(QDialog):
         self.refresh_roi_grid()
 
     def select_reference_image1(self):
-        select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
-
-        select_image_dialog.exec()
+        self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
 
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
-            select_image_dialog = SelectImageDialog(self, self.ui.reference_image2)
-
-            select_image_dialog.exec()
+            self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
         else:
             QMessageBox.warning(self, "Image selection", "You must select the left image first")
 
@@ -393,6 +411,9 @@ class ImageRoiDialog(QDialog):
             tprint("Roi: Load right preview image:", self.main_window.experiment.roi_reference_image2)
         else:
             self.roi_grid2.show_rois = False
+
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.refresh_roi_grid()
         self.refresh_image_sizes()
@@ -456,18 +477,16 @@ class ImageRoiDialog(QDialog):
         self.ui.roi_detection_mode.blockSignals(False)
 
     def image_to_point_coordinates(self, point):
-        return QPoint(point.x() * self.roi_grid1.scaling_factor, point.y() * self.roi_grid1.scaling_factor)
+        return self.main_window.experiment.image_to_point_coordinates(point, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
     
     def point_to_image_coordinates(self, point):
-        return QPoint(point.x() / self.roi_grid1.scaling_factor, point.y() / self.roi_grid1.scaling_factor)
+        return self.main_window.experiment.point_to_image_coordinates(point, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
     
     def image_to_rect_coordinates(self, rect):
-        return QRect(rect.x() * self.roi_grid1.scaling_factor, rect.y() * self.roi_grid1.scaling_factor, \
-                     rect.width() * self.roi_grid1.scaling_factor, rect.height() * self.roi_grid1.scaling_factor)
+        return self.main_window.experiment.image_to_rect_coordinates(rect, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
 
     def rect_to_image_coordinates(self, rect):
-        return QRect(rect.x() / self.roi_grid1.scaling_factor, rect.y() / self.roi_grid1.scaling_factor, \
-                     rect.width() / self.roi_grid1.scaling_factor, rect.height() / self.roi_grid1.scaling_factor)
+        return self.main_window.experiment.rect_to_image_coordinates(rect, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
 
     def on_placement_mode_change(self):
         if self.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix:  # Switching from Matrix to Manual?
@@ -502,18 +521,23 @@ class ImageRoiDialog(QDialog):
 
         if self.shape == Experiment.RoiInfo.Shape.Circle:
             self.update_item_type(self.focused_roi_item, "Circle")
-            self.update_item_radius(self.focused_roi_item, self.ui.width_spinbox.value() / 2)
         elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
             self.update_item_type(self.focused_roi_item, "Rectangle")
         elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
             self.update_item_type(self.focused_roi_item, "Ellipse")
-            self.update_item_radius(self.focused_roi_item, self.ui.width_spinbox.value())
         elif self.shape == Experiment.RoiInfo.Shape.Polygon:
             self.remove_item(self.focused_roi_item)
             self.focused_roi_item = None
 
             self.polygon = QPolygon()
             self.polygon_closed = True
+
+        if self.shape == Experiment.RoiInfo.Shape.Circle:
+            self.focused_roi_item["width"] = self.focused_roi_item["height"]  # MAke sure width equals height for a circle
+
+        self.ui.width_spinbox.setValue(self.focused_roi_item["width"])
+        self.ui.height_spinbox.setValue(self.focused_roi_item["height"])
+        self.ui.radius_spinbox.setValue(self.focused_roi_item["width"] / 2)
 
         self.refresh_info_label()
         self.refresh_roi_grid()
@@ -737,6 +761,37 @@ class ImageRoiDialog(QDialog):
                                          
             self.refresh_roi_grid()
 
+    def on_crop_rect_changed(self, rect):
+        if self.ui.reference_image1 is not None:
+            self.ui.reference_image1.crop_edit_rect = rect
+            self.ui.reference_image1.crop_mode = True
+            self.ui.reference_image1.update()
+        if self.ui.reference_image2 is not None:
+            self.ui.reference_image2.crop_edit_rect = rect
+            self.ui.reference_image2.crop_mode = True
+            self.ui.reference_image2.update()
+
+    def on_crop_state_changed(self):
+        # Copy all crop settings from image 2 to image 1
+        self.ui.reference_image2.crop_mode = self.ui.reference_image1.crop_mode
+        self.ui.reference_image2.crop_origin = self.ui.reference_image1.crop_origin
+        self.ui.reference_image2.crop_edit_rect = self.ui.reference_image1.crop_edit_rect
+        self.ui.reference_image2.crop_rect = self.ui.reference_image1.crop_rect
+        self.ui.reference_image2.crop_pixmap = self.ui.reference_image1.crop_pixmap
+
+        self.ui.reference_image2.set_crop_rect(self.ui.reference_image2.crop_rect)
+        self.ui.reference_image2.refresh_image_size()
+
+        self.ui.reference_image2.update()
+
+    def on_crop_accepted(self):
+        self.clear_rois()
+        self.refresh_image_sizes()
+
+    def on_crop_reset(self):
+        self.clear_rois()
+        self.refresh_image_sizes()
+
     def contains_item(self, existing_item, new_item):
         item_type = existing_item["type"]
         item_type2 = new_item["type"]
@@ -849,10 +904,15 @@ class ImageRoiDialog(QDialog):
             height = self.ui.reference_image1.height()
 
             if self.ui.reference_image1.original_image:
+                self.ui.reference_image1.refresh_image_size()
+                
                 # Scale pixmap to follow available space
-                self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+                # self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
-                self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() / self.ui.reference_image1.original_image.width()
+                if not self.ui.reference_image1.crop_rect.isEmpty():
+                    self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() / self.ui.reference_image1.crop_rect.width()
+                else:
+                    self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() / self.ui.reference_image1.original_image.width()
             else:
                 self.roi_grid1.scaling_factor = 1.0
 
@@ -867,10 +927,15 @@ class ImageRoiDialog(QDialog):
             height = self.ui.reference_image2.height()
 
             if self.ui.reference_image2.original_image:
+                self.ui.reference_image2.refresh_image_size()
+                
                 # Scale pixmap to follow available space
-                self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+                # self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
-                self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() / self.ui.reference_image2.original_image.width()
+                if not self.ui.reference_image2.crop_rect.isEmpty():
+                    self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() / self.ui.reference_image2.crop_rect.width()
+                else:
+                    self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() / self.ui.reference_image2.original_image.width()
             else:
                 self.roi_grid2.scaling_factor = self.roi_grid1.scaling_factor 
 
@@ -880,8 +945,12 @@ class ImageRoiDialog(QDialog):
             self.roi_grid2.update()
 
     def refresh_image_sizes(self):
+        # self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        # self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
+
         self.refresh_reference_image1()
         self.refresh_reference_image2()
 
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()
+            

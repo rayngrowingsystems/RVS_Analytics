@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'AnalysisPreviewDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,33 +26,12 @@ class Ui_AnalysisPreviewDialog(object):
         if not AnalysisPreviewDialog.objectName():
             AnalysisPreviewDialog.setObjectName(u"AnalysisPreviewDialog")
         AnalysisPreviewDialog.setWindowModality(Qt.NonModal)
-        AnalysisPreviewDialog.resize(628, 605)
+        AnalysisPreviewDialog.resize(881, 697)
         AnalysisPreviewDialog.setModal(True)
         self.gridLayout_3 = QGridLayout(AnalysisPreviewDialog)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.script_label = QLabel(AnalysisPreviewDialog)
-        self.script_label.setObjectName(u"script_label")
-        font = QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.script_label.setFont(font)
-
-        self.verticalLayout.addWidget(self.script_label)
-
-        self.script_description = QLabel(AnalysisPreviewDialog)
-        self.script_description.setObjectName(u"script_description")
-
-        self.verticalLayout.addWidget(self.script_description)
-
-        self.line = QFrame(AnalysisPreviewDialog)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
-
-        self.verticalLayout.addWidget(self.line)
-
         self.label = QLabel(AnalysisPreviewDialog)
         self.label.setObjectName(u"label")
 
@@ -64,6 +43,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.reference_image1.setObjectName(u"reference_image1")
         self.reference_image1.setMinimumSize(QSize(300, 200))
         self.reference_image1.setFrameShape(QFrame.Box)
+        self.reference_image1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout.addWidget(self.reference_image1)
 
@@ -71,6 +51,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.reference_image2.setObjectName(u"reference_image2")
         self.reference_image2.setMinimumSize(QSize(300, 200))
         self.reference_image2.setFrameShape(QFrame.Box)
+        self.reference_image2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout.addWidget(self.reference_image2)
 
@@ -88,6 +69,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.preview_image1.setObjectName(u"preview_image1")
         self.preview_image1.setMinimumSize(QSize(300, 200))
         self.preview_image1.setFrameShape(QFrame.Box)
+        self.preview_image1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_2.addWidget(self.preview_image1)
 
@@ -95,6 +77,7 @@ class Ui_AnalysisPreviewDialog(object):
         self.preview_image2.setObjectName(u"preview_image2")
         self.preview_image2.setMinimumSize(QSize(300, 200))
         self.preview_image2.setFrameShape(QFrame.Box)
+        self.preview_image2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_2.addWidget(self.preview_image2)
 
@@ -119,13 +102,13 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_3.addItem(self.verticalSpacer)
 
@@ -141,7 +124,8 @@ class Ui_AnalysisPreviewDialog(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.verticalLayout.setStretch(8, 1)
+        self.verticalLayout.setStretch(1, 1)
+        self.verticalLayout.setStretch(3, 1)
 
         self.gridLayout_3.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
@@ -157,8 +141,6 @@ class Ui_AnalysisPreviewDialog(object):
 
     def retranslateUi(self, AnalysisPreviewDialog):
         AnalysisPreviewDialog.setWindowTitle(QCoreApplication.translate("AnalysisPreviewDialog", u"Analytic preview", None))
-        self.script_label.setText("")
-        self.script_description.setText("")
         self.label.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"Pick one or two reference images", None))
         self.reference_image1.setText(QCoreApplication.translate("AnalysisPreviewDialog", u"\n"
 "\n"

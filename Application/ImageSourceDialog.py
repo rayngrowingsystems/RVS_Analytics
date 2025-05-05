@@ -15,7 +15,8 @@
 # This Python file uses the following encoding: utf-8
 import os
 
-from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
+from PySide6.QtCore import QTimer
 
 from PySide6 import QtCore
 
@@ -65,22 +66,38 @@ class ImageSourceDialog(QDialog):
         for cid, camera_json in self.main_window.cameras.items():
             if cid == self.main_window.experiment.camera_cid:
                 self.ui.camera_selection_combobox.setCurrentIndex(index)
+                if cid in self.main_window.experiment.camera_api_keys:
+                    self.ui.camera_api_key.setText(self.main_window.experiment.camera_api_keys[cid])
+                self.ui.camera_api_key.setEnabled(True)
                 break
 
             index = index + 1
 
         self.ui.camera_selection_combobox.currentIndexChanged.connect(self.camera_selection_changed)
+        self.ui.camera_api_key.editingFinished.connect(self.camera_api_key_changed)
 
-        if self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Image:
+        if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Image:
             self.ui.image_source_radiobutton.setChecked(True)
-        elif self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Folder:
+        elif self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Folder:
             self.ui.folder_source_radiobutton.setChecked(True)
         else:
             self.ui.camera_source_radiobutton.setChecked(True)
 
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
+
     def load_ui(self):
         self.ui = Ui_ImageSourceDialog()
         self.ui.setupUi(self)
+
+    def accept(self):
+        if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Camera and \
+            self.main_window.experiment.camera_file_path in [None, "", "."]:
+            QMessageBox.warning(self, "Incomplete Camera setup", "You need to choose a Target folder")
+        elif self.main_window.experiment.output_file_path in [None, "", "."]:
+            QMessageBox.warning(self, "Incomplete Output setup", "You need to choose an Output folder")
+        else:
+            super(ImageSourceDialog, self).accept()
 
     def set_image_mode(self):
         self.main_window.set_image_source(self.main_window.experiment.ImageSource.Image)
@@ -123,6 +140,8 @@ class ImageSourceDialog(QDialog):
 
             self.ui.folder_file_path.setText(folder)
 
+            self.main_window.experiment.clear_all_preview_images()
+
     def set_camera_file_path(self):
         folder = QFileDialog.getExistingDirectory(self, "Select a folder", self.main_window.experiment.current_folder())
 
@@ -155,8 +174,14 @@ class ImageSourceDialog(QDialog):
             self.ui.camera_selection_combobox.removeItem(0)
 
         # Add back the current list
+        count = 0
         for camera in self.main_window.camera_display_names():
             self.ui.camera_selection_combobox.addItem(camera)
+            count += 1
+
+        if count > 0:
+            self.ui.camera_api_key.setEnabled(True)
+            self.ui.camera_selection_combobox.setCurrentIndex(0)
 
         self.ui.camera_selection_combobox.blockSignals(False)
 
@@ -174,3 +199,16 @@ class ImageSourceDialog(QDialog):
 
     def camera_selection_changed(self, index):
         self.main_window.camera_selection_changed(index)
+
+        # Refresh the UI
+        cid = self.main_window.experiment.camera_cid
+
+        if cid in self.main_window.experiment.camera_api_keys:
+            self.ui.camera_api_key.setText(self.main_window.experiment.camera_api_keys[cid])
+        else:
+            self.ui.camera_api_key.setText("")
+        
+        self.ui.camera_api_key.setEnabled(True)
+
+    def camera_api_key_changed(self):
+        self.main_window.camera_api_key_changed(self.ui.camera_api_key.text())

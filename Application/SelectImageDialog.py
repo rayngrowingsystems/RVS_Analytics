@@ -28,9 +28,9 @@ from ui_SelectImageDialog import Ui_SelectImageDialog
 from Helper import tprint
 
 class SelectImageDialog(QDialog):
-    def __init__(self, parent, corresponding_label):
-        self.main_window = parent.main_window
-        self.dialog = parent
+    def __init__(self, main_window, dialog, corresponding_label):
+        self.main_window = main_window
+        self.dialog = dialog
 
         self.corresponding_label = corresponding_label
 
@@ -45,9 +45,9 @@ class SelectImageDialog(QDialog):
         self.ui.setupUi(self)
 
     def pick_image(self):
-        if self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Image:
+        if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Image:
             start_folder = self.main_window.experiment.image_file_path
-        elif self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Folder:
+        elif self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Folder:
             start_folder = self.main_window.experiment.folder_file_path
         else:
             start_folder = self.main_window.experiment.camera_file_path
@@ -91,9 +91,9 @@ class SelectImageDialog(QDialog):
             file, ok = QInputDialog.getItem(self, "Select image", "Image", files, 0, False)
 
             if ok:
-                if self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Image:
+                if self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Image:
                     target_folder = self.main_window.experiment.image_file_path
-                elif self.main_window.experiment.ImageSource is self.main_window.experiment.ImageSource.Folder:
+                elif self.main_window.experiment.image_source is self.main_window.experiment.ImageSource.Folder:
                     target_folder = self.main_window.experiment.folder_file_path
                 else:
                     target_folder = self.main_window.experiment.camera_file_path

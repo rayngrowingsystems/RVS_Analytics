@@ -57,6 +57,8 @@ class ImageMaskDialog(QDialog):
 
         self.wavelength_value = {}
 
+        self.default_values = {}
+
         # Flag to track setup completion
         self.setup_completed = False
 
@@ -64,7 +66,7 @@ class ImageMaskDialog(QDialog):
         super(ImageMaskDialog, self).__init__()
 
         # Set window flags to customize window behavior
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)  # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
 
         # Load the UI from the ui file
         self.load_ui()
@@ -72,6 +74,9 @@ class ImageMaskDialog(QDialog):
         # Connect signals of reference images to the slot for running mask script
         self.ui.reference_image1.image_file_name_changed.connect(self.run_mask_script)
         self.ui.reference_image2.image_file_name_changed.connect(self.run_mask_script)
+
+        self.ui.reference_image1.image_file_name_changed.connect(self.refresh_image_sizes)
+        self.ui.reference_image2.image_file_name_changed.connect(self.refresh_image_sizes)
 
         # Initialize variables to hold original preview images
         self.original_preview_image1 = None
@@ -81,22 +86,15 @@ class ImageMaskDialog(QDialog):
         self.roi_grid2 = None
 
         # Connect image buttons to slot for selecting reference images
-        image_button = QPushButton("Image...", self.ui.reference_image1)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image1)
-
-        image_button = QPushButton("Image...", self.ui.reference_image2)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image2)
+        self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
+        self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
 
         # Connect cancel button to close the dialog
         self.ui.cancel_button.clicked.connect(self.reject)
 
         self.ui.show_rois_checkbox.toggled.connect(self.show_rois)
+
+        self.ui.default_button.clicked.connect(self.set_default_values)
 
         # Initialize script description
         self.script_description = ''
@@ -124,14 +122,14 @@ class ImageMaskDialog(QDialog):
             if "mask" in data:
                 self.mask_description = data['mask']['info']['description']
 
-            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges = \
+            grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges, self.default_values = \
                 Helper.get_ui_elements_from_config(options=data['mask']['options'], settings=self.main_window.experiment.mask, \
                                                    execute_on_change=self.run_mask_script, dropdown_changed=self.dropdown_changed, \
                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                   script_for_dropdown_values=self.main_window.current_mask_script())
+                                                   script_for_dropdown_values=self.main_window.current_mask_script(), preset_folder=self.main_window.preset_folder)
             
             # Set the layout for mask options
-            self.ui.mask_options_box.setLayout(grid)
+            self.ui.main_box.setLayout(grid)
 
             tprint(self.option_wavelengths, self.option_dropdowns)
 
@@ -145,6 +143,9 @@ class ImageMaskDialog(QDialog):
 
         # For some reason, geometry won't work unless we move the update outside the constructor
         QTimer.singleShot(300, lambda: self.load_reference_images())
+
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
     def load_ui(self):
         self.ui = Ui_ImageMaskDialog()
@@ -227,15 +228,11 @@ class ImageMaskDialog(QDialog):
             self.roi_grid2.setVisible(active)
 
     def select_reference_image1(self):
-        select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
-
-        select_image_dialog.exec()
+        self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
 
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
-            select_image_dialog = SelectImageDialog(self, self.ui.reference_image2)
-
-            select_image_dialog.exec()
+            self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
         else:
             QMessageBox.warning(self, "Image selection", "You must select the left image first")
 
@@ -247,6 +244,9 @@ class ImageMaskDialog(QDialog):
         if self.main_window.experiment.mask_reference_image2 is not None:
             self.ui.reference_image2.set_image_file_name(self.main_window.experiment.mask_reference_image2, self.main_window.experiment.image_options_to_dict())
             tprint("Mask: Load right preview image:", self.main_window.experiment.mask_reference_image2)
+
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.populate_wavelengths()
 
@@ -293,10 +293,6 @@ class ImageMaskDialog(QDialog):
 
             # Populate image options
             settings["experimentSettings"]["imageOptions"] = self.main_window.experiment.image_options_to_dict()
-            # settings["experimentSettings"]["imageOptions"]["lensAngle"] = self.main_window.experiment.lens_angle
-            # settings["experimentSettings"]["imageOptions"]["normalize"] = self.main_window.experiment.normalize
-            # settings["experimentSettings"]["imageOptions"]["lightCorrection"] = self.main_window.experiment.light_correction
-            # settings["experimentSettings"]["imageOptions"]["rotation"] = self.main_window.experiment.rotation
 
             # Get the current mask script
             mask_script = self.main_window.current_mask_script()
@@ -311,7 +307,10 @@ class ImageMaskDialog(QDialog):
                 mask_script.create_mask(settings)
 
                 # Load the generated mask preview image
-                self.original_preview_image1 = QPixmap(temp_file_name)
+                if not self.main_window.experiment.crop_rect.isEmpty():
+                    self.original_preview_image1 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
+                else:    
+                    self.original_preview_image1 = QPixmap(temp_file_name)
 
                 # Refresh the preview image on the UI
                 self.refresh_preview_image1()
@@ -324,7 +323,10 @@ class ImageMaskDialog(QDialog):
                 mask_script.create_mask(settings)
 
                 # Load the generated mask preview image
-                self.original_preview_image2 = QPixmap(temp_file_name)
+                if not self.main_window.experiment.crop_rect.isEmpty():
+                    self.original_preview_image2 = QPixmap(temp_file_name).copy(self.main_window.experiment.crop_rect)
+                else:    
+                    self.original_preview_image2 = QPixmap(temp_file_name)
 
                 # Refresh the preview image on the UI
                 self.refresh_preview_image2()
@@ -371,25 +373,14 @@ class ImageMaskDialog(QDialog):
             self.roi_grid2.scaling_factor = scaling_factor
             self.roi_grid2.setFixedSize(self.ui.preview_image2.pixmap().size())
 
-    def refresh_reference_image1(self):
-        if self.ui.reference_image1 is not None:
-            width = self.ui.reference_image1.width()
-            height = self.ui.reference_image1.height()
-
-            # Scale pixmap to follow available space
-            self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
-
-    def refresh_reference_image2(self):
-        if self.ui.reference_image2 is not None:
-            width = self.ui.reference_image2.width()
-            height = self.ui.reference_image2.height()
-
-            # Scale pixmap to follow available space
-            self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
-
     def refresh_image_sizes(self):
-        self.refresh_reference_image1()
-        self.refresh_reference_image2()
+        if self.ui.reference_image1 is not None:
+            self.ui.reference_image1.refresh_image_size()
+        if self.ui.reference_image2 is not None:
+            self.ui.reference_image2.refresh_image_size()
+
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.refresh_preview_image1()
         self.refresh_preview_image2()
@@ -397,3 +388,8 @@ class ImageMaskDialog(QDialog):
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()
 
+    def set_default_values(self):
+        self.blockSignals(True)
+        Helper.set_ui_elements_default_values(self.default_values)
+        self.blockSignals(False)
+            

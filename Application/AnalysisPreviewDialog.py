@@ -47,11 +47,14 @@ class AnalysisPreviewDialog(QDialog):
         self.option_dropdowns = []
 
         super(AnalysisPreviewDialog, self).__init__()
+
+        # Set window flags to customize window behavior
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
+
         self.load_ui()
 
-        # Connect signals of reference images to the slot for running preview script
-        # self.ui.reference_image1.image_file_name_changed.connect(self.run_preview_script)
-        # self.ui.reference_image2.image_file_name_changed.connect(self.run_preview_script)
+        self.ui.reference_image1.image_file_name_changed.connect(self.refresh_image_sizes)
+        self.ui.reference_image2.image_file_name_changed.connect(self.refresh_image_sizes)
 
         # Initialize variables to hold original preview images
         self.original_preview_image1 = None
@@ -61,17 +64,8 @@ class AnalysisPreviewDialog(QDialog):
         self.roi_grid2 = None
 
         # Connect image buttons to slot for selecting reference images
-        image_button = QPushButton("Image...", self.ui.reference_image1)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image1)
-
-        image_button = QPushButton("Image...", self.ui.reference_image2)
-        image_button.setMaximumWidth(55)
-        image_button.setDefault(False)
-        image_button.setAutoDefault(False)
-        image_button.clicked.connect(self.select_reference_image2)
+        self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
+        self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
 
         self.ui.preview_button.clicked.connect(self.run_preview_script)
 
@@ -79,33 +73,11 @@ class AnalysisPreviewDialog(QDialog):
 
         self.script_description = ''
 
-        # TODO change Move to AnalysisOptionsDialog
-        '''
-        if self.main_window.experiment.selected_script != "":
-            # configFileName = path.join(self.mainWindow.scriptFolder, self.mainWindow.experiment.selectedScript.replace(".py", ".config"))
-            config_file_name = self.main_window.script_paths[self.main_window.experiment.selected_script].replace(".py", ".config")
-
-            tprint("Script options config:", config_file_name)
-
-            with open(config_file_name) as config_file:
-                data = json.load(config_file)
-                tprint(data)
-
-                self.script_description = data['script']['info']['description']
-
-                grid, self.option_checkboxes, self.option_sliders, self.option_wavelengths, self.wavelength_value, self.option_dropdowns, self.option_ranges = \
-                    Helper.get_ui_elements_from_config(options=data['script']['options'], settings=self.main_window.experiment.script_options, \
-                                                    execute_on_change=self.refresh_values, dropdown_changed=self.dropdown_changed, \
-                                                    slider_value_changed=self.slider_value_changed, wavelength_changed=self.wavelength_changed, \
-                                                    script_for_dropdown_values=self.main_window.current_analysis_script())
-
-                self.ui.analysis_preview_box.setLayout(grid)'''
-
-        # self.ui.script_label.setText("Script: " + self.main_window.ui.script_selection_combobox.currentText())
-        # self.ui.script_description.setText(self.script_description)
-
         # For some reason, geometry won't work unless we move the update outside the constructor
         QTimer.singleShot(300, lambda: self.load_reference_images())
+
+        if self.main_window.test_mode:
+            QTimer.singleShot(self.main_window.test_dialog_timeout, lambda:self.accept())
 
     def load_ui(self):
         self.ui = Ui_AnalysisPreviewDialog()
@@ -149,25 +121,14 @@ class AnalysisPreviewDialog(QDialog):
             self.roi_grid2.scaling_factor = scaling_factor
             self.roi_grid2.setFixedSize(self.ui.preview_image2.pixmap().size())
 
-    def refresh_reference_image1(self):
-        if self.ui.reference_image1 is not None:
-            width = self.ui.reference_image1.width()
-            height = self.ui.reference_image1.height()
-
-            # Scale pixmap to follow available space
-            self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
-
-    def refresh_reference_image2(self):
-        if self.ui.reference_image2 is not None:
-            width = self.ui.reference_image2.width()
-            height = self.ui.reference_image2.height()
-
-            # Scale pixmap to follow available space
-            self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
-
     def refresh_image_sizes(self):
-        self.refresh_reference_image1()
-        self.refresh_reference_image2()
+        if self.ui.reference_image1 is not None:
+            self.ui.reference_image1.refresh_image_size()
+        if self.ui.reference_image2 is not None:
+            self.ui.reference_image2.refresh_image_size()
+
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.refresh_preview_image1()
         self.refresh_preview_image2()
@@ -182,17 +143,11 @@ class AnalysisPreviewDialog(QDialog):
             self.roi_grid2.setVisible(active)
 
     def select_reference_image1(self):
-        select_image_dialog = SelectImageDialog(self, self.ui.reference_image1)
-
-        select_image_dialog.exec()
-
-        # self.populate_wavelengths()
-
+        self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
+        
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
-            select_image_dialog = SelectImageDialog(self, self.ui.reference_image2)
-
-            select_image_dialog.exec()
+            self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
         else:
             QMessageBox.warning(self, "Image selection", "You must select the left image first")
 
@@ -211,6 +166,9 @@ class AnalysisPreviewDialog(QDialog):
             self.ui.preview_image1.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
         if self.ui.reference_image2.image_file_name != "":
             self.ui.preview_image2.setText("Press 'Create Preview' to perform an analysis<br>on the sample images")
+
+        self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
+        self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
 
         self.refresh_image_sizes()
 

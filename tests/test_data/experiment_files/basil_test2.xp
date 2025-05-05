@@ -1,0 +1,139 @@
+{
+    "name": "",
+    "imageSource": 1,
+    "imageFilePath": ".",
+    "folderFilePath": "test_data/hsi/basil",
+    "cameraFilePath": ".",
+    "outputFilePath": "test_data/analysis_results",
+    "cameraCid": "",
+    "cameraApiKeys": {},
+    "roiInfo": {
+        "rect": [
+            288,
+            204,
+            780,
+            408
+        ],
+        "columns": 3,
+        "rows": 2,
+        "radius": 50,
+        "width": 40,
+        "height": 40,
+        "shape": 0,
+        "placementMode": 0,
+        "detectionMode": 0,
+        "roiList": [
+            {
+                "type": "Circle",
+                "x": 288,
+                "y": 204,
+                "width": 100,
+                "height": 100
+            },
+            {
+                "type": "Circle",
+                "x": 678,
+                "y": 204,
+                "width": 100,
+                "height": 100
+            },
+            {
+                "type": "Circle",
+                "x": 1068,
+                "y": 204,
+                "width": 100,
+                "height": 100
+            },
+            {
+                "type": "Circle",
+                "x": 288,
+                "y": 612,
+                "width": 100,
+                "height": 100
+            },
+            {
+                "type": "Circle",
+                "x": 678,
+                "y": 612,
+                "width": 100,
+                "height": 100
+            },
+            {
+                "type": "Circle",
+                "x": 1068,
+                "y": 612,
+                "width": 100,
+                "height": 100
+            }
+        ]
+    },
+    "analysis": {
+        "maskOptions": {
+            "dilate_pixel": true,
+            "invert_mask": false,
+            "overlay_mask": false,
+            "wl_thresh": 0.293,
+            "fill_size": 119.549,
+            "wavelength": "850"
+        },
+        "scriptOptions": {
+            "general": {
+                "roi_overlay": false,
+                "area": true,
+                "hull_area": false,
+                "perimeter": false,
+                "height": false,
+                "width": false,
+                "longest_path": false,
+                "mean_index": true,
+                "false_color_image": false,
+                "index_histogram": false,
+                "spectral_histogram": true,
+                "line_width": 2,
+                "index_selection": [
+                    "ari"
+                ]
+            }
+        },
+        "chartOptionTypes": {
+            "roi_overlay": "",
+            "area": "plot",
+            "hull_area": "plot",
+            "perimeter": "plot",
+            "height": "plot",
+            "width": "plot",
+            "longest_path": "plot",
+            "mean_index": "plot",
+            "false_color_image": "image",
+            "index_histogram": "image",
+            "spectral_histogram": "image"
+        },
+        "selectedScript": "base_script.py",
+        "selectedMask": "Default"
+    },
+    "maskDefined": true,
+    "maskReferenceImage1": "test_data/hsi/basil/RC5-9B3D54_000000_20240528_010000.hdr",
+    "maskReferenceImage2": "test_data/hsi/basil/RC5-9B3D54_000000_20240603_010000.hdr",
+    "imageOptions": {
+        "lensAngle": 60,
+        "normalize": true,
+        "rotation": 0
+    },
+    "roiReferenceImage1": "test_data/hsi/basil/RC5-9B3D54_000000_20240528_010000.hdr",
+    "roiReferenceImage2": "test_data/hsi/basil/RC5-9B3D54_000000_20240603_010000.hdr",
+    "scriptReferenceImage1": "test_data/hsi/basil/RC5-9B3D54_000000_20240528_010000.hdr",
+    "scriptReferenceImage2": "test_data/hsi/basil/RC5-9B3D54_000000_20240603_010000.hdr",
+    "cameraDiscoveryIp": "10.0.0.2",
+    "mqttBroker": "",
+    "mqttPort": "1883",
+    "mqttUserName": "",
+    "mqttPassword": "",
+    "theme": "auto",
+    "sessionData": {},
+    "cropRect": [
+        0,
+        0,
+        0,
+        0
+    ]
+}
