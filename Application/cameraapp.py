@@ -142,6 +142,7 @@ def validate_folder(folder):
 if __name__ == '__main__':
     # Process will re-run CameraApp.py (with name = __mp_main__) so let's make
     # sure nothing is executed if in that case
+    # test comment for test commit
 
     stackprinter.set_excepthook()
     rvs_app, splash = start_application()
