@@ -92,6 +92,7 @@ pure_eval==0.2.3
 pycparser==2.22
 Pygments==2.19.1
 pyparsing==3.2.1
+pyqtdarktheme==2.1.0
 PySide6==6.8.1.1
 PySide6_Addons==6.8.1.1
 PySide6_Essentials==6.8.1.1
