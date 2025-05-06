@@ -325,6 +325,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
         section_groupbox = QGroupBox(display_name)
         section_grid = QGridLayout()
+        section_grid.setHorizontalSpacing(40)
 
         row = 0
         column = 0
