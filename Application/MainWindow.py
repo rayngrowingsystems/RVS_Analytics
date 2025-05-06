@@ -33,7 +33,7 @@ from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
 from PySide6 import QtCore
 from PySide6.QtCore import QDir, QObject, QRunnable, QStandardPaths, QThreadPool, QTimer, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QScreen
+from PySide6.QtGui import QDesktopServices, QIcon, QPainter, QPixmap, QScreen
 from PySide6.QtNetwork import QAbstractSocket, QNetworkInterface
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
@@ -151,6 +151,26 @@ class MyFileEventHandler(FileSystemEventHandler):
         if Config.verbose_mode:
             tprint(f"{event.src_path} moved to {event.dest_path}")
 
+class ResultTabWidget(QLabel):
+    def __init__(self, file_name, parent=None):
+        super().__init__(parent)
+        self.pixmap = QPixmap(file_name)
+
+    def update_pixmap(self, file_name):
+        self.pixmap = QPixmap(file_name)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+
+        # Draw the pixmap, scaled to fit the widget while keeping the aspect ratio
+        if not self.pixmap.isNull():
+            scaled_pixmap = self.pixmap.scaled(self.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            x = (self.width() - scaled_pixmap.width()) // 2
+            y = (self.height() - scaled_pixmap.height()) // 2
+            painter.drawPixmap(x, y, scaled_pixmap)
+
+        # Call the base class implementation
+        super().paintEvent(event)
 
 class MainWindow(QMainWindow):
     add_status_text = QtCore.Signal(str)
@@ -1177,6 +1197,13 @@ class MainWindow(QMainWindow):
 
         return found
 
+    def tab_widget(self, tab_name):
+        for index in range(self.ui.tab_widget.count()):
+            if self.ui.tab_widget.tabText(index) == tab_name:
+                return self.ui.tab_widget.widget(index)
+
+        return None
+
     def handle_script_feedback(self, command, value):
         handled = False
 
@@ -1257,7 +1284,7 @@ class MainWindow(QMainWindow):
 
         # Unknown response
         if not handled:
-            self.add_status_text.emit(command)
+            self.add_status_text.emit("Unhandled script command: " + command)
 
         # if handled:
         #    QApplication.instance().processEvents()
@@ -2013,12 +2040,13 @@ class MainWindow(QMainWindow):
     def on_add_preview_tab(self, tab_name, file_name):
         tprint("add_preview_tab", tab_name, file_name)
         if not self.tab_exists(tab_name):
-            label = QLabel()
-            self.ui.tab_widget.addTab(label, tab_name)
+            tab = ResultTabWidget(file_name)
+            tab.setContentsMargins(0, 0, 0, 0)
 
-        for index in range(self.ui.tab_widget.count()):
-            if self.ui.tab_widget.tabText(index) == tab_name:
-                self.ui.tab_widget.widget(index).setPixmap(QPixmap(file_name))
+            self.ui.tab_widget.addTab(tab, tab_name)
+
+        widget = self.tab_widget(tab_name)
+        widget.update_pixmap(file_name)
 
     def mask_info(self):
         if self.ui.mask_selection_combobox.currentIndex() == 0:  ## Default item -> use mask in script
