@@ -29,6 +29,37 @@ from PySide6.QtGui import QColor
 from Helper import tprint
 
 
+def apply_fixed_axis_limits(chart, x_domain=None, y_domain=None):
+    """Update an Altair chart with fixed axis limits on x and y axes."""
+
+    enc = chart.encoding
+
+    if x_domain:
+        x = enc.x.to_dict()
+        chart = chart.encode(
+            x=alt.X(
+                x.get("shorthand", x.get("field")),
+                type=x.get("type"),
+                title=x.get("title"),
+                scale=alt.Scale(domain=x_domain)
+            )
+        )
+
+    if y_domain:
+        y = enc.y.to_dict()
+        chart = chart.encode(
+            y=alt.Y(
+                y.get("shorthand", y.get("field")),
+                type=y.get("type"),
+                title=y.get("title"),
+                scale=alt.Scale(domain=y_domain)
+            )
+        )
+
+    return chart
+
+
+
 def is_dark(hex_color: str) -> bool:
     c = QColor(hex_color)
     # Using the perceived brightness formula
@@ -161,6 +192,15 @@ class Chart:
 
         #chart.save(self.web_page(), embed_options={"theme": "custom_dark"}, inline=True)  # HTML export
         chart.save(self.image_file())  # SVG export
+        print(f"Chart saved to {self.image_file()}")
+
+        #timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        #chart = apply_fixed_axis_limits(
+        #    chart,
+        #    x_domain=["2024-11-27T20:00:00", "2024-12-10T09:00:00"],
+        #    y_domain=[0, 2200]
+        #)
+        #chart.save(os.path.join("/home/alex/Downloads/test_graphs", f"{timestamp}.png"))
 
         chart_html = chart.to_html(embed_options={
             "theme": "custom_dark",

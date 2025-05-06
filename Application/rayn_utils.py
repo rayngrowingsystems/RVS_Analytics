@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import crop, print_image, readimage, spectral_index
 from plantcv.plantcv.transform import rotate
+from matplotlib import pyplot as plt
 
 
 def load_coefficients(path):
@@ -327,11 +328,12 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
             print_image(img=mask, filename=image_file_name)
 
 
-def apply_theme_to_chart_dict(chart_dict: dict, theme: str):
+def apply_theme_to_chart_dict(chart_dict: dict, bg_color: str):
     # Define theme-specific colors
-    if theme == "dark":
+    if bg_color == "#202124":
         label_color = "white"
-        bg_color = "#1f2024"
+    elif bg_color == "#f8f9fa":
+        label_color = "black"
     else:
         label_color = "black"
         bg_color = "#f8f9fa"
@@ -366,3 +368,36 @@ def apply_theme_to_chart_dict(chart_dict: dict, theme: str):
             "labelColor": label_color,
             "titleColor": label_color
         })
+
+
+def print_themed_pseudocolor_img(file_name, figure, index, bg_color, dpi):
+    # Define theme-specific colors
+    if bg_color == "#202124":
+        label_color = "white"
+    elif bg_color == "#f8f9fa":
+        label_color = "black"
+    else:
+        label_color = "black"
+        bg_color = "#f8f9fa"
+
+
+    ax = figure.gca()
+    im = ax.images
+    # Assume colorbar was plotted last one plotted last
+    cb = im[-1].colorbar
+
+    # COLORBAR
+    # set colorbar label plus label color
+    cb.set_label(f"{index.upper()} value", color=label_color)
+
+    # set colorbar tick color
+    cb.ax.yaxis.set_tick_params(color=label_color)
+
+    # set colorbar edgecolor
+    cb.outline.set_edgecolor(label_color)
+
+    plt.setp(plt.getp(cb.ax.axes, 'yticklabels'), color=label_color)
+
+    figure.savefig(file_name,
+                   dpi=dpi,
+                   facecolor=bg_color)
