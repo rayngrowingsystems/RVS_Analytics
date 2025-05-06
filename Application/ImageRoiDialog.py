@@ -316,7 +316,7 @@ class ImageRoiDialog(QDialog):
         self.ui.columns_spinbox.setFixedWidth(50)
         self.ui.rows_spinbox.setFixedWidth(50)
 
-        self.ui.radius_spinbox.setFixedWidth(50)
+        self.ui.radius_spinbox.setFixedWidth(65)
         self.ui.width_spinbox.setFixedWidth(50)
         self.ui.height_spinbox.setFixedWidth(50)
 
