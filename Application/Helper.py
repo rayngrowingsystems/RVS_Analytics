@@ -415,7 +415,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 elif "value" in option:
                     start_value = default_value  # Use default value
 
-                default_values[option_slider] = default_value
+                default_values[option_slider] = start_value
 
                 display_name = option["displayName"]
                 name = option["name"]
@@ -563,7 +563,9 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 min = int(option["minimum"])
                 max = int(option["maximum"])
 
-                default_value = 0  # TODO?
+                default_value = 0  
+                if "value" in option:
+                    default_value = option["value"]
 
                 # Check if the spinbox value is set
                 if option["name"] in settings:
@@ -633,6 +635,8 @@ def set_ui_elements_default_values(values):
     for option, value in values.items():
         if isinstance(option, QSlider):
             option.setValue(value)
+        elif isinstance(option, QSpinBox):
+            option.setValue(int(value))
         elif isinstance(option, QCheckBox):
             option.setChecked(bool(value))
         elif isinstance(option, QComboBox):
