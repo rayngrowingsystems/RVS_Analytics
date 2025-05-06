@@ -158,6 +158,7 @@ class ResultTabWidget(QLabel):
 
     def update_pixmap(self, file_name):
         self.pixmap = QPixmap(file_name)
+        self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
