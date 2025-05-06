@@ -1,5 +1,5 @@
-# Copyright 2024 RAYN Growing Systems
 #
+# Copyright 2024 RAYN Growing Systems
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -313,6 +313,12 @@ class ImageRoiDialog(QDialog):
         self.ui.rows_spinbox.setValue(DEFAULT_MATRIX_ROWS)
 
         # self.ui.radius_spinbox.setValue(DEFAULT_RADIUS)
+        self.ui.columns_spinbox.setFixedWidth(50)
+        self.ui.rows_spinbox.setFixedWidth(50)
+
+        self.ui.radius_spinbox.setFixedWidth(50)
+        self.ui.width_spinbox.setFixedWidth(50)
+        self.ui.height_spinbox.setFixedWidth(50)
 
         # Connect signals for updating ROI grid based on parameter changes
         self.ui.columns_spinbox.valueChanged.connect(self.refresh_roi_grid)
@@ -340,6 +346,10 @@ class ImageRoiDialog(QDialog):
 
         self.ui.reference_image1.image_file_name_changed.connect(self.refresh_image_sizes)
         self.ui.reference_image2.image_file_name_changed.connect(self.refresh_image_sizes)
+
+        self.ui.roi_placement_mode.setFixedWidth(120)
+        self.ui.roi_shape.setFixedWidth(120)
+        self.ui.roi_detection_mode.setFixedWidth(120)
 
         # Restore previous settings for ROI parameters
         self.rubberband_rect = self.main_window.experiment.roi_info.rect
@@ -544,29 +554,30 @@ class ImageRoiDialog(QDialog):
     def on_shape_change(self):
         self.update_controls()
 
-        if self.shape == Experiment.RoiInfo.Shape.Circle:
-            self.update_item_type(self.focused_roi_item, "Circle")
-        elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
-            self.update_item_type(self.focused_roi_item, "Rectangle")
-        elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
-            self.update_item_type(self.focused_roi_item, "Ellipse")
-        elif self.shape == Experiment.RoiInfo.Shape.Polygon:
-            self.remove_item(self.focused_roi_item)
-            self.focused_roi_item = None
+        if self.focused_roi_item:
+            if self.shape == Experiment.RoiInfo.Shape.Circle:
+                self.update_item_type(self.focused_roi_item, "Circle")
+            elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
+                self.update_item_type(self.focused_roi_item, "Rectangle")
+            elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
+                self.update_item_type(self.focused_roi_item, "Ellipse")
+            elif self.shape == Experiment.RoiInfo.Shape.Polygon:
+                self.remove_item(self.focused_roi_item)
+                self.focused_roi_item = None
 
-            self.polygon = QPolygon()
-            self.polygon_closed = True
+                self.polygon = QPolygon()
+                self.polygon_closed = True
 
-        if self.shape == Experiment.RoiInfo.Shape.Circle:
-            # Make sure width equals height for a circle
-            self.focused_roi_item["width"] = self.focused_roi_item["height"]
+            if self.shape == Experiment.RoiInfo.Shape.Circle:
+                # Make sure width equals height for a circle
+                self.focused_roi_item["width"] = self.focused_roi_item["height"]
 
-        self.ui.width_spinbox.setValue(self.focused_roi_item["width"])
-        self.ui.height_spinbox.setValue(self.focused_roi_item["height"])
-        self.ui.radius_spinbox.setValue(self.focused_roi_item["width"] / 2)
+            self.ui.width_spinbox.setValue(self.focused_roi_item["width"])
+            self.ui.height_spinbox.setValue(self.focused_roi_item["height"])
+            self.ui.radius_spinbox.setValue(self.focused_roi_item["width"] / 2)
 
-        self.refresh_info_label()
-        self.refresh_roi_grid()
+            self.refresh_info_label()
+            self.refresh_roi_grid()
 
     def on_detection_mode_change(self):
         self.update_controls()

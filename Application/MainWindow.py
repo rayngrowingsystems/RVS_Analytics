@@ -225,7 +225,7 @@ class MainWindow(QMainWindow):
 
         self.experiment.from_json()
 
-        qdarktheme.setup_theme(self.experiment.theme)
+        # qdarktheme.setup_theme(self.experiment.theme)  # Mac crashes if it is run here
 
         # Set up RVS path and check for EULA acceptance
         self.rvs_path = QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation)

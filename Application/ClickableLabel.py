@@ -70,7 +70,7 @@ class ClickableLabel(QLabel):
         self.mouse_pos = QPoint()
 
         self.select_image_button = QPushButton("Image...", self)
-        self.select_image_button.setMaximumWidth(60)
+        self.select_image_button.setMaximumWidth(70)
         self.select_image_button.setDefault(False)
         self.select_image_button.setAutoDefault(False)
 

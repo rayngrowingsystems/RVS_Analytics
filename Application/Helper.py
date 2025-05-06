@@ -594,7 +594,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 #option_spinbox.valueChanged.connect(lambda a, name=name,
                 #optionSpinBox=option_spinbox: spinbox_value_changed(name, optionSpinbox))
                 #option_spinbox.valueChanged.emit(0)  # Force refresh of label
-                option_spinbox.setValue(start_value)
+                option_spinbox.setValue(int(start_value))
                 if "hint" in option:
                     option_spinbox.setToolTip(option["hint"])
 
