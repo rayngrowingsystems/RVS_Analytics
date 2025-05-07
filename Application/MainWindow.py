@@ -32,9 +32,10 @@ import qdarktheme
 from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
 from PySide6 import QtCore
-from PySide6.QtCore import QDir, QObject, QRunnable, QStandardPaths, QThreadPool, QTimer, QUrl
+from PySide6.QtCore import QDir, QObject, QRunnable, QSize, QStandardPaths, QThreadPool, QTimer, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QScreen
 from PySide6.QtNetwork import QAbstractSocket, QNetworkInterface
+from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
     QApplication,
@@ -66,7 +67,7 @@ from EulaDialog import EulaDialog
 from Experiment import Experiment
 from FolderStartDialog import FolderStartDialog
 from HelpDialog import HelpDialog
-from Helper import tprint
+from Helper import ResultTabWidget, tprint
 from ImageMaskDialog import ImageMaskDialog
 from ImageOptionDialog import ImageOptionDialog
 from ImageRoiDialog import ImageRoiDialog
@@ -429,6 +430,10 @@ class MainWindow(QMainWindow):
 
     def resizeEvent(self, event):  # Qt override, keep casing
         self.refresh_image_preview_size()
+
+        for key, chart in self.charts.items():
+            if os.path.exists(chart.web_page()):
+                chart.adjust_zoom(self.ui.tab_widget.currentWidget().size())
 
         QMainWindow.resizeEvent(self, event)
 
@@ -1662,8 +1667,13 @@ class MainWindow(QMainWindow):
             if os.path.exists(chart.web_page()):
                 chart.preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), chart.web_page())))
 
+                # Disable scrollbars
+                chart.preview_view.page().settings().setAttribute(QWebEngineSettings.ShowScrollBars, False)
+
                 chart.preview_view.page().setBackgroundColor(self.experiment.theme_background_color())
                 chart.preview_view.show()
+
+                chart.preview_view.loadFinished.connect(lambda _, widget_size=self.ui.tab_widget.currentWidget().size(): chart.adjust_zoom(widget_size))
 
                 # Copy webPage() to "outputFolder"
                 shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"],
@@ -1682,6 +1692,7 @@ class MainWindow(QMainWindow):
         json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
         self.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
+
 
     def play(self):
         ready, reason = self.ready_to_run()

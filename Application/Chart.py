@@ -21,7 +21,7 @@ from datetime import datetime
 import altair as alt
 import pandas as pd
 import vl_convert as vlc
-from PySide6.QtCore import QStandardPaths
+from PySide6.QtCore import QSize, QStandardPaths
 from PySide6.QtGui import QColor, QPalette, QPixmap
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QVBoxLayout, QWidget
@@ -88,7 +88,6 @@ def dark_theme():
 alt.themes.register('custom_dark', dark_theme)
 alt.themes.enable('custom_dark')
 
-
 class Chart:
     def __init__(self, main_window, title, y_label):
         tprint("Chart.init")
@@ -97,6 +96,9 @@ class Chart:
         self.title = title
         self.y_label = y_label
         self.data = []
+
+        self.content_size = QSize()
+        self.widget_size = QSize()
 
         # Create temp file paths
         base_file_name = str(uuid.uuid4())
@@ -216,3 +218,28 @@ class Chart:
 
         #self.preview_label.setPixmap(self.pixmap())
         self.preview_label.update_pixmap(self.image_file())
+
+    def adjust_zoom(self, widget_size):
+        # Get the size of the content
+        self.preview_view.page().runJavaScript("document.body.scrollWidth", self.set_content_width)
+        self.preview_view.page().runJavaScript("document.body.scrollHeight", self.set_content_height)
+
+        self.widget_size = widget_size
+
+    def set_content_width(self, content_width):
+        self.content_size.setWidth(content_width)
+
+    def set_content_height(self, content_height):
+        self.content_size.setHeight(content_height)
+
+        self.update_zoom_factor()
+
+    def update_zoom_factor(self):
+        # Calculate the zoom factor to fit the content
+
+        zoom_factor_width = self.widget_size.width() / self.content_size.width()
+        zoom_factor_height = self.widget_size.height() / self.content_size.height()
+
+        zoom_factor = min(zoom_factor_width, zoom_factor_height)
+
+        self.preview_view.setZoomFactor(zoom_factor)
