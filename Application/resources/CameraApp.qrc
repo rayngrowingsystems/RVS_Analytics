@@ -5,5 +5,7 @@
         <file>images/Refresh.png</file>
         <file>images/Splash.png</file>
         <file>images/Magnify.png</file>
+        <file>images/Play.png</file>
+        <file>images/Stop.png</file>
     </qresource>
 </RCC>

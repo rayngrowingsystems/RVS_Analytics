@@ -273,12 +273,16 @@ class MainWindow(QMainWindow):
         # Set-up Play button
         self.ui.play_button.clicked.connect(self.play)
         self.ui.play_button.setCheckable(True)
-        self.ui.play_button.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.ui.play_button.setIcon(QIcon(":/images/Play.png"))
+        self.ui.play_button.setIconSize(QSize(20, 20))
+        self.ui.play_button.setFixedSize(40, 40)
 
         # Set-up Stop button
         self.ui.stop_button.clicked.connect(self.stop)
         self.ui.stop_button.setCheckable(True)
-        self.ui.stop_button.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
+        self.ui.stop_button.setIcon(QIcon(":/images/Stop.png"))
+        self.ui.stop_button.setIconSize(QSize(18, 18))
+        self.ui.stop_button.setFixedSize(40, 40)
 
         self.ui.clear_sessiondata_button.clicked.connect(self.clear_sessiondata)
 
