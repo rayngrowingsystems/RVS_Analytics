@@ -103,7 +103,7 @@ class Chart:
         # Create temp file paths
         base_file_name = str(uuid.uuid4())
         self.temp_image_file = os.path.normpath(os.path.join(
-            QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".svg"))
+            QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".png"))
         self.temp_html_file = os.path.normpath(os.path.join(
             QStandardPaths.writableLocation(QStandardPaths.TempLocation), base_file_name + ".html"))
 
@@ -206,10 +206,11 @@ class Chart:
         #)
         #chart.save(os.path.join("/home/alex/Downloads/test_graphs", f"{timestamp}.png"))
 
-        chart_html = chart.to_html(embed_options={
+        chart_html = vlc.vegalite_to_html(chart_dict, bundle=True)
+        '''chart_html = chart.to_html(embed_options={
             "theme": "custom_dark",
             "actions": False
-        }, inline=True)
+        }, inline=True)'''
 
         # Inject CSS override
         injected_html = chart_html.replace(
