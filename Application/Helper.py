@@ -20,7 +20,7 @@ from datetime import datetime
 
 from PySide6 import QtCore
 from PySide6.QtCore import QEvent, QTimer
-from PySide6.QtGui import QFontMetrics, QPalette, QStandardItem
+from PySide6.QtGui import QFontMetrics, QPainter, QPalette, QPixmap, QStandardItem
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -666,4 +666,26 @@ def get_settings_for_ui_elements(dialog):
         settings[name] = spinbox.value()
 
     return settings
+
+class ResultTabWidget(QLabel):
+    def __init__(self, file_name, parent=None):
+        super().__init__(parent)
+        self.pixmap = QPixmap(file_name)
+
+    def update_pixmap(self, file_name):
+        self.pixmap = QPixmap(file_name)
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+
+        # Draw the pixmap, scaled to fit the widget while keeping the aspect ratio
+        if not self.pixmap.isNull():
+            scaled_pixmap = self.pixmap.scaled(self.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            x = (self.width() - scaled_pixmap.width()) // 2
+            y = (self.height() - scaled_pixmap.height()) // 2
+            painter.drawPixmap(x, y, scaled_pixmap)
+
+        # Call the base class implementation
+        super().paintEvent(event)
 

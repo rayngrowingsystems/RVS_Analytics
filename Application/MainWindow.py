@@ -33,7 +33,7 @@ from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
 from PySide6 import QtCore
 from PySide6.QtCore import QDir, QObject, QRunnable, QStandardPaths, QThreadPool, QTimer, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon, QPainter, QPixmap, QScreen
+from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QScreen
 from PySide6.QtNetwork import QAbstractSocket, QNetworkInterface
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (
@@ -42,7 +42,6 @@ from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
     QInputDialog,
-    QLabel,
     QMainWindow,
     QMessageBox,
     QStyle,
@@ -150,28 +149,6 @@ class MyFileEventHandler(FileSystemEventHandler):
     def on_moved(self, event):
         if Config.verbose_mode:
             tprint(f"{event.src_path} moved to {event.dest_path}")
-
-class ResultTabWidget(QLabel):
-    def __init__(self, file_name, parent=None):
-        super().__init__(parent)
-        self.pixmap = QPixmap(file_name)
-
-    def update_pixmap(self, file_name):
-        self.pixmap = QPixmap(file_name)
-        self.update()
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-
-        # Draw the pixmap, scaled to fit the widget while keeping the aspect ratio
-        if not self.pixmap.isNull():
-            scaled_pixmap = self.pixmap.scaled(self.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
-            x = (self.width() - scaled_pixmap.width()) // 2
-            y = (self.height() - scaled_pixmap.height()) // 2
-            painter.drawPixmap(x, y, scaled_pixmap)
-
-        # Call the base class implementation
-        super().paintEvent(event)
 
 class MainWindow(QMainWindow):
     add_status_text = QtCore.Signal(str)

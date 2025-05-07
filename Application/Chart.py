@@ -20,14 +20,13 @@ from datetime import datetime
 
 import altair as alt
 import pandas as pd
-from PySide6.QtCore import QStandardPaths
-from PySide6.QtGui import QPixmap
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
-from PySide6.QtGui import QPalette
-from PySide6.QtGui import QColor
-from Helper import tprint
 import vl_convert as vlc
+from PySide6.QtCore import QStandardPaths
+from PySide6.QtGui import QColor, QPalette, QPixmap
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import QVBoxLayout, QWidget
+
+from Helper import ResultTabWidget, tprint
 
 
 def apply_fixed_axis_limits(chart, x_domain=None, y_domain=None):
@@ -112,7 +111,7 @@ class Chart:
         layout = QVBoxLayout()
         self.widget.setLayout(layout)
 
-        self.preview_label = QLabel()
+        self.preview_label = ResultTabWidget(self.temp_image_file)
         layout.addWidget(self.preview_label)
 
         self.preview_view = QWebEngineView()
@@ -215,4 +214,5 @@ class Chart:
         with open(self.web_page(), "w", encoding="utf-8") as f:
             f.write(injected_html)
 
-        self.preview_label.setPixmap(self.pixmap())
+        #self.preview_label.setPixmap(self.pixmap())
+        self.preview_label.update_pixmap(self.image_file())
