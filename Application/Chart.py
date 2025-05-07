@@ -60,7 +60,6 @@ def apply_fixed_axis_limits(chart, x_domain=None, y_domain=None):
     return chart
 
 
-
 def is_dark(hex_color: str) -> bool:
     c = QColor(hex_color)
     # Using the perceived brightness formula
@@ -191,27 +190,19 @@ class Chart:
         if chart is None:
             return
 
-        #chart.save(self.image_file())  # SVG export
         chart_dict = chart.to_dict()
         png_data = vlc.vegalite_to_png(chart_dict, scale=1.5)  # TODO: rather export it as svg?
         with open(self.image_file(), "wb") as f:
             f.write(png_data)
         print(f"Chart saved to {self.image_file()}")
 
-        #timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        #chart = apply_fixed_axis_limits(
-        #    chart,
-        #    x_domain=["2024-11-27T20:00:00", "2024-12-10T09:00:00"],
-        #    y_domain=[0, 2200]
-        #)
-        #chart.save(os.path.join("/home/alex/Downloads/test_graphs", f"{timestamp}.png"))
-
         chart_html = vlc.vegalite_to_html(chart_dict, bundle=True)
-        '''chart_html = chart.to_html(embed_options={
-            "theme": "custom_dark",
-            "actions": False
-        }, inline=True)'''
 
+        # Replace default vegaEmbed call with one that includes options
+        chart_html = chart_html.replace(
+            'const opts = {"renderer":"svg"}',
+            'const opts = {"renderer":"svg", "actions": false}'
+        )
         # Inject CSS override
         injected_html = chart_html.replace(
             "</head>",
