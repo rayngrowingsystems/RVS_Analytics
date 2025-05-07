@@ -27,6 +27,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 from PySide6.QtGui import QPalette
 from PySide6.QtGui import QColor
 from Helper import tprint
+import vl_convert as vlc
 
 
 def apply_fixed_axis_limits(chart, x_domain=None, y_domain=None):
@@ -190,8 +191,11 @@ class Chart:
         if chart is None:
             return
 
-        #chart.save(self.web_page(), embed_options={"theme": "custom_dark"}, inline=True)  # HTML export
-        chart.save(self.image_file())  # SVG export
+        #chart.save(self.image_file())  # SVG export
+        chart_dict = chart.to_dict()
+        png_data = vlc.vegalite_to_png(chart_dict, scale=1.5)  # TODO: rather export it as svg?
+        with open(self.image_file(), "wb") as f:
+            f.write(png_data)
         print(f"Chart saved to {self.image_file()}")
 
         #timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
