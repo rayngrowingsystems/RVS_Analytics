@@ -27,6 +27,7 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from Helper import ResultTabWidget, tprint
+import re
 
 
 def apply_fixed_axis_limits(chart, x_domain=None, y_domain=None):
@@ -192,39 +193,93 @@ class Chart:
             return
 
         chart_dict = chart.to_dict()
+
+
+
         png_data = vlc.vegalite_to_png(chart_dict, scale=1.5)  # TODO: rather export it as svg?
         with open(self.image_file(), "wb") as f:
             f.write(png_data)
         print(f"Chart saved to {self.image_file()}")
 
+        chart_dict["autosize"] = {
+            "type": "fit",
+            "contains": "padding"
+        }
+
+
+
+
         chart_html = vlc.vegalite_to_html(chart_dict, bundle=True)
 
-        # Replace default vegaEmbed call with one that includes options
+        chart_html = re.sub(
+            r'<svg([^>]+?)width="[^"]+" height="[^"]+"([^>]*)>',
+            r'<svg\1width="100%" height="auto"\2>',
+            chart_html
+        )
+
         chart_html = chart_html.replace(
             'const opts = {"renderer":"svg"}',
-            'const opts = {"renderer":"svg", "actions": false}'
+            '''const opts = {
+                "renderer": "svg",
+                "actions": false,
+                "config": {
+                    "view": {
+                        "continuousWidth": "container",
+                        "continuousHeight": "container"
+                    }
+                }
+            }'''
         )
-        # Inject CSS override
-        injected_html = chart_html.replace(
+
+        chart_html = chart_html.replace(
             "</head>",
             """<style>
-               body { background-color: transparent !important; }
-               .vega-embed { background-color: transparent !important; }
+               html, body {
+                 margin: 0;
+                 height: 100%;
+               }
+               #vega-chart {
+                 width: 100%;
+                 height: 100%;
+               }
+               .vega-embed, .vega-embed > svg {
+                 width: auto !important;
+                 height: 100% !important;
+                 max-width: 100%;
+               }
              </style></head>"""
         )
 
+        # Replace width and height in the <svg> tag
+        chart_html = re.sub(
+            r'<svg([^>]*?)width="[^"]+" height="[^"]+"([^>]*)>',
+            r'<svg\1width="auto" height="50%"\2>',
+            chart_html
+        )
+
+        # Inject CSS override
+        #injected_html = chart_html.replace(
+         #   "</head>",
+          #  """<style>
+           #    body { background-color: transparent !important; }
+            #   .vega-embed { background-color: transparent !important; }
+             #</style></head>"""
+        #)
+
         with open(self.web_page(), "w", encoding="utf-8") as f:
-            f.write(injected_html)
+            f.write(chart_html)
 
         #self.preview_label.setPixmap(self.pixmap())
         self.preview_label.update_pixmap(self.image_file())
 
     def adjust_zoom(self, widget_size):
         # Get the size of the content
+        return
         self.preview_view.page().runJavaScript("document.body.scrollWidth", self.set_content_width)
         self.preview_view.page().runJavaScript("document.body.scrollHeight", self.set_content_height)
 
         self.widget_size = widget_size
+
 
     def set_content_width(self, content_width):
         self.content_size.setWidth(content_width)
