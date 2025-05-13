@@ -194,28 +194,19 @@ class Chart:
 
         chart_dict = chart.to_dict()
 
-
-
+        # Save as image
         png_data = vlc.vegalite_to_png(chart_dict, scale=1.5)  # TODO: rather export it as svg?
         with open(self.image_file(), "wb") as f:
             f.write(png_data)
         print(f"Chart saved to {self.image_file()}")
 
+        # Save as HTML
         chart_dict["autosize"] = {
             "type": "fit",
             "contains": "padding"
         }
 
-
-
-
         chart_html = vlc.vegalite_to_html(chart_dict, bundle=True)
-
-        chart_html = re.sub(
-            r'<svg([^>]+?)width="[^"]+" height="[^"]+"([^>]*)>',
-            r'<svg\1width="100%" height="auto"\2>',
-            chart_html
-        )
 
         chart_html = chart_html.replace(
             'const opts = {"renderer":"svg"}',
@@ -250,51 +241,8 @@ class Chart:
              </style></head>"""
         )
 
-        # Replace width and height in the <svg> tag
-        chart_html = re.sub(
-            r'<svg([^>]*?)width="[^"]+" height="[^"]+"([^>]*)>',
-            r'<svg\1width="auto" height="50%"\2>',
-            chart_html
-        )
-
-        # Inject CSS override
-        #injected_html = chart_html.replace(
-         #   "</head>",
-          #  """<style>
-           #    body { background-color: transparent !important; }
-            #   .vega-embed { background-color: transparent !important; }
-             #</style></head>"""
-        #)
-
         with open(self.web_page(), "w", encoding="utf-8") as f:
             f.write(chart_html)
+            print(f"Chart saved to {self.web_page()}")
 
-        #self.preview_label.setPixmap(self.pixmap())
         self.preview_label.update_pixmap(self.image_file())
-
-    def adjust_zoom(self, widget_size):
-        # Get the size of the content
-        return
-        self.preview_view.page().runJavaScript("document.body.scrollWidth", self.set_content_width)
-        self.preview_view.page().runJavaScript("document.body.scrollHeight", self.set_content_height)
-
-        self.widget_size = widget_size
-
-
-    def set_content_width(self, content_width):
-        self.content_size.setWidth(content_width)
-
-    def set_content_height(self, content_height):
-        self.content_size.setHeight(content_height)
-
-        self.update_zoom_factor()
-
-    def update_zoom_factor(self):
-        # Calculate the zoom factor to fit the content
-
-        zoom_factor_width = self.widget_size.width() / self.content_size.width()
-        zoom_factor_height = self.widget_size.height() / self.content_size.height()
-
-        zoom_factor = min(zoom_factor_width, zoom_factor_height)
-
-        self.preview_view.setZoomFactor(zoom_factor)

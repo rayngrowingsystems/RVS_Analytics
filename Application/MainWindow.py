@@ -435,10 +435,6 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):  # Qt override, keep casing
         self.refresh_image_preview_size()
 
-        for key, chart in self.charts.items():
-            if os.path.exists(chart.web_page()):
-                chart.adjust_zoom(self.ui.tab_widget.currentWidget().size())
-
         QMainWindow.resizeEvent(self, event)
 
     def load_ui(self):
@@ -1676,8 +1672,6 @@ class MainWindow(QMainWindow):
 
                 chart.preview_view.page().setBackgroundColor(self.experiment.theme_background_color())
                 chart.preview_view.show()
-
-                chart.preview_view.loadFinished.connect(lambda _, widget_size=self.ui.tab_widget.currentWidget().size(): chart.adjust_zoom(widget_size))
 
                 # Copy webPage() to "outputFolder"
                 shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"],
