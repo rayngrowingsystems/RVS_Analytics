@@ -69,15 +69,19 @@ class ClickableLabel(QLabel):
         self.setMouseTracking(True)
         self.mouse_pos = QPoint()
 
+        button_stylesheet = "background-color: #444; color: white;"
+
         self.select_image_button = QPushButton("Image...", self)
         self.select_image_button.setMaximumWidth(70)
         self.select_image_button.setDefault(False)
         self.select_image_button.setAutoDefault(False)
+        self.select_image_button.setStyleSheet(button_stylesheet)
 
         self.crop_button = QPushButton("Crop", self)
         self.crop_button.setFixedWidth(55)
         self.crop_button.setDefault(False)
         self.crop_button.setAutoDefault(False)
+        self.crop_button.setStyleSheet(button_stylesheet)
         self.crop_button.clicked.connect(self.on_crop)
         self.crop_button.hide()
 
@@ -85,6 +89,7 @@ class ClickableLabel(QLabel):
         self.crop_accept_button.setFixedWidth(55)
         self.crop_accept_button.setDefault(False)
         self.crop_accept_button.setAutoDefault(False)
+        self.crop_accept_button.setStyleSheet(button_stylesheet)
         self.crop_accept_button.clicked.connect(self.on_crop_accept)
         self.crop_accept_button.hide()
 
@@ -92,6 +97,7 @@ class ClickableLabel(QLabel):
         self.crop_cancel_button.setFixedWidth(55)
         self.crop_cancel_button.setDefault(False)
         self.crop_cancel_button.setAutoDefault(False)
+        self.crop_cancel_button.setStyleSheet(button_stylesheet)
         self.crop_cancel_button.clicked.connect(self.on_crop_cancel)
         self.crop_cancel_button.hide()
 
@@ -99,6 +105,7 @@ class ClickableLabel(QLabel):
         self.crop_reset_button.setFixedWidth(55)
         self.crop_reset_button.setDefault(False)
         self.crop_reset_button.setAutoDefault(False)
+        self.crop_reset_button.setStyleSheet(button_stylesheet)
         self.crop_reset_button.clicked.connect(self.on_crop_reset)
         self.crop_reset_button.hide()
 
@@ -106,6 +113,7 @@ class ClickableLabel(QLabel):
         self.magnify_button.setFixedWidth(40)
         self.magnify_button.setDefault(False)
         self.magnify_button.setAutoDefault(False)
+        self.magnify_button.setStyleSheet(button_stylesheet)
         self.magnify_button.clicked.connect(self.on_magnify)
         self.magnify_button.hide()
 
