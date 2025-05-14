@@ -14,6 +14,8 @@
 
 # This Python file uses the following encoding: utf-8
 
+import platform
+
 from PySide6.QtWidgets import QDialog
 
 from ui_SettingsDialog import Ui_SettingsDialog
@@ -29,14 +31,18 @@ class SettingsDialog(QDialog):
         self.ui.done_button.clicked.connect(self.accept)
         self.ui.cancel_button.clicked.connect(self.reject)
 
-        if self.main_window.experiment.theme == "auto":
-            self.ui.theme_combo_box.setCurrentIndex(0)
-        elif self.main_window.experiment.theme == "light":
-            self.ui.theme_combo_box.setCurrentIndex(1)
-        elif self.main_window.experiment.theme == "dark":
-            self.ui.theme_combo_box.setCurrentIndex(2)
+        if platform.system() != "Darwin":
+            if self.main_window.experiment.theme == "auto":
+                self.ui.theme_combo_box.setCurrentIndex(0)
+            elif self.main_window.experiment.theme == "light":
+                self.ui.theme_combo_box.setCurrentIndex(1)
+            elif self.main_window.experiment.theme == "dark":
+                self.ui.theme_combo_box.setCurrentIndex(2)
 
-        self.ui.theme_combo_box.currentIndexChanged.connect(self.on_theme_changed)
+            self.ui.theme_combo_box.currentIndexChanged.connect(self.on_theme_changed)
+        else:
+            self.ui.theme_combo_box.hide()
+            self.ui.theme_label.hide()
 
         self.ui.ip_lineedit.setText(self.main_window.experiment.mqtt_broker)
         self.ui.port_lineedit.setText(self.main_window.experiment.mqtt_port)
@@ -48,13 +54,14 @@ class SettingsDialog(QDialog):
         self.ui.setupUi(self)
 
     def on_theme_changed(self):
-        if self.ui.theme_combo_box.currentIndex() == 0:
-            self.main_window.experiment.theme = "auto"
-        elif self.ui.theme_combo_box.currentIndex() == 1:
-            self.main_window.experiment.theme = "light"
-        elif self.ui.theme_combo_box.currentIndex() == 2:
-            self.main_window.experiment.theme = "dark"
+        if platform.system() != "Darwin":
+            if self.ui.theme_combo_box.currentIndex() == 0:
+                self.main_window.experiment.theme = "auto"
+            elif self.ui.theme_combo_box.currentIndex() == 1:
+                self.main_window.experiment.theme = "light"
+            elif self.ui.theme_combo_box.currentIndex() == 2:
+                self.main_window.experiment.theme = "dark"
 
-        self.main_window.set_theme(self.main_window.experiment.theme)
+            self.main_window.set_theme(self.main_window.experiment.theme)
 
-        self.main_window.update_experiment_file(False)
+            self.main_window.update_experiment_file(False)
