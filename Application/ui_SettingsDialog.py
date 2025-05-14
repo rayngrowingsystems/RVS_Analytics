@@ -31,10 +31,10 @@ class Ui_SettingsDialog(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label = QLabel(SettingsDialog)
-        self.label.setObjectName(u"label")
+        self.theme_label = QLabel(SettingsDialog)
+        self.theme_label.setObjectName(u"theme_label")
 
-        self.horizontalLayout_2.addWidget(self.label)
+        self.horizontalLayout_2.addWidget(self.theme_label)
 
         self.theme_combo_box = QComboBox(SettingsDialog)
         self.theme_combo_box.addItem("")
@@ -160,7 +160,7 @@ class Ui_SettingsDialog(object):
 
     def retranslateUi(self, SettingsDialog):
         SettingsDialog.setWindowTitle(QCoreApplication.translate("SettingsDialog", u"Settings", None))
-        self.label.setText(QCoreApplication.translate("SettingsDialog", u"Theme", None))
+        self.theme_label.setText(QCoreApplication.translate("SettingsDialog", u"Theme", None))
         self.theme_combo_box.setItemText(0, QCoreApplication.translate("SettingsDialog", u"Auto", None))
         self.theme_combo_box.setItemText(1, QCoreApplication.translate("SettingsDialog", u"Light", None))
         self.theme_combo_box.setItemText(2, QCoreApplication.translate("SettingsDialog", u"Dark", None))

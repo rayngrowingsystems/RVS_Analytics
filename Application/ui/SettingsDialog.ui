@@ -19,7 +19,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="theme_label">
          <property name="text">
           <string>Theme</string>
          </property>
