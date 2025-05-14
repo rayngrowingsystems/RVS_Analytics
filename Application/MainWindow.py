@@ -1464,6 +1464,10 @@ class MainWindow(QMainWindow):
 
             tprint("Analysis: Selected script: " + self.experiment.selected_script)
 
+            if not resume:
+                self.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
+                self.update_experiment_file(False)
+
             # Set-up list of image header files
             image_header_list = []
 
@@ -1690,7 +1694,7 @@ class MainWindow(QMainWindow):
         json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
         self.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
-
+        self.update_experiment_file(False)
 
     def play(self):
         ready, reason = self.ready_to_run()
@@ -1731,6 +1735,9 @@ class MainWindow(QMainWindow):
         # Clear all session data
         self.experiment.session_data["persistent"] = {}
         self.experiment.session_data["temporary"] = {}
+        self.update_experiment_file(False)
+
+        tprint("All session data cleared")
 
     def ready_to_run(self):
         ready = True

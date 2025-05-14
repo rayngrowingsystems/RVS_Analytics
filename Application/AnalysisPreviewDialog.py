@@ -263,6 +263,9 @@ class AnalysisPreviewDialog(QDialog):
                         if not ready and self.ui.reference_image2.image_file_name != "":
                             self.ui.preview_image2.setText(reason)
 
+                self.main_window.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
+                self.main_window.update_experiment_file(False)
+
             # Restore the cursor to its original state
             QGuiApplication.restoreOverrideCursor()
 
