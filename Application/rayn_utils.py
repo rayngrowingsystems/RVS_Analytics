@@ -156,7 +156,9 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
     spectral_data = readimage(filename=img_file, mode='envi')
 
     # prepare image data
-    spectral_data.array_data = spectral_data.array_data.astype("float32")  # required for further calculations
+    with np.errstate(invalid='ignore'):
+        spectral_data.array_data = spectral_data.array_data.astype("float32")
+
     if spectral_data.d_type == np.uint8:  # only convert if data seems to be uint8
         spectral_data.array_data = spectral_data.array_data / 255  # convert 0-255 (orig.) to 0-1 range
 
