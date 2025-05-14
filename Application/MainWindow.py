@@ -28,7 +28,9 @@ import warnings
 from importlib.metadata import version
 from os import path
 
-import qdarktheme
+if platform.system() != "Darwin":
+    import qdarktheme
+
 from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
 from PySide6 import QtCore
@@ -2083,5 +2085,6 @@ class MainWindow(QMainWindow):
            select_image_dialog.exec()
 
     def set_theme(self, theme):
-        qdarktheme.setup_theme(theme)
+        if platform.system() != "Darwin":
+            qdarktheme.setup_theme(theme)
 

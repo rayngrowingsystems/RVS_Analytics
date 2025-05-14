@@ -17,11 +17,14 @@
 import glob
 import logging
 import os
+import platform
 import sys
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
-import qdarktheme
+if platform.system() != "Darwin":
+    import qdarktheme
+
 import stackprinter
 from PySide6 import QtCore
 from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
@@ -187,7 +190,8 @@ if __name__ == '__main__':
     if splash:
         splash.close()
 
-    qdarktheme.setup_theme(widget.experiment.theme)
-    
+    if platform.system() != "Darwin":
+        qdarktheme.setup_theme(widget.experiment.theme)
+
     exit_code = rvs_app.exec()
     sys.exit(exit_code)

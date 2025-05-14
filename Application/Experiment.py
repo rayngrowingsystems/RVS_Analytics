@@ -16,10 +16,13 @@
 
 import json
 import os
+import platform
 from enum import Enum
 from os import path
 
-import qdarktheme
+if platform.system() != "Darwin":
+    import qdarktheme
+
 from PySide6.QtCore import QDir, QPoint, QRect, QSize, QStandardPaths
 from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QApplication
@@ -470,7 +473,10 @@ class Experiment:
                      QSize(rect.width() / scaling_factor, rect.height() / scaling_factor))
 
     def theme_background_color(self):
-        application_palette = qdarktheme.load_palette(self.theme)
-        background_color = application_palette.color(QPalette.Window)
-        return background_color.name()
+        if platform.system() != "Darwin":
+            application_palette = qdarktheme.load_palette(self.theme)
+            background_color = application_palette.color(QPalette.Window)
+            return background_color.name()
+        else:
+            return "#444"
 
