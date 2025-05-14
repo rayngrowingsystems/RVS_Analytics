@@ -1243,6 +1243,12 @@ class MainWindow(QMainWindow):
             self.add_preview_tab.emit("Spectral Histogram", value)
             handled = True
 
+        if command.startswith("image"):
+            index = command.replace("image_", "").replace("_", " ")
+            index = index.capitalize()
+            self.add_preview_tab.emit(f"{index}", value)
+            handled = True
+
         if command.startswith("index_hist"):
             index = command.replace("index_hist_", "").replace("_", " ").upper()
             self.add_preview_tab.emit(f"{index} Histogram", value)
