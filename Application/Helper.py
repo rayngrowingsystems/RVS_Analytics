@@ -416,7 +416,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 elif "value" in option:
                     start_value = default_value  # Use default value
 
-                default_values[option_slider] = start_value
+                if "value" in option:
+                    default_values[option_slider] = option["value"]
 
                 display_name = option["displayName"]
                 name = option["name"]
@@ -635,13 +636,17 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 def set_ui_elements_default_values(values):
     for option, value in values.items():
         if isinstance(option, QSlider):
-            option.setValue(value)
+            option.setValue(float(value))
         elif isinstance(option, QSpinBox):
             option.setValue(int(value))
         elif isinstance(option, QCheckBox):
             option.setChecked(bool(value))
         elif isinstance(option, QComboBox):
-            option.setCurrentIndex(int(value))
+            index = option.findText(value)
+            if index != -1:
+                option.setCurrentIndex(index)
+            else:
+                option.setCurrentIndex(0)
 
 # Get a settings dict for the UI elements of the dialog
 def get_settings_for_ui_elements(dialog):
