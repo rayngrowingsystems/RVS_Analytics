@@ -13,71 +13,76 @@
 # limitations under the License.
 
 # This Python file uses the following encoding: utf-8
+from os import path
+import sys
+import shutil
+import tempfile
+
 import datetime
-import glob
+import time as systime
+
+import traceback
+from multiprocessing import Queue
+
 import importlib
+
+import glob
 import json
 import os
 import platform
-import shutil
-import sys
-import tempfile
-import time as systime
-import traceback
+
 import warnings
+
+import csv
+
 from importlib.metadata import version
-from os import path
 
-if platform.system() != "Darwin":
-    import qdarktheme
-
-from plantcv.parallel import process_results
-from plantcv.utils.converters import json2csv
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog, QStyle, QMessageBox, QInputDialog, QLineEdit, QFileDialog, QLabel, QCheckBox
+from PySide6.QtCore import QUrl, QTimer, QStandardPaths, QDir, QObject, QRunnable, QThreadPool, QSize
 from PySide6 import QtCore
-from PySide6.QtCore import QDir, QObject, QRunnable, QSize, QStandardPaths, QThreadPool, QTimer, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon, QPixmap, QScreen
-from PySide6.QtNetwork import QAbstractSocket, QNetworkInterface
-from PySide6.QtWebEngineCore import QWebEngineSettings
+from PySide6.QtGui import QPixmap, QIcon, QScreen, QDesktopServices
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import (
-    QApplication,
-    QCheckBox,
-    QDialog,
-    QFileDialog,
-    QInputDialog,
-    QMainWindow,
-    QMessageBox,
-    QStyle,
-    QVBoxLayout,
-    QWidget,
-)
-from watchdog.events import FileSystemEventHandler
+from PySide6.QtNetwork import QNetworkInterface, QAbstractSocket
+
 from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+from ImageSourceDialog import ImageSourceDialog
+from ImageOptionDialog import ImageOptionDialog
+from ImageMaskDialog import ImageMaskDialog
+from ImageRoiDialog import ImageRoiDialog
+from AnalysisPreviewDialog import AnalysisPreviewDialog
+from AnalysisOptionsDialog import AnalysisOptionsDialog
+from DownloadImagesDialog import DownloadImagesDialog
+from DeleteImagesDialog import DeleteImagesDialog
+from AboutDialog import AboutDialog
+from HelpDialog import HelpDialog
+from EulaDialog import EulaDialog
+from CameraStartDialog import CameraStartDialog
+from FolderStartDialog import FolderStartDialog
+from SelectImageDialog import SelectImageDialog
 
 import Config
 import Helper
-from AboutDialog import AboutDialog
-from AnalysisOptionsDialog import AnalysisOptionsDialog
-from AnalysisPreviewDialog import AnalysisPreviewDialog
-from Camera import Camera
-from CameraDiscovery import CameraDiscovery
-from CameraStartDialog import CameraStartDialog
-from Chart import Chart
-from DeleteImagesDialog import DeleteImagesDialog
-from DownloadImagesDialog import DownloadImagesDialog
-from EulaDialog import EulaDialog
-from Experiment import Experiment
-from FolderStartDialog import FolderStartDialog
-from HelpDialog import HelpDialog
-from Helper import ResultTabWidget, tprint
-from ImageMaskDialog import ImageMaskDialog
-from ImageOptionDialog import ImageOptionDialog
-from ImageRoiDialog import ImageRoiDialog
-from ImageSourceDialog import ImageSourceDialog
-from Mqtt import Mqtt
-from SelectImageDialog import SelectImageDialog
-from SettingsDialog import SettingsDialog
+
+from Helper import tprint
+
+import CameraApp_rc
+
 from ui_MainWindow import Ui_MainWindow
+
+from Experiment import Experiment
+
+from Camera import Camera
+
+from CameraDiscovery import CameraDiscovery
+
+from Mqtt import Mqtt
+
+from Chart import Chart
+
+from plantcv.parallel import process_results
+from plantcv.utils.converters import json2csv
 
 if Config.profile_mode:
     from pyinstrument import Profiler
