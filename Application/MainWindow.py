@@ -1660,48 +1660,51 @@ class MainWindow(QMainWindow):
         self.analysis_running = False
 
         # Move current session to the output folder for documentation
-        now = datetime.datetime.now()
-        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-        self.current_session["status"]["running"] = "false"
-        self.current_session["status"]["stoppedAt"] = timestamp
-        self.update_current_session_file()
+        if "status" in self.current_session:
+            now = datetime.datetime.now()
+            timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+            self.current_session["status"]["running"] = "false"
+            self.current_session["status"]["stoppedAt"] = timestamp
+            self.update_current_session_file()
 
-        if os.path.exists(self.current_session_file_name) \
-            and os.path.exists(self.current_session["outputFolder"]["appData"]):
-            shutil.move(self.current_session_file_name,
-                        os.path.join(self.current_session["outputFolder"]["appData"], 'session.json'))
-        else:
-            tprint("Path missing:", self.current_session_file_name, self.current_session["outputFolder"]["appData"])
+        if "outputFolder" in self.current_session:
+            if os.path.exists(self.current_session_file_name) \
+                and os.path.exists(self.current_session["outputFolder"]["appData"]):
+                shutil.move(self.current_session_file_name,
+                            os.path.join(self.current_session["outputFolder"]["appData"], 'session.json'))
+            else:
+                tprint("Path missing:", self.current_session_file_name, self.current_session["outputFolder"]["appData"])
 
-        self.ui.results_button.setEnabled(True)
+            self.ui.results_button.setEnabled(True)
 
-        for key, chart in self.charts.items():
-            if os.path.exists(chart.web_page()):
-                chart.preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), chart.web_page())))
+            for key, chart in self.charts.items():
+                if os.path.exists(chart.web_page()):
+                    chart.preview_view.load(QUrl.fromLocalFile(path.join(path.dirname(__file__), chart.web_page())))
 
-                # Disable scrollbars
-                chart.preview_view.page().settings().setAttribute(QWebEngineSettings.ShowScrollBars, False)
+                    # Disable scrollbars
+                    chart.preview_view.page().settings().setAttribute(QWebEngineSettings.ShowScrollBars, False)
 
-                chart.preview_view.page().setBackgroundColor(self.experiment.theme_background_color())
-                chart.preview_view.show()
+                    chart.preview_view.page().setBackgroundColor(self.experiment.theme_background_color())
+                    chart.preview_view.show()
 
-                # Copy webPage() to "outputFolder"
-                shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"],
-                                                           f"chart_{key}.html"))
-            chart.preview_label.hide()
-            chart.preview_label.setPixmap(QPixmap())
+                    # Copy webPage() to "outputFolder"
+                    shutil.copy(chart.web_page(), os.path.join(self.current_session["outputFolder"]["visuals"],
+                                                            f"chart_{key}.html"))
+                chart.preview_label.hide()
+                chart.preview_label.setPixmap(QPixmap())
 
-        output_folder = self.current_session["outputFolder"]["data"]
+            output_folder = self.current_session["outputFolder"]["data"]
 
-        combined_json = os.path.join(output_folder, "combined.json")
+            combined_json = os.path.join(output_folder, "combined.json")
 
-        process_results(output_folder, combined_json)
+            process_results(output_folder, combined_json)
 
-        self.save_as_experiment_directly(os.path.join(self.current_session["outputFolder"]["appData"], "experiment.xp"))
+            self.save_as_experiment_directly(os.path.join(self.current_session["outputFolder"]["appData"], "experiment.xp"))
 
-        json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
+            json2csv(combined_json, os.path.join(self.current_session["outputFolder"]["appData"], "combined"))
 
         self.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
+
         self.update_experiment_file(False)
 
     def play(self):
