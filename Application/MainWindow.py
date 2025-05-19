@@ -13,6 +13,11 @@
 # limitations under the License.
 
 # This Python file uses the following encoding: utf-8
+
+# NOTE: The order of imports is important. When these were sorted by ruff, the application crashed in multiprocessing
+# but only on Mac when running the application frozen by pyinstaller and running on an empty Mac account
+# Do not sort the imports, keep them in this order for now
+
 from os import path
 import sys
 import shutil
@@ -61,6 +66,7 @@ from EulaDialog import EulaDialog
 from CameraStartDialog import CameraStartDialog
 from FolderStartDialog import FolderStartDialog
 from SelectImageDialog import SelectImageDialog
+from SettingsDialog import SettingsDialog
 
 import Config
 import Helper
@@ -83,6 +89,9 @@ from Chart import Chart
 
 from plantcv.parallel import process_results
 from plantcv.utils.converters import json2csv
+
+if platform.system() != "Darwin":
+    import qdarktheme
 
 if Config.profile_mode:
     from pyinstrument import Profiler

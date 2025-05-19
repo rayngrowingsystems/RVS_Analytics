@@ -14,6 +14,10 @@
 
 # This Python file uses the following encoding: utf-8
 
+# NOTE: The order of imports is important. When these were sorted by ruff, the application crashed in multiprocessing
+# but only on Mac when running the application frozen by pyinstaller and running on an empty Mac account
+# Do not sort the imports, keep them in this order for now
+
 import time
 import json
 import datetime
