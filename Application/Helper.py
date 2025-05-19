@@ -393,6 +393,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                     if not found:
                         tprint("Slider is referring a non-existent dropdown", option["getRangesFor"])
 
+                    # The resolved values are set in the dropdown_changed callback
                     min = 0
                     max = 1
                     steps = 2

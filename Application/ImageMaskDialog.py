@@ -215,6 +215,9 @@ class ImageMaskDialog(QDialog):
                 else:
                     start_value = slider.defaultValue
 
+                # Update default_values with the value from the selected dropdown
+                self.default_values[slider] = start_value
+
                 slider.setValue(start_value)
 
                 slider.valueChanged.emit(slider.value())  # Force refresh of label
