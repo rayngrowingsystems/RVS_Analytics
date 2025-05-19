@@ -14,22 +14,25 @@
 
 # This Python file uses the following encoding: utf-8
 
-import datetime
-import json
-import os
 import time
-from multiprocessing import Queue
+import json
+import datetime
+import os
+
 from threading import Thread
 
-import requests
-from PySide6 import QtCore
-from PySide6.QtGui import QPixmap
+from multiprocessing import Queue
+
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QPixmap
+from PySide6 import QtCore
+
+import requests
 
 import Config
 import Helper
-from Helper import tprint
 
+from Helper import tprint
 
 def fetch_files_in_the_background(camera, feedback_queue):
     progress = 0

@@ -14,30 +14,38 @@
 
 # This Python file uses the following encoding: utf-8
 
-import glob
-import logging
-import os
-import platform
-import sys
-from datetime import datetime
-from logging.handlers import RotatingFileHandler
+from multiprocessing import freeze_support
 
-if platform.system() != "Darwin":
-    import qdarktheme
+# freeze_support should be at the top to be able to handle multiprocessing in the installer. Otherwise, the CameraApp module is executed multiple times
+# https://github.com/pyinstaller/pyinstaller/issues/3957
 
-import stackprinter
-from PySide6 import QtCore
-from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
-from PySide6.QtGui import QPixmap
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
+# Thread about multiprocessing and why Process spawn runs the main module again, with a different name (__mp_main__):
+# https://stackoverflow.com/questions/72497140/in-python-multiprocessing-why-is-child-process-name-mp-main-is-there-a-way
+
+freeze_support()
 
 import Helper
 from Helper import tprint
-from MainWindow import MainWindow
 
 tprint("Loading CameraApp", __name__)
 
+import sys
+import os
+import glob
+import stackprinter
+from datetime import datetime
+import logging
+from logging.handlers import RotatingFileHandler
+import platform
+
+from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QCoreApplication, QStandardPaths, QUrl
+from PySide6 import QtCore
+from PySide6.QtWebEngineWidgets import QWebEngineView
+
+import CameraApp_rc
+from MainWindow import MainWindow
 
 class StreamToLogger(object):
     """
