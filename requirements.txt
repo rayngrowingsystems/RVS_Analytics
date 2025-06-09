@@ -38,7 +38,7 @@ ipykernel==6.29.5
 ipython==8.31.0
 isoduration==20.11.0
 jedi==0.19.2
-Jinja2==3.1.5
+Jinja2==3.1.6
 joblib==1.4.2
 json5==0.10.0
 jsonpointer==3.0.0
@@ -92,11 +92,12 @@ pure_eval==0.2.3
 pycparser==2.22
 Pygments==2.19.1
 pyparsing==3.2.1
+pyqtdarktheme==2.1.0
 PySide6==6.8.1.1
 PySide6_Addons==6.8.1.1
 PySide6_Essentials==6.8.1.1
 python-dateutil==2.9.0.post0
-python-json-logger==3.2.1
+python-json-logger==3.2.1.dev1
 pytz==2024.2
 PyYAML==6.0.2
 pyzmq==26.2.0

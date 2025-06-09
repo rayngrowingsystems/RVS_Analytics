@@ -28,6 +28,7 @@
         "MainWindow.py",
         "Mqtt.py",
         "SelectImageDialog.py",
+        "SettingsDialog.py",
         "rayn_utils.py",
         "resources/CameraApp.qrc",
         "ui/AboutDialog.ui",
@@ -45,6 +46,7 @@
         "ui/ImageSourceDialog.ui",
         "ui/MainWindow.ui",
         "ui/AnalysisPreviewDialog.ui",
-        "ui/SelectImageDialog.ui"
+        "ui/SelectImageDialog.ui",
+        "ui/SettingsDialog.ui"
     ]
 }

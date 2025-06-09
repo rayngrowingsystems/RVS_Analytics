@@ -1,0 +1,23 @@
+[tool.ruff]
+# Maximum allowed line length
+line-length = 120
+
+# Target Python version
+target-version = "py310"
+
+# Enable common rulesets: F (pyflakes), E/W (pycodestyle), I (isort)
+lint.extend-select = ["F", "E", "W", "I"]
+
+# Exclude auto-generated/test folders if needed
+exclude = ["__pycache__", ".git", ".venv", "build", "dist", ".mypy_cache", "ui_*.py", "Database.py"]
+
+# Optional: fix lint issues automatically with `ruff check . --fix`
+# (not active by default)
+
+[tool.ruff.format]
+# Match Black behavior
+quote-style = "double"
+indent-style = "space"
+
+# Optional: don’t format docstrings
+docstring-code-format = true

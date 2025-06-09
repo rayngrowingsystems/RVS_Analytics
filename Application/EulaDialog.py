@@ -16,10 +16,8 @@
 
 from os import path
 
-from PySide6.QtWidgets import QDialog
 from PySide6 import QtCore
-
-import CameraApp_rc
+from PySide6.QtWidgets import QDialog
 
 from ui_EulaDialog import Ui_EulaDialog
 
@@ -28,7 +26,8 @@ class EulaDialog(QDialog):
     def __init__(self):
         super(EulaDialog, self).__init__()
 
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)  # Get rid of What's this icon in title bar
+        # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
 
         self.load_ui()
 

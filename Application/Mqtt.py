@@ -18,7 +18,6 @@ import json
 import random
 
 import paho.mqtt.client as mqtt
-
 from PySide6 import QtCore
 from PySide6.QtCore import QObject
 
@@ -29,7 +28,7 @@ QOS = 2
 class Mqtt(QObject):
     status_changed = QtCore.Signal(str, bool)
 
-    def __init__(self, broker, port):
+    def __init__(self, broker, port, username, password):
         QObject.__init__(self)
 
         client_name = "pythonCamera_" + str(random.randint(0, 10000))
@@ -45,7 +44,7 @@ class Mqtt(QObject):
         self.client.on_message = self.on_message
         self.client.on_disconnect = self.on_disconnect
 
-        # RAYNCAMANA-360: Authentication: self.client.username_pw_set(username="name",password="password")
+        self.client.username_pw_set(username=username,password=password)
 
         self.connected = False
 

@@ -65,6 +65,8 @@ class Ui_MainWindow(object):
         self.action_save_analysis.setEnabled(True)
         self.action_delete_images = QAction(MainWindow)
         self.action_delete_images.setObjectName(u"action_delete_images")
+        self.action_settings = QAction(MainWindow)
+        self.action_settings.setObjectName(u"action_settings")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -109,13 +111,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addLayout(self.gridLayout)
 
-        self.tabWidget = QTabWidget(self.centralwidget)
-        self.tabWidget.setObjectName(u"tabWidget")
+        self.tab_widget = QTabWidget(self.centralwidget)
+        self.tab_widget.setObjectName(u"tab_widget")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy2)
+        sizePolicy2.setHeightForWidth(self.tab_widget.sizePolicy().hasHeightForWidth())
+        self.tab_widget.setSizePolicy(sizePolicy2)
         self.preview_tab = QWidget()
         self.preview_tab.setObjectName(u"preview_tab")
         self.horizontalLayout_3 = QHBoxLayout(self.preview_tab)
@@ -140,9 +142,9 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_3.addWidget(self.image_preview)
 
-        self.tabWidget.addTab(self.preview_tab, "")
+        self.tab_widget.addTab(self.preview_tab, "")
 
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.verticalLayout.addWidget(self.tab_widget)
 
         self.timestamp_label = QLabel(self.centralwidget)
         self.timestamp_label.setObjectName(u"timestamp_label")
@@ -229,7 +231,7 @@ class Ui_MainWindow(object):
         sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.dockWidget.sizePolicy().hasHeightForWidth())
         self.dockWidget.setSizePolicy(sizePolicy5)
-        self.dockWidget.setMinimumSize(QSize(114, 473))
+        self.dockWidget.setMinimumSize(QSize(114, 500))
         self.dockWidget.setFeatures(QDockWidget.DockWidgetFloatable|QDockWidget.DockWidgetMovable)
         self.dockWidget.setAllowedAreas(Qt.LeftDockWidgetArea|Qt.RightDockWidgetArea)
         self.dock_widget_contents = QWidget()
@@ -246,6 +248,32 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addItem(self.verticalSpacer, 10, 0, 1, 1)
 
+        self.analysis_options_button = QPushButton(self.dock_widget_contents)
+        self.analysis_options_button.setObjectName(u"analysis_options_button")
+        self.analysis_options_button.setEnabled(True)
+
+        self.gridLayout_3.addWidget(self.analysis_options_button, 7, 0, 1, 1)
+
+        self.analysis_preview_button = QPushButton(self.dock_widget_contents)
+        self.analysis_preview_button.setObjectName(u"analysis_preview_button")
+
+        self.gridLayout_3.addWidget(self.analysis_preview_button, 9, 0, 1, 1)
+
+        self.script_selection_combobox = QComboBox(self.dock_widget_contents)
+        self.script_selection_combobox.setObjectName(u"script_selection_combobox")
+
+        self.gridLayout_3.addWidget(self.script_selection_combobox, 2, 0, 1, 1)
+
+        self.play_status_label = QLabel(self.dock_widget_contents)
+        self.play_status_label.setObjectName(u"play_status_label")
+
+        self.gridLayout_3.addWidget(self.play_status_label, 14, 0, 1, 1)
+
+        self.label_4 = QLabel(self.dock_widget_contents)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayout_3.addWidget(self.label_4, 3, 0, 1, 1)
+
         self.mask_selection_combobox = QComboBox(self.dock_widget_contents)
         self.mask_selection_combobox.setObjectName(u"mask_selection_combobox")
 
@@ -259,59 +287,6 @@ class Ui_MainWindow(object):
         self.label_2.setFont(font1)
 
         self.gridLayout_3.addWidget(self.label_2, 1, 0, 1, 1)
-
-        self.line_3 = QFrame(self.dock_widget_contents)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.Shape.HLine)
-        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.gridLayout_3.addWidget(self.line_3, 11, 0, 1, 1)
-
-        self.label_4 = QLabel(self.dock_widget_contents)
-        self.label_4.setObjectName(u"label_4")
-
-        self.gridLayout_3.addWidget(self.label_4, 3, 0, 1, 1)
-
-        self.analysis_options_button = QPushButton(self.dock_widget_contents)
-        self.analysis_options_button.setObjectName(u"analysis_options_button")
-        self.analysis_options_button.setEnabled(True)
-
-        self.gridLayout_3.addWidget(self.analysis_options_button, 7, 0, 1, 1)
-
-        self.script_selection_combobox = QComboBox(self.dock_widget_contents)
-        self.script_selection_combobox.setObjectName(u"script_selection_combobox")
-
-        self.gridLayout_3.addWidget(self.script_selection_combobox, 2, 0, 1, 1)
-
-        self.label_3 = QLabel(self.dock_widget_contents)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setFont(font1)
-
-        self.gridLayout_3.addWidget(self.label_3, 12, 0, 1, 1)
-
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.play_button = QToolButton(self.dock_widget_contents)
-        self.play_button.setObjectName(u"play_button")
-        self.play_button.setMinimumSize(QSize(32, 32))
-        self.play_button.setIconSize(QSize(32, 32))
-
-        self.horizontalLayout_2.addWidget(self.play_button)
-
-        self.stop_button = QToolButton(self.dock_widget_contents)
-        self.stop_button.setObjectName(u"stop_button")
-        self.stop_button.setMinimumSize(QSize(32, 32))
-        self.stop_button.setIconSize(QSize(32, 32))
-
-        self.horizontalLayout_2.addWidget(self.stop_button)
-
-
-        self.gridLayout_3.addLayout(self.horizontalLayout_2, 14, 0, 1, 1)
-
-        self.play_status_label = QLabel(self.dock_widget_contents)
-        self.play_status_label.setObjectName(u"play_status_label")
-
-        self.gridLayout_3.addWidget(self.play_status_label, 13, 0, 1, 1)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setSpacing(6)
@@ -354,16 +329,48 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
 
+        self.line_3 = QFrame(self.dock_widget_contents)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.gridLayout_3.addWidget(self.line_3, 11, 0, 1, 1)
+
+        self.label_3 = QLabel(self.dock_widget_contents)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setFont(font1)
+
+        self.gridLayout_3.addWidget(self.label_3, 12, 0, 1, 1)
+
         self.results_button = QPushButton(self.dock_widget_contents)
         self.results_button.setObjectName(u"results_button")
         self.results_button.setEnabled(False)
 
-        self.gridLayout_3.addWidget(self.results_button, 15, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.results_button, 16, 0, 1, 1)
 
-        self.analysis_preview_button = QPushButton(self.dock_widget_contents)
-        self.analysis_preview_button.setObjectName(u"analysis_preview_button")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.play_button = QToolButton(self.dock_widget_contents)
+        self.play_button.setObjectName(u"play_button")
+        self.play_button.setMinimumSize(QSize(32, 32))
+        self.play_button.setIconSize(QSize(32, 32))
 
-        self.gridLayout_3.addWidget(self.analysis_preview_button, 9, 0, 1, 1)
+        self.horizontalLayout_2.addWidget(self.play_button)
+
+        self.stop_button = QToolButton(self.dock_widget_contents)
+        self.stop_button.setObjectName(u"stop_button")
+        self.stop_button.setMinimumSize(QSize(32, 32))
+        self.stop_button.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_2.addWidget(self.stop_button)
+
+
+        self.gridLayout_3.addLayout(self.horizontalLayout_2, 15, 0, 1, 1)
+
+        self.clear_sessiondata_button = QPushButton(self.dock_widget_contents)
+        self.clear_sessiondata_button.setObjectName(u"clear_sessiondata_button")
+
+        self.gridLayout_3.addWidget(self.clear_sessiondata_button, 13, 0, 1, 1)
 
         self.dockWidget.setWidget(self.dock_widget_contents)
         MainWindow.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockWidget)
@@ -373,7 +380,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_analysis.menuAction())
         self.menubar.addAction(self.menu_help.menuAction())
         self.menu_file.addAction(self.action_select_network)
-        self.menu_file.addAction(self.action_mqtt_broker)
+        self.menu_file.addAction(self.action_settings)
         self.menu_file.addAction(self.action_download_images)
         self.menu_file.addAction(self.action_delete_images)
         self.menu_file.addSeparator()
@@ -394,7 +401,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.action_exit.triggered.connect(MainWindow.close)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tab_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -432,11 +439,12 @@ class Ui_MainWindow(object):
         self.action_new_analysis.setText(QCoreApplication.translate("MainWindow", u"New Analysis", None))
         self.action_save_analysis.setText(QCoreApplication.translate("MainWindow", u"Save Analysis", None))
         self.action_delete_images.setText(QCoreApplication.translate("MainWindow", u"Delete images from camera...", None))
+        self.action_settings.setText(QCoreApplication.translate("MainWindow", u"Settings...", None))
         self.image_source.setText("")
         self.camera_status.setText("")
         self.mqtt_status.setText("")
         self.image_preview.setText("")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"Preview", None))
+        self.tab_widget.setTabText(self.tab_widget.indexOf(self.preview_tab), QCoreApplication.translate("MainWindow", u"Preview", None))
         self.timestamp_label.setText("")
         self.menu_file.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menu_help.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
@@ -446,18 +454,19 @@ class Ui_MainWindow(object):
         self.status_text.setText("")
         self.dockWidget.setWindowTitle(QCoreApplication.translate("MainWindow", u"Sidebar", None))
         self.image_mask_button.setText(QCoreApplication.translate("MainWindow", u"Masking", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Analysis", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Mask Script", None))
         self.analysis_options_button.setText(QCoreApplication.translate("MainWindow", u"Options", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Run", None))
-        self.play_button.setText("")
-        self.stop_button.setText("")
+        self.analysis_preview_button.setText(QCoreApplication.translate("MainWindow", u"Preview", None))
         self.play_status_label.setText("")
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Mask Script", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Analysis", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Setup", None))
         self.image_source_button.setText(QCoreApplication.translate("MainWindow", u"Image Source", None))
         self.image_option_button.setText(QCoreApplication.translate("MainWindow", u"Image Options", None))
         self.image_roi_button.setText(QCoreApplication.translate("MainWindow", u"Regions", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Run", None))
         self.results_button.setText(QCoreApplication.translate("MainWindow", u"Results", None))
-        self.analysis_preview_button.setText(QCoreApplication.translate("MainWindow", u"Preview", None))
+        self.play_button.setText("")
+        self.stop_button.setText("")
+        self.clear_sessiondata_button.setText(QCoreApplication.translate("MainWindow", u"Clear Session Data", None))
     # retranslateUi
 

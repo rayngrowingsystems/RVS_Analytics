@@ -1,5 +1,5 @@
-# Copyright 2024 RAYN Growing Systems
 #
+# Copyright 2024 RAYN Growing Systems
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,21 +14,15 @@
 
 # This Python file uses the following encoding: utf-8
 
-from PySide6.QtWidgets import QDialog, QWidget, QMessageBox, QPushButton
-from PySide6.QtGui import QPainter, QColor, QPen, QPolygon
-from PySide6.QtCore import QRect, QPoint, QSize, QTimer
-
 from PySide6 import QtCore
-
-import CameraApp_rc
+from PySide6.QtCore import QPoint, QRect, QSize, QTimer
+from PySide6.QtGui import QColor, QPainter, QPen, QPolygon
+from PySide6.QtWidgets import QDialog, QMessageBox, QWidget
 
 from Experiment import Experiment
-
+from Helper import tprint
 from ui_ImageRoiDialog import Ui_ImageRoiDialog
 
-from SelectImageDialog import SelectImageDialog
-
-from Helper import tprint
 
 # TODO Move to its own class when we have merged into main, to avoid confusion with new file
 class RoiGrid(QWidget):
@@ -53,7 +47,7 @@ class RoiGrid(QWidget):
     def paintEvent(self, e):  # Qt override, keep casing
         if not self.show_rois:
             return
-        
+
         painter = QPainter(self)
         pen = QPen()
         pen.setColor(QColor('#888'))
@@ -79,7 +73,8 @@ class RoiGrid(QWidget):
                     rect = self.dialog.rubberband_rect
 
                     # All other items are scaled below, except for the grid lines that need to be scaled here
-                    line_rect = QRect(rect.x() * self.scaling_factor, rect.y() * self.scaling_factor, rect.width() * self.scaling_factor, rect.height() * self.scaling_factor)
+                    line_rect = QRect(rect.x() * self.scaling_factor, rect.y() * self.scaling_factor,
+                                      rect.width() * self.scaling_factor, rect.height() * self.scaling_factor)
 
                     # Draw column lines
                     if columns > 1:
@@ -148,7 +143,8 @@ class RoiGrid(QWidget):
         for index, item in enumerate(items):
             if not self.editing_mode:
                 pen.setColor(QColor('#666'))
-            elif self.dialog.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix or item == self.dialog.focused_roi_item:
+            elif self.dialog.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix or \
+                item == self.dialog.focused_roi_item:
                 pen.setColor(QColor('#FC4'))
             else:
                 pen.setColor(QColor('#0A0'))
@@ -156,7 +152,9 @@ class RoiGrid(QWidget):
 
             item_type = item["type"]
 
-            p = self.dialog.main_window.experiment.image_to_point_coordinates(QPoint(item["x"], item["y"]), self.dialog.ui.reference_image1.crop_rect, self.scaling_factor)
+            p = self.dialog.main_window.experiment.image_to_point_coordinates(QPoint(item["x"], item["y"]),
+                                                                              self.dialog.ui.reference_image1.crop_rect,
+                                                                              self.scaling_factor)
             x = p.x()
             y = p.y()
 
@@ -172,12 +170,14 @@ class RoiGrid(QWidget):
                 if "points" in item:
                     points = item["points"]
                     for point in points:
-                        p = self.dialog.main_window.experiment.image_to_point_coordinates(QPoint(point[0], point[1]), self.dialog.ui.reference_image1.crop_rect, self.scaling_factor)
+                        p = self.dialog.main_window.experiment.image_to_point_coordinates(QPoint(point[0], point[1]),
+                                                                                          self.dialog.ui.reference_image1.crop_rect,
+                                                                                          self.scaling_factor)
                         x = p.x()
                         y = p.y()
 
                         polygon.append(QPoint(x, y))
-                        
+
                     if polygon.size() == 1:  # Single point?
                         painter.drawEllipse(polygon.at(0), 2, 2)
                     elif polygon.size() >= 2 and polygon[0] == polygon[-1]:  # Closed?
@@ -188,7 +188,8 @@ class RoiGrid(QWidget):
                     x = polygon.boundingRect().center().x()
                     y = polygon.boundingRect().center().y   ()
 
-            painter.drawText(QRect(QPoint(x, y) - QPoint(15, 19), QSize(30, 18)), QtCore.Qt.AlignHCenter, str(index + 1))
+            painter.drawText(QRect(QPoint(x, y) - QPoint(15, 19),
+                                   QSize(30, 18)), QtCore.Qt.AlignHCenter, str(index + 1))
 
             # Check if Roi is inside the image
             if self.editing_mode:
@@ -198,7 +199,8 @@ class RoiGrid(QWidget):
                 else:
                     image_width = self.visible_image_size.width()
                     image_height = self.visible_image_size.height()
-                    if x - width / 2 < 0 or y - height / 2 < 0 or x + width / 2 > image_width or y + height / 2 > image_height:
+                    if x - width / 2 < 0 or y - height / 2 < 0 or x + width / 2 > image_width or \
+                        y + height / 2 > image_height:
                         invalid_rois = True
 
         if invalid_rois:
@@ -208,7 +210,9 @@ class RoiGrid(QWidget):
             painter.setFont(font)
             pen.setColor(QColor('#F44'))
             painter.setPen(pen)
-            painter.drawText(QRect(0, painter.viewport().center().y(), painter.viewport().width(), 30), QtCore.Qt.AlignHCenter, "Error: Roi(s) outside of image")
+            painter.drawText(QRect(0, painter.viewport().center().y(),
+                                   painter.viewport().width(), 30), QtCore.Qt.AlignHCenter,
+                                   "Error: Roi(s) outside of image")
 
         self.invalid_rois = invalid_rois
 
@@ -224,10 +228,10 @@ class ImageRoiDialog(QDialog):
         # Define default values for matrix rows, columns, and radius
         DEFAULT_MATRIX_ROWS = 3
         DEFAULT_MATRIX_COLUMNS = 3
-        DEFAULT_RADIUS = 20
 
         # Set window flags to remove 'What's this' icon from the title bar
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint |
+                            QtCore.Qt.WindowMaximizeButtonHint)
 
         # Load the UI elements for the dialog
         self.load_ui()
@@ -277,6 +281,9 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image1.crop_reset.connect(self.on_crop_reset)
         self.ui.reference_image2.crop_reset.connect(self.on_crop_reset)
 
+        self.ui.reference_image1.show_magnify_button = False
+        self.ui.reference_image2.show_magnify_button = False
+
         # Create and configure ROI grids for reference images
         self.roi_grid1 = RoiGrid(self.ui.reference_image1, self, [])
         self.ui.reference_image1.set_roi_grid(self.roi_grid1)
@@ -287,7 +294,7 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image1.show_crop_buttons = True
         self.ui.reference_image1.select_image_button.setParent(self.roi_grid1)
         self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
- 
+
         self.ui.reference_image2.show_crop_buttons = False
         self.ui.reference_image2.select_image_button.setParent(self.roi_grid2)
         self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
@@ -306,6 +313,12 @@ class ImageRoiDialog(QDialog):
         self.ui.rows_spinbox.setValue(DEFAULT_MATRIX_ROWS)
 
         # self.ui.radius_spinbox.setValue(DEFAULT_RADIUS)
+        self.ui.columns_spinbox.setFixedWidth(50)
+        self.ui.rows_spinbox.setFixedWidth(50)
+
+        self.ui.radius_spinbox.setFixedWidth(65)
+        self.ui.width_spinbox.setFixedWidth(50)
+        self.ui.height_spinbox.setFixedWidth(50)
 
         # Connect signals for updating ROI grid based on parameter changes
         self.ui.columns_spinbox.valueChanged.connect(self.refresh_roi_grid)
@@ -334,6 +347,10 @@ class ImageRoiDialog(QDialog):
         self.ui.reference_image1.image_file_name_changed.connect(self.refresh_image_sizes)
         self.ui.reference_image2.image_file_name_changed.connect(self.refresh_image_sizes)
 
+        self.ui.roi_placement_mode.setFixedWidth(120)
+        self.ui.roi_shape.setFixedWidth(120)
+        self.ui.roi_detection_mode.setFixedWidth(120)
+
         # Restore previous settings for ROI parameters
         self.rubberband_rect = self.main_window.experiment.roi_info.rect
         self.ui.reference_image1.rubberband_rect = self.rubberband_rect
@@ -341,7 +358,7 @@ class ImageRoiDialog(QDialog):
 
         self.ui.columns_spinbox.setValue(self.main_window.experiment.roi_info.columns)
         self.ui.rows_spinbox.setValue(self.main_window.experiment.roi_info.rows)
-    
+
         self.ui.radius_spinbox.setValue(self.main_window.experiment.roi_info.radius)
         self.ui.width_spinbox.setValue(self.main_window.experiment.roi_info.width)
         self.ui.height_spinbox.setValue(self.main_window.experiment.roi_info.height)
@@ -373,10 +390,14 @@ class ImageRoiDialog(QDialog):
         self.ui.setupUi(self)
 
     def accept(self):
-        if not self.roi_grid1.invalid_rois and not self.ui.reference_image1.size().isEmpty() and (self.rubberband_rect.isValid() or len(self.manual_roi_items) > 0):
+        if not self.roi_grid1.invalid_rois and not self.ui.reference_image1.size().isEmpty() and \
+            (self.rubberband_rect.isValid() or len(self.manual_roi_items) > 0):
             super(ImageRoiDialog, self).accept()
         elif not self.rubberband_rect.isValid() and len(self.manual_roi_items) == 0:
-            if QMessageBox.question(self, "Incomplete setup", "Do you want to continue without setting a ROI (the whole image will be used as a single ROI)?") == QMessageBox.StandardButton.Yes:
+            if QMessageBox.question(self, "Incomplete setup",
+                                    ("Do you want to continue without setting a ROI "
+                                    "(the whole image will be used as a single ROI)?")
+                                    ) == QMessageBox.StandardButton.Yes:
                 super(ImageRoiDialog, self).accept()
         else:
             QMessageBox.warning(self, "Incomplete setup", "You must have at least one preview image and a valid ROI")
@@ -390,23 +411,29 @@ class ImageRoiDialog(QDialog):
 
     def select_reference_image1(self):
         self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
+        self.ui.reference_image1.on_crop_reset()
+        self.ui.reference_image2.on_crop_reset()
 
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
             self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
+            self.ui.reference_image1.on_crop_reset()
+            self.ui.reference_image2.on_crop_reset()
         else:
             QMessageBox.warning(self, "Image selection", "You must select the left image first")
 
     def load_reference_images(self):
         if self.main_window.experiment.roi_reference_image1 not in [None, "."]:
-            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.roi_reference_image1, self.main_window.experiment.image_options_to_dict())
+            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.roi_reference_image1,
+                                                         self.main_window.experiment.image_options_to_dict())
             self.roi_grid1.show_rois = True
             tprint("Roi: Load left preview image:", self.main_window.experiment.roi_reference_image1)
         else:
             self.roi_grid1.show_rois = False
 
         if self.main_window.experiment.roi_reference_image2 not in [None, "."]:
-            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.roi_reference_image2, self.main_window.experiment.image_options_to_dict())
+            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.roi_reference_image2,
+                                                         self.main_window.experiment.image_options_to_dict())
             self.roi_grid2.show_rois = True
             tprint("Roi: Load right preview image:", self.main_window.experiment.roi_reference_image2)
         else:
@@ -433,9 +460,12 @@ class ImageRoiDialog(QDialog):
 
     def refresh_info_label(self):
         if self.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix:
-            self.ui.info_label.setText("<br><b>Instructions</b><br>Click-and-drag to create a matrix frame with row and column")
+            self.ui.info_label.setText(("<br><b>Instructions</b><br>"
+                                        "Click-and-drag to create a matrix frame with row and column"))
         elif self.placement_mode == Experiment.RoiInfo.PlacementMode.Manual:
-            text = "<br><b>Instructions</b><br>Click to place item, right-click item to delete<br>Click on existing item to select for change<br>Click-and-drag item to move selected item"
+            text = ("<br><b>Instructions</b><br>Click to place item, "
+            "right-click item to delete<br>Click on existing item to select for change<br>"
+            "Click-and-drag item to move selected item")
             if self.shape == Experiment.RoiInfo.Shape.Polygon:
                 text += "<br>Polygon: Click to add points. Double click to close and exit polygon mode"
             self.ui.info_label.setText(text)
@@ -477,33 +507,38 @@ class ImageRoiDialog(QDialog):
         self.ui.roi_detection_mode.blockSignals(False)
 
     def image_to_point_coordinates(self, point):
-        return self.main_window.experiment.image_to_point_coordinates(point, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
-    
+        return self.main_window.experiment.image_to_point_coordinates(point, self.ui.reference_image1.crop_rect,
+                                                                      self.roi_grid1.scaling_factor)
+
     def point_to_image_coordinates(self, point):
-        return self.main_window.experiment.point_to_image_coordinates(point, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
-    
+        return self.main_window.experiment.point_to_image_coordinates(point, self.ui.reference_image1.crop_rect,
+                                                                      self.roi_grid1.scaling_factor)
+
     def image_to_rect_coordinates(self, rect):
-        return self.main_window.experiment.image_to_rect_coordinates(rect, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
+        return self.main_window.experiment.image_to_rect_coordinates(rect, self.ui.reference_image1.crop_rect,
+                                                                     self.roi_grid1.scaling_factor)
 
     def rect_to_image_coordinates(self, rect):
-        return self.main_window.experiment.rect_to_image_coordinates(rect, self.ui.reference_image1.crop_rect, self.roi_grid1.scaling_factor)
+        return self.main_window.experiment.rect_to_image_coordinates(rect, self.ui.reference_image1.crop_rect,
+                                                                     self.roi_grid1.scaling_factor)
 
     def on_placement_mode_change(self):
         if self.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix:  # Switching from Matrix to Manual?
             self.update_controls()
-            
+
             self.manual_roi_items = self.current_matrix_items
 
             self.refresh_info_label()
             self.refresh_roi_grid()
-        elif QMessageBox.question(self, "Confirm mode change", "Switching placement mode will clear existing items. Continue?") == QMessageBox.Yes:
+        elif QMessageBox.question(self, "Confirm mode change",
+                                  "Switching placement mode will clear existing items. Continue?") == QMessageBox.Yes:
             self.update_controls()
 
             if self.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix:
                 self.manual_roi_items = []
                 if self.shape == Experiment.RoiInfo.Shape.Polygon:  # Polygon isn't allowed in Matrix mode
                     self.shape = Experiment.RoiInfo.Shape.Circle
-                    
+
                     self.refresh_shape()
                     self.update_controls()
 
@@ -519,28 +554,30 @@ class ImageRoiDialog(QDialog):
     def on_shape_change(self):
         self.update_controls()
 
-        if self.shape == Experiment.RoiInfo.Shape.Circle:
-            self.update_item_type(self.focused_roi_item, "Circle")
-        elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
-            self.update_item_type(self.focused_roi_item, "Rectangle")
-        elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
-            self.update_item_type(self.focused_roi_item, "Ellipse")
-        elif self.shape == Experiment.RoiInfo.Shape.Polygon:
-            self.remove_item(self.focused_roi_item)
-            self.focused_roi_item = None
+        if self.focused_roi_item:
+            if self.shape == Experiment.RoiInfo.Shape.Circle:
+                self.update_item_type(self.focused_roi_item, "Circle")
+            elif self.shape == Experiment.RoiInfo.Shape.Rectangle:
+                self.update_item_type(self.focused_roi_item, "Rectangle")
+            elif self.shape == Experiment.RoiInfo.Shape.Ellipse:
+                self.update_item_type(self.focused_roi_item, "Ellipse")
+            elif self.shape == Experiment.RoiInfo.Shape.Polygon:
+                self.remove_item(self.focused_roi_item)
+                self.focused_roi_item = None
 
-            self.polygon = QPolygon()
-            self.polygon_closed = True
+                self.polygon = QPolygon()
+                self.polygon_closed = True
 
-        if self.shape == Experiment.RoiInfo.Shape.Circle:
-            self.focused_roi_item["width"] = self.focused_roi_item["height"]  # MAke sure width equals height for a circle
+            if self.shape == Experiment.RoiInfo.Shape.Circle:
+                # Make sure width equals height for a circle
+                self.focused_roi_item["width"] = self.focused_roi_item["height"]
 
-        self.ui.width_spinbox.setValue(self.focused_roi_item["width"])
-        self.ui.height_spinbox.setValue(self.focused_roi_item["height"])
-        self.ui.radius_spinbox.setValue(self.focused_roi_item["width"] / 2)
+            self.ui.width_spinbox.setValue(self.focused_roi_item["width"])
+            self.ui.height_spinbox.setValue(self.focused_roi_item["height"])
+            self.ui.radius_spinbox.setValue(self.focused_roi_item["width"] / 2)
 
-        self.refresh_info_label()
-        self.refresh_roi_grid()
+            self.refresh_info_label()
+            self.refresh_roi_grid()
 
     def on_detection_mode_change(self):
         self.update_controls()
@@ -548,20 +585,21 @@ class ImageRoiDialog(QDialog):
     def update_controls(self):
         if self.ui.roi_placement_mode.currentIndex() == 0:
             self.placement_mode = Experiment.RoiInfo.PlacementMode.Matrix
- 
+
             self.ui.columns_spinbox.show()
             self.ui.rows_spinbox.show()
             self.ui.columns_label.show()
             self.ui.rows_label.show()
         else:
             self.placement_mode = Experiment.RoiInfo.PlacementMode.Manual
- 
+
             self.ui.columns_spinbox.hide()
             self.ui.rows_spinbox.hide()
             self.ui.columns_label.hide()
             self.ui.rows_label.hide()
 
-        self.ui.roi_shape.model().item(3).setEnabled(self.ui.roi_placement_mode.currentIndex() != 0)  # Disable Polygon choice in Matrix mode
+        # Disable Polygon choice in Matrix mode
+        self.ui.roi_shape.model().item(3).setEnabled(self.ui.roi_placement_mode.currentIndex() != 0)
 
         if self.ui.roi_shape.currentIndex() == 0:
             self.shape = Experiment.RoiInfo.Shape.Circle
@@ -640,7 +678,7 @@ class ImageRoiDialog(QDialog):
                 self.update_controls()
 
                 self.refresh_roi_grid()
-      
+
         self.last_move_point = self.point_to_image_coordinates(point)
 
     def on_clicked(self, point):
@@ -733,17 +771,17 @@ class ImageRoiDialog(QDialog):
 
             self.polygon_closed = True
 
-            l = []
+            points = []
             for point in point_list:
-                l.append([ point.x(), point.y() ])
+                points.append([ point.x(), point.y() ])
 
             self.focused_roi_item["type"] = "Polygon"
             self.focused_roi_item["x"] = self.polygon.boundingRect().center().x()
             self.focused_roi_item["y"] = self.polygon.boundingRect().center().y()
             self.focused_roi_item["width"] = self.polygon.boundingRect().width()
             self.focused_roi_item["height"] = self.polygon.boundingRect().height()
-            
-            self.focused_roi_item["points"] = l
+
+            self.focused_roi_item["points"] = points
 
             # self.add_item(d)
 
@@ -758,7 +796,7 @@ class ImageRoiDialog(QDialog):
     def on_rubberband_changed(self, rect):
         if self.placement_mode == Experiment.RoiInfo.PlacementMode.Matrix:
             self.rubberband_rect = self.rect_to_image_coordinates(rect)
-                                         
+
             self.refresh_roi_grid()
 
     def on_crop_rect_changed(self, rect):
@@ -799,7 +837,7 @@ class ImageRoiDialog(QDialog):
         if item_type == "Polygon" and item_type2 == "Polygon":
             if existing_item["points"] == new_item["points"]:
                 return True
-            
+
         center_x = existing_item["x"]
         center_y = existing_item["y"]
         width = existing_item["width"]
@@ -810,7 +848,8 @@ class ImageRoiDialog(QDialog):
         # width2 = new_item["width"]
         # height2 = new_item["height"]
 
-        if center_x2 > center_x - width / 2 and center_x2 < center_x + width / 2 and center_y2 > center_y - height / 2 and center_y2 < center_y + height / 2:
+        if center_x2 > center_x - width / 2 and center_x2 < center_x + width / 2 and \
+            center_y2 > center_y - height / 2 and center_y2 < center_y + height / 2:
             return True
 
         return False
@@ -838,7 +877,8 @@ class ImageRoiDialog(QDialog):
                     p = QPoint(points[0][0], points[0][1])
                     if QRect(p, QSize(10, 10)).adjusted(-5, -5, -5, -5).contains(point):
                         return True
-        elif point.x() > center_x - width / 2 and point.x() < center_x + width / 2 and point.y() > center_y - height / 2 and point.y() < center_y + height / 2:
+        elif point.x() > center_x - width / 2 and point.x() < center_x + width / 2 and \
+            point.y() > center_y - height / 2 and point.y() < center_y + height / 2:
             return True
 
         return False
@@ -900,19 +940,19 @@ class ImageRoiDialog(QDialog):
 
     def refresh_reference_image1(self):
         if self.ui.reference_image1 is not None:
-            width = self.ui.reference_image1.width()
-            height = self.ui.reference_image1.height()
+            # width = self.ui.reference_image1.width()
+            # height = self.ui.reference_image1.height()
 
             if self.ui.reference_image1.original_image:
                 self.ui.reference_image1.refresh_image_size()
-                
-                # Scale pixmap to follow available space
-                # self.ui.reference_image1.setPixmap(self.ui.reference_image1.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
+                # Scale pixmap to follow available space
                 if not self.ui.reference_image1.crop_rect.isEmpty():
-                    self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() / self.ui.reference_image1.crop_rect.width()
+                    self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() \
+                        / self.ui.reference_image1.crop_rect.width()
                 else:
-                    self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() / self.ui.reference_image1.original_image.width()
+                    self.roi_grid1.scaling_factor = self.ui.reference_image1.pixmap().width() \
+                        / self.ui.reference_image1.original_image.width()
             else:
                 self.roi_grid1.scaling_factor = 1.0
 
@@ -920,24 +960,24 @@ class ImageRoiDialog(QDialog):
 
             self.roi_grid1.show_rois = not self.ui.reference_image1.original_image.isNull()
             self.roi_grid1.update()
-            
+
     def refresh_reference_image2(self):
         if self.ui.reference_image2 is not None:
-            width = self.ui.reference_image2.width()
-            height = self.ui.reference_image2.height()
+            # width = self.ui.reference_image2.width()
+            # height = self.ui.reference_image2.height()
 
             if self.ui.reference_image2.original_image:
                 self.ui.reference_image2.refresh_image_size()
-                
-                # Scale pixmap to follow available space
-                # self.ui.reference_image2.setPixmap(self.ui.reference_image2.original_image.scaled(width, height, QtCore.Qt.KeepAspectRatio))
 
+                # Scale pixmap to follow available space
                 if not self.ui.reference_image2.crop_rect.isEmpty():
-                    self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() / self.ui.reference_image2.crop_rect.width()
+                    self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() \
+                        / self.ui.reference_image2.crop_rect.width()
                 else:
-                    self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() / self.ui.reference_image2.original_image.width()
+                    self.roi_grid2.scaling_factor = self.ui.reference_image2.pixmap().width() \
+                        / self.ui.reference_image2.original_image.width()
             else:
-                self.roi_grid2.scaling_factor = self.roi_grid1.scaling_factor 
+                self.roi_grid2.scaling_factor = self.roi_grid1.scaling_factor
 
             self.roi_grid2.visible_image_size = self.ui.reference_image2.pixmap().size()
 
@@ -945,12 +985,9 @@ class ImageRoiDialog(QDialog):
             self.roi_grid2.update()
 
     def refresh_image_sizes(self):
-        # self.ui.reference_image1.set_crop_rect(self.main_window.experiment.crop_rect)
-        # self.ui.reference_image2.set_crop_rect(self.main_window.experiment.crop_rect)
-
         self.refresh_reference_image1()
         self.refresh_reference_image2()
 
     def resizeEvent(self, event):  # Qt override
         self.refresh_image_sizes()
-            
+

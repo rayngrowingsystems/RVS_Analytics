@@ -128,8 +128,7 @@ options associated with the selected analysis script.</p>
                                         </ul>
                                         <p>The chosen index is used when generating any selected <b>Index and Reflectance</b> options.</p>
                                         <h2>Chart Options</h2>
-                                        <p>
-                                            <MadCap:conditionalText data-mc-conditions="Snippets.Analysis Options">This section</MadCap:conditionalText> allows you to choose various  metrics to be analyzed and plotted on  charts. After analysis, charts of the selected options are saved to the <a href="Results.htm" class="MCXref xref">Results</a> folder, and can be viewed in the <a href="Chart_Tabs.htm" class="MCXref xref" data-mc-conditions="Snippets.Analysis Options">Chart Tabs</a> to the right of the <a href="Preview_Tab.htm" class="MCXref xref">Preview Tab</a>.</p>
+                                        <p>The checkboxes in <MadCap:conditionalText data-mc-conditions="Snippets.Analysis Options">this section</MadCap:conditionalText> allow you to choose various  metrics to be analyzed and plotted on  charts. After analysis, charts of the selected options are saved to the <a href="Results.htm" class="MCXref xref">Results</a> folder, and can be viewed in the <a href="Chart_Tabs.htm" class="MCXref xref" data-mc-conditions="Snippets.Analysis Options">Chart Tabs</a> to the right of the <a href="Preview_Tab.htm" class="MCXref xref">Preview Tab</a>.</p>
                                         <p>One or more of the  metrics can be chosen by selecting the associated box.</p>
                                         <h3>Shape</h3>
                                         <p>The following options are available to chart analyzed shape data:</p>
@@ -157,7 +156,7 @@ options associated with the selected analysis script.</p>
                                                     </td>
                                                     <td class="TableStyle-NoLines_LeftMargin-BodyD-Column1-Body1_default">
                                                         <ul>
-                                                            <li><b>Convex hull area</b> - the size of the shape that encloses the outer edges of the plant.</li>
+                                                            <li><b>Convex Hull Area</b> - the size of the shape that encloses the outer edges of the plant.</li>
                                                         </ul>
                                                     </td>
                                                 </tr>
@@ -205,7 +204,7 @@ options associated with the selected analysis script.</p>
                                                     </td>
                                                     <td class="TableStyle-NoLines_LeftMargin-BodyA-Column1-Body1_default">
                                                         <ul>
-                                                            <li><b>Longest path</b> - the furthest distance between the outer edges of the plant.</li>
+                                                            <li><b>Longest Path</b> - the furthest distance between the outer edges of the plant.</li>
                                                         </ul>
                                                     </td>
                                                 </tr>
@@ -214,10 +213,11 @@ options associated with the selected analysis script.</p>
                                         <h3>Index and Reflectance</h3>
                                         <p>The following options are available to chart analyzed index and reflectance data:</p>
                                         <ul>
-                                            <li><b>Mean index</b> - takes an average of the selected reflectance index, returning mean, median, and standard deviation values for the plant.</li>
-                                            <li><b>False color image</b> - generates a false color image showing the values of the selected index. One false color image is created for each hyperspectral image analyzed; only the last false color image is displayed in the results tab.</li>
-                                            <li><b>Index histogram</b> - generates distribution charts of index values.</li>
-                                            <li><b>Spectral histogram</b> - generates distribution charts of reflectance values.</li>
+                                            <li><b>Mean Index</b> - takes an average of the selected reflectance index, returning mean, median, and standard deviation values for the plant.</li>
+                                            <li><b>False Color Image</b> - generates a false color image showing the values of the selected index. One false color image is created for each hyperspectral image analyzed; only the last false color image is displayed in the results tab.<ul><li><b>RGB image as background</b> - generates the false color image with an RGB background.</li></ul></li>
+                                            <li><b>Index Histogram</b> - generates distribution charts of index values.</li>
+                                            <li><b>Auto Min/Max</b> - set custom <b>Min Percentile</b> and <b>Max Percentile</b> levels to adjust the range used when generating false color images.</li>
+                                            <li><b>Spectral Histogram</b> - generates distribution charts of reflectance values.</li>
                                         </ul>
                                         <p>The histogram options generate a chart for each of the configured <a href="Setup_Regions.htm" class="MCXref xref">Regions of Interest</a>. The index chosen in <b>Script Options</b> is used to analyze detected objects within each ROI and the results are averaged together in the chart for that region. The last histogram created is displayed in the results tab.</p>
                                     </div>

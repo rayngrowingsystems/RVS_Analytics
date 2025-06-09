@@ -14,14 +14,27 @@
 
 # This Python file uses the following encoding: utf-8
 
-from datetime import datetime
-import os
 import json
+import os
+from datetime import datetime
 
-from PySide6.QtWidgets import QDialog, QGridLayout, QCheckBox, QLabel, QPushButton, QMessageBox, QComboBox, QFrame, QStyledItemDelegate, QSlider, QGroupBox, QVBoxLayout
-from PySide6.QtCore import QTimer, QEvent
 from PySide6 import QtCore
-from PySide6.QtGui import QPalette, QFontMetrics, QStandardItem
+from PySide6.QtCore import QEvent, QTimer
+from PySide6.QtGui import QFontMetrics, QPainter, QPalette, QPixmap, QStandardItem
+from PySide6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QComboBox,
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QSlider,
+    QSpinBox,
+    QStyledItemDelegate,
+    QVBoxLayout,
+)
 
 from DoubleSlider import DoubleSlider
 
@@ -40,7 +53,7 @@ def tprint(*args, **kwargs):
         s += str(kwarg) + " "
 
     print(s)
-    
+
     if debug_file_name:
         with open(debug_file_name, "a") as f:
            f.write(s + "\n")
@@ -68,27 +81,6 @@ def info_from_header_file(file_name):
         time = now.strftime("%H:%M:%S")
 
     return date, time, camera, header_dict["wavelength"]
-
-    # Old implementation - obsolete
-    with open(file_name, 'r') as hdr:
-        lines = hdr.readlines()
-
-        date = ""
-        time = ""
-        camera = ""
-        wavelengths = []
-
-        for line in lines:
-            if line.startswith('capture date = '):
-                date = line.replace('capture date = ', '').replace('\n', '')
-            elif line.startswith('capture time = '):
-                time = line.replace('capture time = ', '').replace('\n', '')
-            elif line.startswith('camera = '):
-                camera = line.replace('camera = ', '').replace('\n', '')
-            elif line.startswith('wavelength = '):
-                wavelengths = line.replace('wavelength = ', '').replace('\n', '').replace('{', '').replace('}', '').replace(' ', '').split(",")
-
-        return date, time, camera, wavelengths
 
 # Copied from plantcv
 def _parse_envi(headername):
@@ -168,7 +160,7 @@ class CheckableComboBox(QComboBox):
         self.setEditable(True)
         self.lineEdit().setReadOnly(True)
         # Make the lineedit the same color as QPushButton
-        palette = qApp.palette()
+        palette = QApplication.instance().palette()
         palette.setBrush(QPalette.Base, palette.button())
         self.lineEdit().setPalette(palette)
 
@@ -273,16 +265,16 @@ class CheckableComboBox(QComboBox):
             if self.model().item(i).checkState() == QtCore.Qt.Checked:
                 res.append(self.model().item(i).data())
         return res
-    
+
     def setCurrentData(self, data):
         for i in range(self.model().rowCount()):
             if self.model().item(i).data() in data:
                 self.model().item(i).setCheckState(QtCore.Qt.Checked)
             else:
                 self.model().item(i).setCheckState(QtCore.Qt.Unchecked)
-        
+
         QTimer.singleShot(300, lambda:self.updateText())  # Delayed update to get size established
-    
+
 def expand_presets(preset_folder, preset_list):
     settings_list = []
 
@@ -294,22 +286,21 @@ def expand_presets(preset_folder, preset_list):
             if "settings" in d:
                 for setting in d["settings"]:
                     settings_list.append(setting)
-        
+
     return settings_list
 
 # Create grid of ui elements defined in a config file
-def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_changed, slider_value_changed, wavelength_changed, script_for_dropdown_values, preset_folder):
+def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_changed, slider_value_changed,
+                                wavelength_changed, script_for_dropdown_values, preset_folder):
     # Lists to hold various UI elements
     option_checkboxes = []
     option_sliders = []
     option_wavelengths = []
     option_dropdowns = []
+    option_spinboxes = []
 
     # Store ranges for related sliders
     option_ranges = []
-
-    # Lists to store wavelength settings
-    wavelengths = []
 
     wavelength_value = {}
 
@@ -324,7 +315,7 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
         settings_list = []
         if "settings" in section:
             settings_list = section["settings"]
-        
+
         preset_list = []
         if "presets" in section:
             preset_list = section["presets"]
@@ -332,8 +323,9 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
         if len(preset_list) > 0:
             settings_list.extend(expand_presets(preset_folder, preset_list))
 
-        section_groupbox = QGroupBox(display_name) 
+        section_groupbox = QGroupBox(display_name)
         section_grid = QGridLayout()
+        section_grid.setHorizontalSpacing(40)
 
         row = 0
         column = 0
@@ -391,14 +383,17 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                             option_ranges.append((option_slider, dropdown, name,))
 
                             tprint("Force delayed refresh of related slider range", name)
-                            # Force refresh of initial dropdown range. Needs a delay, otherwise, it won't activate the new range
-                            QTimer.singleShot(200, lambda name=name, dropdown=dropdown: dropdown_changed(name, dropdown, True))
+                            # Force refresh of initial dropdown range. Needs a delay, otherwise,
+                            # it won't activate the new range
+                            QTimer.singleShot(200, lambda name=name,
+                                              dropdown=dropdown: dropdown_changed(name, dropdown, True))
                             found = True
                             break
 
                     if not found:
                         tprint("Slider is referring a non-existent dropdown", option["getRangesFor"])
 
+                    # The resolved values are set in the dropdown_changed callback
                     min = 0
                     max = 1
                     steps = 2
@@ -422,7 +417,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 elif "value" in option:
                     start_value = default_value  # Use default value
 
-                default_values[option_slider] = default_value
+                if "value" in option:
+                    default_values[option_slider] = option["value"]
 
                 display_name = option["displayName"]
                 name = option["name"]
@@ -443,7 +439,8 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
                 option_slider.setSingleStep((max - min) / steps)
 
                 # Connect slider value change to script execution
-                option_slider.valueChanged.connect(lambda a, name=name, optionSlider=option_slider: slider_value_changed(name, optionSlider))
+                option_slider.valueChanged.connect(lambda a, name=name,
+                                                   optionSlider=option_slider: slider_value_changed(name, optionSlider))
                 option_slider.valueChanged.emit(0)  # Force refresh of label
                 option_slider.setValue(start_value)
                 if "hint" in option:
@@ -550,11 +547,72 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
                 # Connect the signal of dropdown menu change to its handling function
                 option_dropdown.currentIndexChanged.connect(
-                    lambda a, name=name, option_dropdown=option_dropdown: dropdown_changed(name, option_dropdown, False))
+                    lambda a, name=name,
+                    option_dropdown=option_dropdown: dropdown_changed(name, option_dropdown, False))
 
                 # Connect the signal of dropdown menu change to the main function for updating the mask script
                 option_dropdown.currentIndexChanged.connect(execute_on_change)
-            
+
+            # Handle spinbox options
+            elif option["type"] == "spinBox":
+                option_label = QLabel()
+                option_label.setText(option["displayName"])
+                if "hint" in option:
+                    option_label.setToolTip(option["hint"])
+
+                start_value = 0
+                option_spinbox = QSpinBox()
+
+                min = int(option["minimum"])
+                max = int(option["maximum"])
+
+                default_value = 0  
+                if "value" in option:
+                    default_value = option["value"]
+
+                # Check if the spinbox value is set
+                if option["name"] in settings:
+                    tprint("Found spinbox option:", option["name"], settings[option["name"]])
+                    start_value = settings[option["name"]]  # Use last value
+                elif "value" in option:
+                    start_value = default_value  # Use default value
+
+                default_values[option_spinbox] = default_value
+
+                display_name = option["displayName"]
+                name = option["name"]
+
+                # Set spinbox properties
+                option_spinbox.name = name
+                option_spinbox.displayName = display_name
+                option_spinbox.optionLabel = option_label
+                option_spinbox.min = min
+                option_spinbox.max = max
+                option_spinbox.defaultValue = default_value
+                option_spinbox.startValue = start_value
+
+                option_spinbox.setRange(min, max)
+
+                # TODO? Connect spinbox value change to script execution
+                #option_spinbox.valueChanged.connect(lambda a, name=name,
+                #optionSpinBox=option_spinbox: spinbox_value_changed(name, optionSpinbox))
+                #option_spinbox.valueChanged.emit(0)  # Force refresh of label
+                option_spinbox.setValue(int(start_value))
+                if "hint" in option:
+                    option_spinbox.setToolTip(option["hint"])
+
+                layout = QHBoxLayout()
+                layout.addWidget(option_label)
+                layout.addWidget(option_spinbox)
+                layout.addStretch(1)
+
+                section_grid.addLayout(layout, row, column)
+                row += 1
+
+                option_spinboxes.append((option["name"], option_spinbox,))
+
+                option_spinbox.valueChanged.connect(execute_on_change)
+
             # Handle divider
             elif option["type"] == "divider":
                 line = QFrame()
@@ -573,16 +631,23 @@ def get_ui_elements_from_config(options, settings, execute_on_change, dropdown_c
 
     # section_grid.setRowStretch(section_grid.rowCount(), 1)
 
-    return top_layout, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, option_dropdowns, option_ranges, default_values
+    return top_layout, option_checkboxes, option_sliders, option_wavelengths, wavelength_value, \
+           option_dropdowns, option_ranges, option_spinboxes, default_values
 
 def set_ui_elements_default_values(values):
     for option, value in values.items():
         if isinstance(option, QSlider):
-            option.setValue(value)
+            option.setValue(float(value))
+        elif isinstance(option, QSpinBox):
+            option.setValue(int(value))
         elif isinstance(option, QCheckBox):
             option.setChecked(bool(value))
         elif isinstance(option, QComboBox):
-            option.setCurrentIndex(int(value))
+            index = option.findText(value)
+            if index != -1:
+                option.setCurrentIndex(index)
+            else:
+                option.setCurrentIndex(0)
 
 # Get a settings dict for the UI elements of the dialog
 def get_settings_for_ui_elements(dialog):
@@ -603,5 +668,30 @@ def get_settings_for_ui_elements(dialog):
     for name, dropdown in dialog.option_dropdowns:
         settings[name] = dropdown.currentData()
 
+    for name, spinbox in dialog.option_spinboxes:
+        settings[name] = spinbox.value()
+
     return settings
+
+class ResultTabWidget(QLabel):
+    def __init__(self, file_name, parent=None):
+        super().__init__(parent)
+        self.pixmap = QPixmap(file_name)
+
+    def update_pixmap(self, file_name):
+        self.pixmap = QPixmap(file_name)
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+
+        # Draw the pixmap, scaled to fit the widget while keeping the aspect ratio
+        if not self.pixmap.isNull():
+            scaled_pixmap = self.pixmap.scaled(self.size(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+            x = (self.width() - scaled_pixmap.width()) // 2
+            y = (self.height() - scaled_pixmap.height()) // 2
+            painter.drawPixmap(x, y, scaled_pixmap)
+
+        # Call the base class implementation
+        super().paintEvent(event)
 

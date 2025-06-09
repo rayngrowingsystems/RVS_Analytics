@@ -15,16 +15,13 @@
 # This Python file uses the following encoding: utf-8
 import os
 
-from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
-from PySide6.QtCore import QTimer
-
 from PySide6 import QtCore
-
-import CameraApp_rc
-
-from ui_ImageSourceDialog import Ui_ImageSourceDialog
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from Helper import tprint
+from ui_ImageSourceDialog import Ui_ImageSourceDialog
+
 
 class ImageSourceDialog(QDialog):
     def __init__(self, main_window):
@@ -34,7 +31,8 @@ class ImageSourceDialog(QDialog):
 
         super(ImageSourceDialog, self).__init__()
 
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)  # Get rid of What's this icon in title bar
+        # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint)
 
         self.load_ui()
 
@@ -109,7 +107,8 @@ class ImageSourceDialog(QDialog):
         self.main_window.set_image_source(self.main_window.experiment.ImageSource.Camera)
 
     def set_image_file_path(self):
-        file_info = QFileDialog.getOpenFileName(self, "Select an image", self.main_window.experiment.current_folder(), "Image Files (*.hdr)")
+        file_info = QFileDialog.getOpenFileName(self, "Select an image",
+                                                self.main_window.experiment.current_folder(), "Image Files (*.hdr)")
 
         # fileInfo is a tuple
 
@@ -207,7 +206,7 @@ class ImageSourceDialog(QDialog):
             self.ui.camera_api_key.setText(self.main_window.experiment.camera_api_keys[cid])
         else:
             self.ui.camera_api_key.setText("")
-        
+
         self.ui.camera_api_key.setEnabled(True)
 
     def camera_api_key_changed(self):

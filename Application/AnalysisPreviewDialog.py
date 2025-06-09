@@ -14,29 +14,23 @@
 
 # This Python file uses the following encoding: utf-8
 
-import sys
-import os
-import json
-import tempfile
 import importlib
+import os
+import sys
+import tempfile
 
-from multiprocessing import Queue
-
-from PySide6.QtWidgets import QDialog, QCheckBox, QSlider, QLabel, QVBoxLayout, QComboBox, QFrame, QPushButton, QMessageBox
-from PySide6.QtGui import QPixmap, QGuiApplication, QCursor
-from PySide6.QtCore import QTimer, QCoreApplication
 from PySide6 import QtCore
+from PySide6.QtCore import QCoreApplication, QTimer
+from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
+from PySide6.QtWidgets import (
+    QDialog,
+    QMessageBox,
+)
 
-import Helper
 from Helper import tprint
-
 from ImageRoiDialog import RoiGrid
-
-import CameraApp_rc
-
-from SelectImageDialog import SelectImageDialog
-
 from ui_AnalysisPreviewDialog import Ui_AnalysisPreviewDialog
+
 
 class AnalysisPreviewDialog(QDialog):
     def __init__(self, main_window):
@@ -49,7 +43,8 @@ class AnalysisPreviewDialog(QDialog):
         super(AnalysisPreviewDialog, self).__init__()
 
         # Set window flags to customize window behavior
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowSystemMenuHint |
+                            QtCore.Qt.WindowMaximizeButtonHint)  # Get rid of What's this icon in title bar
 
         self.load_ui()
 
@@ -66,6 +61,10 @@ class AnalysisPreviewDialog(QDialog):
         # Connect image buttons to slot for selecting reference images
         self.ui.reference_image1.select_image_button.clicked.connect(self.select_reference_image1)
         self.ui.reference_image2.select_image_button.clicked.connect(self.select_reference_image2)
+
+        # Connect magnify state between reference and preview images
+        self.ui.reference_image1.magnify_state_changed.connect(self.on_magnify_state_changed1)
+        self.ui.reference_image2.magnify_state_changed.connect(self.on_magnify_state_changed2)
 
         self.ui.preview_button.clicked.connect(self.run_preview_script)
 
@@ -90,7 +89,8 @@ class AnalysisPreviewDialog(QDialog):
 
             if self.original_preview_image1:
                 # Scale pixmap to follow available space
-                self.ui.preview_image1.setPixmap(self.original_preview_image1.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+                self.ui.preview_image1.setPixmap(self.original_preview_image1.scaled(width, height,
+                                                                                     QtCore.Qt.KeepAspectRatio))
 
             scaling_factor = self.ui.preview_image1.pixmap().width() / self.original_preview_image1.width()
 
@@ -101,7 +101,7 @@ class AnalysisPreviewDialog(QDialog):
 
             self.roi_grid1.scaling_factor = scaling_factor
             self.roi_grid1.setFixedSize(self.ui.preview_image1.pixmap().size())
-            
+
     def refresh_preview_image2(self):
         if self.original_preview_image2 is not None:
             width = self.ui.preview_image2.width()
@@ -109,7 +109,8 @@ class AnalysisPreviewDialog(QDialog):
 
             if self.original_preview_image2:
                 # Scale pixmap to follow available space
-                self.ui.preview_image2.setPixmap(self.original_preview_image2.scaled(width, height, QtCore.Qt.KeepAspectRatio))
+                self.ui.preview_image2.setPixmap(self.original_preview_image2.scaled(width, height,
+                                                                                     QtCore.Qt.KeepAspectRatio))
 
             scaling_factor = self.ui.preview_image2.pixmap().width() / self.original_preview_image2.width()
 
@@ -144,7 +145,7 @@ class AnalysisPreviewDialog(QDialog):
 
     def select_reference_image1(self):
         self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image1)
-        
+
     def select_reference_image2(self):
         if self.ui.reference_image1.image_file_name != "":
             self.main_window.select_image_dialog(self.main_window, self, self.ui.reference_image2)
@@ -153,11 +154,13 @@ class AnalysisPreviewDialog(QDialog):
 
     def load_reference_images(self):
         if self.main_window.experiment.script_reference_image1 is not None:
-            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.script_reference_image1, self.main_window.experiment.image_options_to_dict())
+            self.ui.reference_image1.set_image_file_name(self.main_window.experiment.script_reference_image1,
+                                                         self.main_window.experiment.image_options_to_dict())
             tprint("Script: Load left preview image:", self.main_window.experiment.script_reference_image1)
 
         if self.main_window.experiment.script_reference_image2 is not None:
-            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.script_reference_image2, self.main_window.experiment.image_options_to_dict())
+            self.ui.reference_image2.set_image_file_name(self.main_window.experiment.script_reference_image2,
+                                                         self.main_window.experiment.image_options_to_dict())
             tprint("Script: Load right preview image:", self.main_window.experiment.script_reference_image2)
 
         # self.run_preview_script()
@@ -191,10 +194,11 @@ class AnalysisPreviewDialog(QDialog):
                 settings["experimentSettings"] = self.main_window.experiment.to_dict()
 
                 settings["scriptName"] = self.main_window.experiment.selected_script
-                settings["outputFolder"] = { "images": temp_path, "visuals": "", "data": "" , "appData": ""}    
+                settings["outputFolder"] = { "images": temp_path, "visuals": "", "data": "" , "appData": ""}
 
                 # Populate script options from UI elements
-                # Note: If you change ui elements here, you are likely to have to update openImageMaskDialog when dialog is closed
+                # Note: If you change ui elements here, you are likely to have to update
+                # openImageMaskDialog when dialog is closed
                 for name, checkbox in self.option_checkboxes:
                     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = checkbox.isChecked()
 
@@ -202,10 +206,12 @@ class AnalysisPreviewDialog(QDialog):
                     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = int(slider.value())
 
                 # for name, wavelength in self.option_wavelengths:
-                #     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = wavelength.currentText()
+                #     settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = \
+                # wavelength.currentText()
 
                 for name, dropdown in self.option_dropdowns:
-                    settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = dropdown.currentData()
+                    settings['experimentSettings']['analysis']['scriptOptions']['general'][name] = \
+                        dropdown.currentData()
 
                 analytics_script_name = self.main_window.experiment.selected_script
                 sys.path.append(os.path.dirname(self.main_window.script_paths[analytics_script_name]))
@@ -229,14 +235,14 @@ class AnalysisPreviewDialog(QDialog):
 
                     try:
                         temp_file_name = analytics_script.execute(analytics_script_name, settings, mask_file_name, True)
-                        
+
                         self.original_preview_image1 = QPixmap(temp_file_name)
                         self.refresh_preview_image1()
 
                         tprint("Reading preview from", temp_file_name)
                     except BaseException as e:
                         tprint("Preview 1 failed: Unknown exception", e)
- 
+
                         ready, reason = self.main_window.ready_to_run()
                         if not ready and self.ui.reference_image1.image_file_name != "":
                             self.ui.preview_image1.setText(reason)
@@ -257,6 +263,14 @@ class AnalysisPreviewDialog(QDialog):
                         if not ready and self.ui.reference_image2.image_file_name != "":
                             self.ui.preview_image2.setText(reason)
 
+                self.main_window.experiment.session_data["temporary"] = {}  # Clear temporary part of the sessionData
+                self.main_window.update_experiment_file(False)
+
             # Restore the cursor to its original state
             QGuiApplication.restoreOverrideCursor()
 
+    def on_magnify_state_changed1(self, mode, pos, zoom_factor):
+        self.ui.preview_image1.set_magnifier_mode(mode, pos, zoom_factor)
+
+    def on_magnify_state_changed2(self, mode, pos, zoom_factor):
+        self.ui.preview_image2.set_magnifier_mode(mode, pos, zoom_factor)

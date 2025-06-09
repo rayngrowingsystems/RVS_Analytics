@@ -12,16 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import warnings
+from os import path
+
 import cv2
 import numpy as np
-import os
-from os import path
-from plantcv.plantcv import spectral_index
-from plantcv.plantcv import readimage
+from plantcv.plantcv import crop, print_image, readimage, spectral_index
 from plantcv.plantcv.transform import rotate
-from plantcv.plantcv import print_image
-from plantcv.plantcv import crop
+from matplotlib import pyplot as plt
 
 
 def load_coefficients(path):
@@ -157,7 +156,9 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
     spectral_data = readimage(filename=img_file, mode='envi')
 
     # prepare image data
-    spectral_data.array_data = spectral_data.array_data.astype("float32")  # required for further calculations
+    with np.errstate(invalid='ignore'):
+        spectral_data.array_data = spectral_data.array_data.astype("float32")
+
     if spectral_data.d_type == np.uint8:  # only convert if data seems to be uint8
         spectral_data.array_data = spectral_data.array_data / 255  # convert 0-255 (orig.) to 0-1 range
 
@@ -170,7 +171,7 @@ def prepare_spectral_data(settings, file_name=False, preview=False):
     # undistort the image cube
     if image_options["lensAngle"] != 0:  # only undistort if angle is selected
         cam_calibration_file = path.join(path.dirname(__file__),
-                                         f"calibration_data/{image_options['lensAngle']}_calibration_data.yml")  # select the data set
+                                         f"calibration_data/{image_options['lensAngle']}_calibration_data.yml")
         mtx, dist = load_coefficients(cam_calibration_file)  # depending on the lens angle
         spectral_data.array_data = undistort_data_cube(spectral_data.array_data, mtx, dist)
         spectral_data.pseudo_rgb = undistort_data_cube(spectral_data.pseudo_rgb, mtx, dist)
@@ -318,7 +319,7 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
         image_file_name = os.path.normpath(out_image)
         print("Writing image to " + image_file_name)
 
-        if mask_options["overlay_mask"]:
+        if mask_options.get("overlay_mask") and mask_options["overlay_mask"]:
             _alpha_base_level = 60
             alpha = np.ones(pseudo_rgb.shape[:2], dtype=np.uint8)*_alpha_base_level
             alpha = np.where(mask > 0, 255, alpha)
@@ -328,5 +329,77 @@ def create_mask_preview(mask, pseudo_rgb, settings, create_preview=True):
         else:
             print_image(img=mask, filename=image_file_name)
 
+
+def apply_theme_to_chart_dict(chart_dict: dict, bg_color: str):
+    # Define theme-specific colors
+    if bg_color == "#202124":
+        label_color = "white"
+    elif bg_color == "#f8f9fa":
+        label_color = "black"
     else:
-        warnings.warn("Missing settings: No mask preview was generated.")
+        label_color = "black"
+        bg_color = "#f8f9fa"
+
+    # Make sure required sections exist
+    chart_dict.setdefault("config", {})
+    chart_dict.setdefault("facet", {})
+    chart_dict["config"].setdefault("axis", {})
+    chart_dict["config"].setdefault("legend", {})
+    chart_dict["config"].setdefault("title", {})
+    chart_dict["config"].setdefault("facet", {})
+    chart_dict["facet"].setdefault("header", {})
+
+    # Apply theme settings
+    chart_dict["config"]["background"] = bg_color
+    chart_dict["config"]["title"]["color"] = label_color
+
+    chart_dict["config"]["axis"].update({
+        "labelColor": label_color,
+        "titleColor": label_color,
+        "domainColor": label_color
+    })
+
+    chart_dict["config"]["legend"].update({
+        "labelColor": label_color,
+        "titleColor": label_color
+    })
+
+    if "facet" in chart_dict:
+        chart_dict["facet"].setdefault("header", {})
+        chart_dict["facet"]["header"].update({
+            "labelColor": label_color,
+            "titleColor": label_color
+        })
+
+
+def print_themed_pseudocolor_img(file_name, figure, index, bg_color, dpi):
+    # Define theme-specific colors
+    if bg_color == "#202124":
+        label_color = "white"
+    elif bg_color == "#f8f9fa":
+        label_color = "black"
+    else:
+        label_color = "black"
+        bg_color = "#f8f9fa"
+
+
+    ax = figure.gca()
+    im = ax.images
+    # Assume colorbar was plotted last one plotted last
+    cb = im[-1].colorbar
+
+    # COLORBAR
+    # set colorbar label plus label color
+    cb.set_label(f"{index.upper()} value", color=label_color)
+
+    # set colorbar tick color
+    cb.ax.yaxis.set_tick_params(color=label_color)
+
+    # set colorbar edgecolor
+    cb.outline.set_edgecolor(label_color)
+
+    plt.setp(plt.getp(cb.ax.axes, 'yticklabels'), color=label_color)
+
+    figure.savefig(file_name,
+                   dpi=dpi,
+                   facecolor=bg_color)
