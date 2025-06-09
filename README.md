@@ -36,22 +36,12 @@ RAYN provides an executables to install RVS-A on Windows or MacOS. You can downl
 ### Source Setup (any platform)
 
 It is recommended to run the application in a virtual environment.
-Required libraries and versions:
-- python (3.11)
-- plantCV 
-- stackprinter
-- paho-mqtt
-- plotly
-- watchdog
-- kaleido (0.1.0.post1 for Windows/Linux, other versions do not work)
-- pyside6
-- requests
+Required libraries and versions can be found in [requirements.txt](https://github.com/rayngrowingsystems/RVS_Analytics/blob/main/requirements.txt)
 
 Here are the steps to set up everything to run the application. Note: You have to have python already installed!
 
 ```bash
-pip install plantcv plotly stackprinter paho-mqtt watchdog pyside6 requests
-pip install kaleido==0.1.0.post1
+pip install -r /path/to/requirements.txt
 ```
 You can run the application from the repository with the following command:
 ```bash
