@@ -21,6 +21,7 @@ import numpy as np
 from plantcv.plantcv import crop, print_image, readimage, spectral_index
 from plantcv.plantcv.transform import rotate
 from matplotlib import pyplot as plt
+from rayn_index import *
 
 
 def load_coefficients(path):
@@ -207,10 +208,16 @@ def get_index_functions():
     """Loads list of available spectral indices (plantCV) including min/max ranges"""
     # TODO: Update ranges
     index_dict = {
-        "ari": ("ARI - Anthocyanin Reflectance Index",
-                spectral_index.ari, -50, 50),
-        "cri700": ("CRI700 - Carotenoid Reflectance Index (700)",
-                   spectral_index.cri700, -10, 10),
+        "ari": ("ARI - Anthocyanin Reflectance Index (modified: 526/740)",
+               rayn_ari, -1, 20),
+        "ci": ("CI - Chlorophyll Index (modified)",
+               rayn_ci, -10, 10),
+        "ci_green": ("CI Green - Chlorophyll Index Green",
+               ci_green, -1, 10),
+        "cri526": ("CRI526 - Carotenoid Reflectance Index (500/526)",
+               rayn_cri526, -10, 10),
+        "cri750": ("CRI750 - Carotenoid Reflectance Index (500/750)",
+               rayn_cri750, -10, 10),
         "egi": ("EGI - Excess Green Index",
                 spectral_index.egi, -1, 2),
         "evi": ("EVI - Enhanced Vegetation Index",
@@ -219,12 +226,16 @@ def get_index_functions():
                 spectral_index.gli, -1, 1),
         "gdvi": ("GDVI - Green Difference Vegetation Index",
                  spectral_index.gdvi, -0.5, 0.5),
-        "mari": ("MARI - Modified Anthocyanin Reflectance Index",
-                 spectral_index.mari, -10, 5),
+        "mari": ("MARI - Modified Anthocyanin Reflectance Index (modified)",
+                 rayn_mari, -1, 20),
         "mcari": ("MCARI - Modified Chlorophyll Absorption Reflectance Index",
-                  spectral_index.mcari, -0.5, 0.5),
+                  rayn_mcari, -0.5, 0.5),
+        "ndre": ("NDRE - Normalized Difference Red Edge (modified)",
+                 rayn_ndre, -1, 1),
         "ndvi": ("NDVI - Normalized Difference Vegetation Index",
                  spectral_index.ndvi, -1, 1),
+        "npci": ("NPCI - Normalized Pigment Chlorophyll Index (modified)",
+                 rayn_npci, -1, 1),
         "pri": ("PRI - Photochemical Reflectance Index",
                 spectral_index.pri, -1, 1),
         "psnd_chla": ("PSND CHLA - Pigment Specific Normalized Differences (Chlorophyll A)",
@@ -234,7 +245,7 @@ def get_index_functions():
         "psnd_car": ("PSND CAR - Pigment Specific Normalized Differences (Carotenoid)",
                      spectral_index.psnd_car, -1, 1),
         "psri": ("PSRI - Plant Senescence Reflectance Index",
-                 spectral_index.psri, -5, 1),
+                 spectral_index.psri, 0, 1),
         "pssr_chla": ("PSSR CHLA - Pigment Specific Simple Ratio (Chlorophyll A)",
                       spectral_index.pssr_chla, -1, 1),
         "pssr_chlb": ("PSSR CHLB - Pigment Specific Simple Ratio (Chlorophyll B)",
@@ -246,9 +257,11 @@ def get_index_functions():
         "savi": ("SAVI - Soil Adjusted Vegetation Index",
                  spectral_index.savi, -1.2, 1.2),
         "sipi": ("SIPI - Structure-Independent Pigment Index",
-                 spectral_index.sipi, -5, 5),
+                 spectral_index.sipi, 0, 5),
         "sr": ("SR - Simple Ratio",
-               spectral_index.sr, 0, 10)
+               spectral_index.sr, 0, 10),
+        "wbi": ("WBI - Water Band Index (modified)",
+               rayn_wbi, 0, 10)
     }
 
     return index_dict

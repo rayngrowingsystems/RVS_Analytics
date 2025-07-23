@@ -42,6 +42,7 @@ import csv
 
 from importlib.metadata import version
 
+from PySide6.QtWebEngineCore import QWebEngineSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog, QStyle, QMessageBox, QInputDialog, QLineEdit, QFileDialog, QLabel, QCheckBox
 from PySide6.QtCore import QUrl, QTimer, QStandardPaths, QDir, QObject, QRunnable, QThreadPool, QSize
 from PySide6 import QtCore
@@ -2059,7 +2060,7 @@ class MainWindow(QMainWindow):
     def on_add_preview_tab(self, tab_name, file_name):
         tprint("add_preview_tab", tab_name, file_name)
         if not self.tab_exists(tab_name):
-            tab = ResultTabWidget(file_name)
+            tab = Helper.ResultTabWidget(file_name)
             tab.setContentsMargins(0, 0, 0, 0)
 
             self.ui.tab_widget.addTab(tab, tab_name)
