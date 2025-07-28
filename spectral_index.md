@@ -1,38 +1,89 @@
 ## Available Spectral Indices
 
 The following spectral indices from [plantCV](https://plantcv.org/) are currently available in RAYN Vision Analytics. 
-Please contact us if you are missing an important index, you want us to add to the list. 
+Please contact us if you are missing an important index, you want us to add to the list.
 
-(original list from plantCV documentation is available [HERE](https://plantcv.readthedocs.io/en/stable/spectral_index/))
+(Original list from plantCV documentation is available [HERE](https://plantcv.readthedocs.io/en/stable/spectral_index/))
+
+## Wavelength Adaption in RAYN Vision System
+
+Some spectral indices in RAYN Vision Analytics use adjusted wavelengths to match the available bands in our multispectral imaging system. These adaptations are based on literature and spectral similarity and maintain sensitivity for comparative plant studies in controlled environments.
+
+**Substitution: 855 nm instead of 800 nm**
+The RVS Camera has two NIR channels: 855 and 950. We use the 855 the channel as standard NIR-band in the indices (if not stated otherwise). Reflectance in the NIR plateau is generally stable across 800–860 nm in healthy vegetation. Substituting 800 nm with 855 nm preserves sensitivity to biomass and canopy structure, especially in relative comparisons.
+
+Supporting literature:
+- Gitelson et al. (2003) validated NIR reflectance stability in the 800–860 nm range for biomass estimation. [DOI:10.1029/2002GL016450](#references)
+- Barnes et al. (2000) report interchangeable use of NIR bands above 800 nm for water and canopy indices.
+
+**Substitution: 740 nm instead of 700 nm**
+Our system uses a band centered at 740 nm to approximate the red edge. The red-edge transition is spectrally smooth between 700–750 nm. Using 740 nm retains chlorophyll sensitivity while improving signal quality.
+
+Supporting literature:
+- Gitelson et al. (2003) showed robust vegetation sensitivity across 700–750 nm. DOI:10.1029/2002GL016450
+- Dash & Curran (2004) used similar bands in MERIS-based indices. DOI:10.1080/0143116042000274015
+
+**Substitution: 526 nm instead of 550 nm**
+Our green channel peaks at 526 nm. While 550 nm is standard for chlorophyll-related indices (e.g. ARI, MARI), 526 nm still lies within the green reflectance plateau and is commonly used in remote sensing sensors like WorldView-2 and RedEdge.
+
+Supporting literature:
+- Blackburn (1998) highlights broad sensitivity of chlorophyll in the 520–560 nm region. DOI:10.1016/S0034-4257(98)00059-5
+- Gitelson et al. (2006) also report flexibility in green bands for non-invasive pigment estimates. DOI:10.1029/2006GL026457
+
+These adjustments are especially valid in indoor setups with masked plant material, where relative differences between treatments are prioritized over absolute index values.
+
 
 ### ARI
 
 Calculates the Anthocyanin Reflectance Index using reflectance values ([Gitelson et al., 2001](#references)):
 
 ```
-ARI = (1 / R550) - (1 / R700) 
+ARI = (1 / R526) - (1 / R740)
+```
+**Modified:** R550 → R526 and R700 → R740  
+**Reason:** No exact 550 nm or 700 nm bands available. 526 and 740 provide best approximation.
+
+### CI (modified)
+
+Calculates the Chlorophyll Index using reflectance values, adapted from Gitelson et al., 2003.
+We use 665 nm (Deep Red) and 855 nm (NIR) instead of the originally suggested 680 nm and 800 nm due to sensor availability.
+The substitution preserves the index’s sensitivity to chlorophyll in red-edge and NIR bands.
 
 ```
+CI = (R855 / R665) - 1
+```
 
-### CRI700
+### CRI526
 
-Calculates the Carotenoid Reflectance Index 700 using reflectance values ([Gitelson et al., 2002a](#references)):
+Calculates the Carotenoid Reflectance Index 526 using reflectance values ([Gitelson et al., 2002a](#references)):
 
 ```
-CRI700 = (1 / R510) - (1 / R700)
+CRI740 = (1 / R500) - (1 / R740)
 ```
+**Modified:** R510 → R500 and R700 → R740  
+**Reason:** Nearest matching bands to assess carotenoid reflectance.
+
+### CRI740
+
+Calculates the Carotenoid Reflectance Index 740 (originally 700) using reflectance values ([Gitelson et al., 2002a](#references)):
+
+```
+CRI740 = (1 / R500) - (1 / R740)
+```
+**Modified:** R510 → R500 and R700 → R740  
+**Reason:** Nearest matching bands to assess carotenoid reflectance.
 
 ### EGI
 
 Calculates the Excess Green Index using RGB values ([Woebbecke et al., 1995](#references)):
 
 ```
-r = R700 / (R700 + R530 + R460)
-g = R530 / (R700 + R530 + R460)
-b = R460 / (R700 + R530 + R460)
+r = R700 / (R740 + R530 + R460)
+g = R530 / (R740 + R530 + R460)
+b = R460 / (R740 + R530 + R460)
 EGI = 2g - r - b
 ```
-
+**Note:** With images from the RAYN Vision System Camera the RGB bands are approximated using the available bands: R → R665, G → R526, B → R475
 
 ### EVI
 
@@ -41,6 +92,7 @@ Calculates the Enhanced Vegetation index using reflectance values ([Huete et al.
 ```
 EVI = (2.5 * (NIR - RED)) / (1 + NIR + (6 * RED) - (7.5 * BLUE))
 ```
+**Note:** With images from the RAYN Vision System Camera the RED and NIR bands are approximated using the available bands: Red → R665, NIR → R855
 
 ### GLI
 
@@ -49,6 +101,7 @@ Calculates the Green Leaf index using RGB values ([Louhaichi et al., 2001](#refe
 ```
 GLI = (2 * GREEN - RED - BLUE) / (2 * GREEN + RED + BLUE)
 ```
+**Note:** With images from the RAYN Vision System Camera the RGB bands are approximated using the available bands: R → R665, G → R526, B → R475
 
 ### GDVI
 
@@ -57,6 +110,7 @@ Calculates the Green Difference Vegetation Index using reflectance values ([Srip
 ```
 GDVI = (NIR - GREEN) / (NIR + GREEN)
 ```
+**Note:** With images from the RAYN Vision System Camera the GREEN and NIR bands are approximated using the available bands: Green → R526, NIR → R855
 
 ### MARI
 
@@ -65,6 +119,7 @@ Calculates the Modified Anthocyanin Reflectance Index using reflectance values (
 ```
 MARI = ((1 / R550) - (1 / R700)) * R800
 ```
+**Modified:** R550 → R526, R700 → R740, R800 → R855
 
 ### MCARI
 
@@ -72,6 +127,14 @@ Calculates the Modified Chlorophyll Absorption Reflectance Index using reflectan
 
 ```
 MCARI = ((R700 - R670) - 0.2 * (R700 - R550)) * (R700 / R670)
+```
+**Modified:** R700 → R740, R550 → R526
+
+### NDRE (modified)
+
+Calculates the Normalized Difference Red Edge Index. We use 740 nm and 855 nm instead of 720 nm and 790 nm. This modification remains within the red-edge to NIR transition range, as described in Gitelson et al., 2003, and is suitable for estimating chlorophyll content.
+```
+NDRE = (R855 - R740) / (R855 + R740)
 ```
 
 ### NDVI
@@ -81,7 +144,16 @@ Calculates the Normalized Difference Vegetation Index using reflectance values (
 ```
 NDVI = (NIR - RED) / (NIR + RED)
 ```
-  
+**Note:** With images from the RAYN Vision System Camera the RED and NIR bands are approximated using the available bands: Red → R665, NIR → R855
+
+### NPCI
+
+Calculates the Normalized Pigment Chlorophyll Index (Penuelas et al., 1995b). We use 665 nm (Deep Red) and 475 nm (Blue) instead of 680 nm and 430 nm due to hardware constraints.
+This change slightly shifts the balance toward red-light reflectance but retains the index’s purpose in detecting pigment ratio changes.
+```
+NPCI = (R665 - R475) / (R665 + R475)
+```
+
 ### PRI
 
 Calculates the Photochemical Reflectance Index using reflectance values ([Penuelas et al., 1995a](#references)):
@@ -159,6 +231,7 @@ Calculates the Red:Green Ratio Index for anthocyanin using reflectance values ([
 ```
 RGRI = RED / GREEN
 ```
+**Note:** With images from the RAYN Vision System Camera the GREEN and RED bands are approximated using the available bands: Green → R526, Red → R665
 
 ### SAVI
 
@@ -167,6 +240,7 @@ Calculates the Soil Adjusted Vegetation Index using reflectance values ([Huete 1
 ```
 SAVI = (1.5 * (NIR - RED)) / (NIR + RED + 0.5)
 ```
+**Note:** With images from the RAYN Vision System Camera the RED and NIR bands are approximated using the available bands: Red → R665, NIR → R855
 
 ### SIPI
 
@@ -175,6 +249,7 @@ Calculates the Structure-Independent Pigment Index using reflectance values ([Pe
 ```
 SIPI = (NIR - RED) / (NIR - BLUE)
 ```
+**Note:** With images from the RAYN Vision System Camera the BLUE, RED and NIR bands are approximated using the available bands: Blue → R475, Red → R665, NIR → R855
 
 ### SR
 
@@ -182,6 +257,13 @@ Calculates the Simple Ratio using reflectance values ([Jordan 1969](#references)
 
 ```
 SR = NIR / RED
+```
+**Note:** With images from the RAYN Vision System Camera the RED and NIR bands are approximated using the available bands: Red → R665, NIR → R855
+
+### Water Band Index (WBI)
+Calculates the Water Band Index, adapted from Penuelas et al., 1997. We use 855 nm and 950 nm instead of the canonical 900 nm and 970 nm. This substitution remains valid for water status estimation, as both bands are within the NIR water absorption region (Gao 1996).
+```
+WBI = R855 / R950
 ```
 
 ### References
