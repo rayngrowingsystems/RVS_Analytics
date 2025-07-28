@@ -13,8 +13,8 @@ Analyse hyper/multispectral images using PlantCV workflows in a graphical user i
 provides different dialogues to e.g. select image source, regions of interest as well as masks 
 in a graphical user interface.
 
-Please refer to the User Guide for more details. You can download it through the 
-[RVS-A webpage (Resources)](https://rayngrowingsystems.com/products/rvs-analytics/).
+Please refer to the User Guide for more details. You can download it through [GitHub](https://github.com/rayngrowingsystems/RVS_Analytics/releases) or the 
+[RVS-A webpage (Resources)](https://rayn.ag/rvs-analytics/).
 
 ## Main Features
 
@@ -29,29 +29,19 @@ Please refer to the User Guide for more details. You can download it through the
 For all spectral indices available for analysis, see [this document](https://github.com/rayngrowingsystems/RVS_Analytics/blob/main/spectral_index.md).
 
 ## Setup
-### Windows installer
-RAYN provides an executable to install RVS-A on Windows. You can download it through the 
-[RVS-A webpage (Resources)](https://rayngrowingsystems.com/products/rvs-analytics/).
+### Windows and MacOS installer
+RAYN provides an executables to install RVS-A on Windows or MacOS. You can download it through [GitHub](https://github.com/rayngrowingsystems/RVS_Analytics/releases) or the 
+[RVS-A webpage (Resources)](https://rayn.ag/rvs-analytics/).
 
 ### Source Setup (any platform)
 
 It is recommended to run the application in a virtual environment.
-Required libraries and versions:
-- python (3.11)
-- plantCV 
-- stackprinter
-- paho-mqtt
-- plotly
-- watchdog
-- kaleido (0.1.0.post1 for Windows/Linux, other versions do not work)
-- pyside6
-- requests
+Required libraries and versions can be found in [requirements.txt](https://github.com/rayngrowingsystems/RVS_Analytics/blob/main/requirements.txt)
 
 Here are the steps to set up everything to run the application. Note: You have to have python already installed!
 
 ```bash
-pip install plantcv plotly stackprinter paho-mqtt watchdog pyside6 requests
-pip install kaleido==0.1.0.post1
+pip install -r /path/to/requirements.txt
 ```
 You can run the application from the repository with the following command:
 ```bash
